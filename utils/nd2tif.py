@@ -1,4 +1,3 @@
-# Requires numpy, dask, nd2, tifffile
 import nd2
 import tifffile
 import numpy as np
