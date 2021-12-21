@@ -4,3 +4,5 @@ nd2
 tifffile
 pandas
 seaborn
+scikit-image
+cv2
