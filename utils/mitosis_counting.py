@@ -5,6 +5,7 @@ import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
 from utils.morphology import roundnessCalculator
+from utils.display import plot_smooth_curves
 
 
 def smooth(y, t_win):
@@ -89,7 +90,7 @@ def count_mitosis(path, stacks=False, pd_dataframe=None, column_data=[], frame_r
 
 min_roundness = [0.85, 0.9, 0.95, 0.97]
 path = "/Users/esti/Documents/PHX/mitosis_mediated_data/results/2021-12-20/CHO_DIC_damage_merged_results"
-path = "/Users/esti/Documents/PHX/mitosis_mediated_data/results/2021-12-20/CHO_DIC_fast-acq_results"
+# path = "/Users/esti/Documents/PHX/mitosis_mediated_data/results/2021-12-20/CHO_DIC_fast-acq_results"
 for r in min_roundness:
     data = count_mitosis(path, stacks=True, frame_rate=2, min_roundness=r)
     # data['Subcategory-02'] = 'raw'
@@ -99,108 +100,34 @@ for r in min_roundness:
     for i in videos:
         video = data[data['Subcategory-01'] == i]
         video = video.sort_values('frame')
-        M = np.max(video['mitosis'])
-        video['mitosis'] = video['mitosis'] / M
         video['Subcategory-02'] = 'Raw'
-
+        # normalise
+        M = np.max(video['mitosis'])
+        video['mitosis_normalised'] = video['mitosis'] / M
+        # smooth
         y = smooth(video['mitosis'], t_win)
+        y_norm = smooth(video['mitosis_normalised'], t_win)
+        # store smooth values
         video2 = video.copy()
         video2['Subcategory-02'] = 'Averaged'
         video2['mitosis'] = y
+        video2['mitosis_normalised'] = y_norm
+        video = pd.concat([video, video2]).reset_index(drop=True)
+        data1 = pd.concat([data1, video]).reset_index(drop=True)
 
-        video3 = pd.concat([video, video2]).reset_index(drop=True)
-        data1 = pd.concat([data1, video3]).reset_index(drop=True)
+    # Display
+    title = "Minimum roundness {}".format(r)
+    y_var = "mitosis"
+    output_path = path
+    name = "mitosis_roundness-{}.png".format(r)
+    plot_smooth_curves(data1, y_var, title, output_path, name)
+    # Display
+    title = "Minimum roundness {}".format(r)
+    y_var = "mitosis_normalised"
+    output_path = path
+    name = "normalised_mitosis_roundness-{}.png".format(r)
+    plot_smooth_curves(data1, y_var, title, output_path, name)
 
-    # Plot the results per category
-    fig = plt.figure()
-    plt.subplot(2, 1, 1)
-    sns.lineplot(x="frame", y="mitosis", hue='Subcategory-01', style='Subcategory-02', data=data1, palette="tab10",
-                 linewidth=1.5, alpha=0.5)
-    plt.ylabel("# Mitosis")
-    plt.xlabel("Time (min)")
-    plt.title("Min roundness {}".format(r))
-
-    # Plot the results per category
-    plt.subplot(2, 1, 2)
-    sns.lineplot(x="frame", y="mitosis", hue='Subcategory-00', style='Subcategory-02', data=data1, palette="tab10",
-                 linewidth=1.5, alpha=0.75)
-    plt.ylabel("# Mitosis")
-    plt.xlabel("Time (min)")
-    plt.title("Min roundness {}".format(r))
-    fig.savefig(os.path.join(path, "roundness-{}.png".format(r)),
-                format='png')
-    plt.show()
-
-path = "/Users/esti/Documents/PHX/mitosis_mediated_data/results/2021-12-20/CHO_DIC_damage_merged_results"
-data_fast = count_mitosis(path, stacks=True, frame_rate=2, min_roundness=0.5)
-
-for r in min_roundness:
-    data = count_mitosis(path, min_roundness=r)
-    ## Smooth curves
-    data['Subcategory-02'] = 'raw'
-    t_win = 15
-    videos = np.unique(data['Subcategory-01'])
-    for i in videos:
-        video = data[data['Subcategory-01'] == i]
-        video = video.sort_values('frame')
-        y = smooth(video['mitosis'], t_win)
-        video['Subcategory-02'] = 'Averaged'
-        video['mitosis'] = y
-        data = pd.concat([data, video]).reset_index(drop=True)
-
-    # Plot the results per category
-    fig = plt.figure()
-    plt.subplot(2, 1, 1)
-    sns.lineplot(x="frame", y="mitosis", hue='Subcategory-01', style='Subcategory-02', data=data, palette="tab10",
-                 linewidth=1.5)
-    plt.ylabel("# Mitosis")
-    plt.xlabel("Time (min)")
-    plt.title("Min roundness {}".format(r))
-
-    # Plot the results per category
-    plt.subplot(2, 1, 2)
-    sns.lineplot(x="frame", y="mitosis", hue='Subcategory-00', style='Subcategory-02', data=data, palette="tab10",
-                 linewidth=1.5)
-    plt.ylabel("# Mitosis")
-    plt.xlabel("Time (min)")
-    plt.title("Min roundness {}".format(r))
-    fig.savefig("/Users/esti/Documents/PHX/mitosis_mediated_data/2021-12-06_roundness-{}.png".format(r), format='png')
-    plt.show()
-
-min_roundness = [0.85, 0.9, 0.95, 0.97]
-path = "/Users/esti/Documents/PHX/mitosis_mediated_data/2021-12-06"
-for r in min_roundness:
-    data = count_mitosis(path, min_roundness=r)
-    ## Smooth curves
-    data['Subcategory-02'] = 'raw'
-    t_win = 15
-    videos = np.unique(data['Subcategory-01'])
-    for i in videos:
-        video = data[data['Subcategory-01'] == i]
-        video = video.sort_values('frame')
-        y = smooth(video['mitosis'], t_win)
-        video['Subcategory-02'] = 'Averaged'
-        video['mitosis'] = y
-        data = pd.concat([data, video]).reset_index(drop=True)
-
-    # Plot the results per category
-    fig = plt.figure()
-    plt.subplot(2, 1, 1)
-    sns.lineplot(x="frame", y="mitosis", hue='Subcategory-01', style='Subcategory-02', data=data, palette="tab10",
-                 linewidth=1.5)
-    plt.ylabel("# Mitosis")
-    plt.xlabel("Time (min)")
-    plt.title("Min roundness {}".format(r))
-
-    # Plot the results per category
-    plt.subplot(2, 1, 2)
-    sns.lineplot(x="frame", y="mitosis", hue='Subcategory-00', style='Subcategory-02', data=data, palette="tab10",
-                 linewidth=1.5)
-    plt.ylabel("# Mitosis")
-    plt.xlabel("Time (min)")
-    plt.title("Min roundness {}".format(r))
-    fig.savefig("/Users/esti/Documents/PHX/mitosis_mediated_data/2021-12-06_roundness-{}.png".format(r), format='png')
-    plt.show()
 
 ## Display roundness
 data2 = data1[data1["Subcategory-02"] == "Raw"]
@@ -223,11 +150,11 @@ for i in range(len(data2)):
     else:
         roundness_data = pd.concat([roundness_data, aux]).reset_index(drop=True)
 
-plt.figure()
+fig = plt.figure()
 plt.subplot(1, 2, 1)
 sns.scatterplot(x="frame", y="roundness_axis", hue='Subcategory-00', data=roundness_data,
                 linewidth=0, alpha=.5, palette="tab10")
-plt.ylabel("# Roundness")
+plt.ylabel("Roundness")
 plt.xlabel("Time (min)")
 # plt.xlim([0,120])
 # plt.ylim([0.7, 1])
@@ -235,8 +162,9 @@ plt.xlabel("Time (min)")
 plt.subplot(1, 2, 2)
 sns.scatterplot(x="frame", y="roundness_projected", hue='Subcategory-00', data=roundness_data,
                 linewidth=0, alpha=.5, palette="tab10")
-plt.ylabel("# Roundness")
+plt.ylabel("Roundness")
 plt.xlabel("Time (min)")
 # plt.xlim([0,120])
 # plt.ylim([0.7, 1])
+fig.savefig(os.path.join(path, "roundness_scatterplot.png"), format='png')
 plt.show()
