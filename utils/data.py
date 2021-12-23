@@ -32,6 +32,15 @@ def videos2frames(path, folder, s):
                             image_resized, imagej=True)
 
 
+def change_bitdepth(path, new_path):
+    if not os.path.exists(new_path):
+        os.mkdir(new_path)
+    for f in os.listdir(path):
+        print(f)
+        seq = tifffile.imread(os.path.join(path, f))
+        seq = seq.astype(np.uint16)
+        tifffile.imsave(os.path.join(new_path, f), seq, imagej=True)
+
 # # scaling factor
 # s = 10
 # path = "/content/gdrive/MyDrive/Projectos/DEEP-IMAGEJ/examples_of_models/ZeroCostDL4Mic/PHTX/nuclei_detection/test"
@@ -58,23 +67,15 @@ def videos2frames(path, folder, s):
 # s = 10
 # videos2frames(path, folder, s)
 
+### Code to convert float results from StarDist into uint16
+# main_path = '/Volumes/OCB-All/Projects/OCB004_Phototoxicity/Analysis/StarDist/results/STARDIST-17122021'
+# main_path = "/Users/esti/Documents/PHX/mitosis_mediated_data/2021-12-06"
+# for folder in os.listdir(main_path):
+#     if not folder.__contains__(".DS"):
+#         new_path = os.path.join(main_path, folder + "_16")
+#         if not os.path.exists(new_path):
+#             os.mkdir(new_path)
+#         for subfolder in os.listdir(os.path.join(main_path, folder)):
+#             if not subfolder.__contains__(".DS"):
+#                 change_bitdepth(os.path.join(main_path, folder, subfolder), os.path.join(new_path, subfolder))
 
-def change_bitdepth(path, new_path):
-    if not os.path.exists(new_path):
-        os.mkdir(new_path)
-    for f in os.listdir(path):
-        print(f)
-        seq = tifffile.imread(os.path.join(path, f))
-        seq = seq.astype(np.uint16)
-        tifffile.imsave(os.path.join(new_path, f), seq, imagej=True)
-
-main_path = '/Volumes/OCB-All/Projects/OCB004_Phototoxicity/Analysis/StarDist/results/STARDIST-17122021'
-main_path = "/Users/esti/Documents/PHX/mitosis_mediated_data/2021-12-06"
-for folder in os.listdir(main_path):
-    if not folder.__contains__(".DS"):
-        new_path = os.path.join(main_path, folder + "_16")
-        if not os.path.exists(new_path):
-            os.mkdir(new_path)
-        for subfolder in os.listdir(os.path.join(main_path, folder)):
-            if not subfolder.__contains__(".DS"):
-                change_bitdepth(os.path.join(main_path, folder, subfolder), os.path.join(new_path, subfolder))
