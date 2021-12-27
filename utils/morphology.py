@@ -22,7 +22,10 @@ def roundnessCalculator(object_matrix, projected=False):
         else:
             M = props[0].axis_major_length
             m = props[0].axis_minor_length
-            roundness = np.min((m / M, 1))
+            if M == 0:
+                roundness = 0
+            else:
+                roundness = np.min((m / M, 1))
     else:
         roundness = 0
     return roundness
