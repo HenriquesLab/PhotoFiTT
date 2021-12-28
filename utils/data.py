@@ -1,7 +1,9 @@
 import os
 import cv2
+import nd2
 import tifffile
 import numpy as np
+
 
 def videos2frames(path, folder, s):
     """
@@ -41,41 +43,53 @@ def change_bitdepth(path, new_path):
         seq = seq.astype(np.uint16)
         tifffile.imsave(os.path.join(new_path, f), seq, imagej=True)
 
-# # scaling factor
-# s = 10
-# path = "/content/gdrive/MyDrive/Projectos/DEEP-IMAGEJ/examples_of_models/ZeroCostDL4Mic/PHTX/nuclei_detection/test"
-# folder = "input"
-# videos2frames(path, folder, s)
-#
-# path = "/content/gdrive/MyDrive/Projectos/DEEP-IMAGEJ/examples_of_models/ZeroCostDL4Mic/PHTX/nuclei_detection/test"
-# folder = "target"
-# videos2frames(path, folder, s)
-#
-# path = "/content/gdrive/MyDrive/Projectos/DEEP-IMAGEJ/examples_of_models/ZeroCostDL4Mic/PHTX/nuclei_detection/train"
-# folder = "input"
-# videos2frames(path, folder, s)
-#
-# path = "/content/gdrive/MyDrive/Projectos/DEEP-IMAGEJ/examples_of_models/ZeroCostDL4Mic/PHTX/nuclei_detection/train"
-# folder = "target"
-# videos2frames(path, folder, s)
-#
-#
-# # name of the input folder
-# path = '/Volumes/OCB-All/Projects/OCB004_Phototoxicity/Data/NikonTi/2021-12-06'
-# folder = "videos"
-# # scaling factor
-# s = 10
-# videos2frames(path, folder, s)
 
-### Code to convert float results from StarDist into uint16
-# main_path = '/Volumes/OCB-All/Projects/OCB004_Phototoxicity/Analysis/StarDist/results/STARDIST-17122021'
-# main_path = "/Users/esti/Documents/PHX/mitosis_mediated_data/2021-12-06"
-# for folder in os.listdir(main_path):
-#     if not folder.__contains__(".DS"):
-#         new_path = os.path.join(main_path, folder + "_16")
-#         if not os.path.exists(new_path):
-#             os.mkdir(new_path)
-#         for subfolder in os.listdir(os.path.join(main_path, folder)):
-#             if not subfolder.__contains__(".DS"):
-#                 change_bitdepth(os.path.join(main_path, folder, subfolder), os.path.join(new_path, subfolder))
+def nikon2tiff(path, output_path, s):
+    folders = os.listdir(path)
+    folders.sort
+    print(folders)
+    if not os.path.exists(output_path):
+        os.mkdir(output_path)
+    for f in folders:
+        if f[0] != '.':
+            if not f.__contains__('.nd2'):
+                nikon2tiff(os.path.join(path, f), os.path.join(output_path, f), s)
+            else:
+                video = nd2.ND2File(os.path.join(path, f))
+                pixel_size = video.metadata.channels[0].volume.axesCalibration[0]
+                video = video.to_dask()
+                resized_video = []
+                for t in range(len(video)):
+                    frame = np.array(video[t])
+                    if s != 1:
+                        frame = cv2.resize(frame, dsize=(frame.shape[0] // s, frame.shape[1] // s),
+                                           interpolation=cv2.INTER_CUBIC)
+                    resized_video.append(frame)
+                resized_video = np.array(resized_video)
+                tifffile.imsave(os.path.join(output_path, f.split(".nd2")[0] + '.tif'),
+                                np.expand_dims(resized_video, axis=[1, 2, -1]),
+                                # addapt the dimensions to tifffile ordering TZCYXS
+                                resolution=(1 / (s*pixel_size), 1 / (s*pixel_size)),
+                                imagej=True,
+                                metadata={'spacing': 1, 'unit': 'um'})
 
+def resize_files_in_folder(path, output_path, s, pixel_size):
+    if not os.path.exists(output_path):
+        os.mkdir(output_path)
+    files = os.listdir(path)
+    for f in files:
+        print(f)
+        if f.__contains__(".tif"):
+            video1 = tifffile.imread(f)
+            resized_video = []
+            for t in range(len(video1)):
+                frame = video1[t]
+                frame = cv2.resize(frame, dsize=(frame.shape[0] // s, frame.shape[1] // s),
+                                   interpolation=cv2.INTER_CUBIC)
+                resized_video.append(frame)
+            tifffile.imsave(os.path.join(output_path, f),
+                            np.expand_dims(resized_video, axis=[1, 2, -1]),
+                            # addapt the dimensions to tifffile ordering TZCYXS
+                            resolution=(1 / (s*pixel_size), 1 / (s*pixel_size)),
+                            imagej=True,
+                            metadata={'spacing': 1, 'unit': 'um'})
