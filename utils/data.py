@@ -80,7 +80,7 @@ def resize_files_in_folder(path, output_path, s, pixel_size):
     for f in files:
         print(f)
         if f.__contains__(".tif"):
-            video1 = tifffile.imread(f)
+            video1 = tifffile.imread(os.path.join(path, f))
             resized_video = []
             for t in range(len(video1)):
                 frame = video1[t]
