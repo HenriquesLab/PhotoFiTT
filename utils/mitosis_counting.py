@@ -21,12 +21,14 @@ def smooth(y, t_win):
 
 def extract_info(frame, t, frame_rate, min_roundness, column_data):
     labels = np.unique(frame)
+    area = []
     r_axis = []
     r_pro = []
     count = 0
     for l in labels:
         if l > 0:
             cell = (frame == l).astype(np.uint8)
+            area.append(np.sum(cell))
             r_axis.append(roundnessCalculator(cell, projected=False))
             r_pro.append(roundnessCalculator(cell, projected=True))
             if roundnessCalculator(cell, projected=False) > min_roundness:
@@ -34,9 +36,10 @@ def extract_info(frame, t, frame_rate, min_roundness, column_data):
     mitosis = count
     t = frame_rate * t
     # initialize list of lists
-    data = [[t, mitosis, r_axis, r_pro] + column_data]
+    data = [[t, mitosis, area, r_axis, r_pro] + column_data]
     columns = ["Subcategory-{:02d}".format(i) for i in range(len(column_data))]
-    aux = pd.DataFrame(data, columns=['frame', 'mitosis', "roundness_axis", "roundness_projected"] + columns)
+    aux = pd.DataFrame(data,
+                       columns=['frame', 'mitosis', 'cell_size', "roundness_axis", "roundness_projected"] + columns)
     return aux
 
 

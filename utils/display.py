@@ -45,7 +45,7 @@ def mosaic(stack_im, path2original, min_roundness=0.5):
         for l in labels:
             if l > 0:
                 cell = (stack_im[t] == l).astype(np.uint8)
-                if np.sum(cell)>0:
+                if np.sum(cell) > 0:
                     if roundnessCalculator(cell, projected=False) > min_roundness:
                         props = regionprops(cell)
                         cell_info = [t] + [i for i in props[0].bbox]
@@ -59,11 +59,11 @@ def mosaic(stack_im, path2original, min_roundness=0.5):
     BBOX = np.array(BBOX)
     # Try to make a squared mosaic with same number of cells in rows and columns
     count_x = int(np.floor(np.sqrt(max_cell))) + 1
-    count_y = int(np.ceil(max_cell/count_x))
-    H = int(np.max(BBOX[:, 5])) + 3 # Add some pixels to visualise the entire cells
-    W = int(np.max(BBOX[:, 6])) + 3 # Add some pixels to visualise the entire cells
+    count_y = int(np.ceil(max_cell / count_x))
+    H = int(np.max(BBOX[:, 5])) + 3  # Add some pixels to visualise the entire cells
+    W = int(np.max(BBOX[:, 6])) + 3  # Add some pixels to visualise the entire cells
     # Create the empty mosaic image
-    mosaic_stack = np.zeros([stack_im.shape[0], count_y*H, count_x*W], dtype=np.uint16)
+    mosaic_stack = np.zeros([stack_im.shape[0], count_y * H, count_x * W], dtype=np.uint16)
     print(mosaic_stack.shape)
     # count_x = np.floor(stack_im.shape[2] / W)
     # # count_y = np.floor(stack_im.shape[1]/H)
@@ -89,7 +89,6 @@ def mosaic(stack_im, path2original, min_roundness=0.5):
     return mosaic_stack
 
 
-
 def build_mosaics(path, path2original, output_path, min_roundness=0.85):
     """"""
     if not os.path.exists(output_path):
@@ -107,3 +106,49 @@ def build_mosaics(path, path2original, output_path, min_roundness=0.85):
                 im = imread(os.path.join(path, f))
                 mosaic_stack = mosaic(im, os.path.join(path2original, f), min_roundness=min_roundness)
                 imsave(os.path.join(output_path, f), mosaic_stack)
+
+# Define and use a simple function to label the plot in axes coordinates
+def label(x, color, label):
+    ax = plt.gca()
+    ax.text(0, .2, label, fontweight="bold", color=color,
+            ha="left", va="center", transform=ax.transAxes)
+
+def plot_distributions(df, xlabel, title, output_path, smoothness=.5):
+    sns.set_theme(style="white", rc={"axes.facecolor": (0, 0, 0, 0)})
+    # Initialize the FacetGrid object
+    pal = sns.cubehelix_palette(len(np.unique(df["frame"])), rot=-.25, light=.7)
+
+    g = sns.FacetGrid(df, row="frame", hue="frame", aspect=15, height=.5, palette=pal)
+    # Draw the densities in a few steps
+    g.map(sns.kdeplot, "variable",
+          bw_adjust=smoothness, clip_on=False,
+          fill=True, alpha=1, linewidth=1.5)
+    # g.map(sns.histplot, "variable",
+    #       kde=True, clip_on=False, stat="density",
+    #       fill=True, alpha=1, linewidth=1.5,
+    #       binwidth=50, binrange=(0, 1000))
+    g.map(sns.kdeplot, "variable", clip_on=False, color="w", lw=2, bw_adjust=smoothness)
+    # passing color=None to refline() uses the hue mapping
+    g.refline(y=0, linewidth=2, linestyle="-", color=None, clip_on=False)
+    g.map(label, "variable")
+    # Set the subplots to overlap
+    g.figure.subplots_adjust(hspace=-.25)
+    # Remove axes details that don't play well with overlap
+    g.set_titles("")
+    g.set(yticks=[], ylabel="")
+    g.set(xlabel=xlabel)
+    g.despine(bottom=True, left=True)
+    g.savefig("{}_facegrid.png".format(output_path))
+
+
+    fig = plt.figure()
+    sns.set_theme(style="white", rc={"axes.facecolor": (1, 1, 1, 0)})
+    sns.histplot(
+        data=df, x="variable", hue="frame", stat="proportion",
+        fill=True, palette="coolwarm", kde=True,
+        alpha=.5, linewidth=0, binwidth=50, binrange=(0, 1000),
+    )
+    plt.xlabel(xlabel)
+    plt.title(title)
+    fig.savefig("{}_histogram.png".format(output_path), format='png')
+    # plt.show()
