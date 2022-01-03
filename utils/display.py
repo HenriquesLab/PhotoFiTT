@@ -25,7 +25,7 @@ def plot_smooth_curves(data, y_var, title, output_path, name):
     plt.xlabel("Time (min)")
     ax.legend(bbox_to_anchor=(0.85, 0.5))
     fig.savefig(os.path.join(output_path, name), format='png')
-    plt.show()
+    # plt.show()
 
 
 def mosaic(stack_im, path2original, min_roundness=0.5):

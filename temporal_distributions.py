@@ -1,4 +1,4 @@
-from utils.display import plot_distributions
+from utils.display import plot_distributions, plot_smooth_curves
 from utils.mitosis_counting import count_mitosis
 import pandas as pd
 import numpy as np
@@ -40,6 +40,8 @@ for f in folders:
         del data
         # variable = "roundness_axis"
         variable = "cell_size"
+        data_display["Subcategory-02"] = "raw"
+        plot_smooth_curves(data_display, variable, "Cell size (pixels)", path, "cell_size.png")
         groups = np.unique(data_display["Subcategory-00"])
         for g in groups:
             output_path = os.path.join(path, g)
