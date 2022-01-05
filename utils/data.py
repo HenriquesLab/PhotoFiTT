@@ -62,7 +62,7 @@ def nikon2tiff(path, output_path, s):
                 for t in range(len(video)):
                     frame = np.array(video[t])
                     if s != 1:
-                        frame = cv2.resize(frame, dsize=(frame.shape[0] // s, frame.shape[1] // s),
+                        frame = cv2.resize(frame, dsize=(int(frame.shape[0] // s), int(frame.shape[1] // s)),
                                            interpolation=cv2.INTER_CUBIC)
                     resized_video.append(frame)
                 resized_video = np.array(resized_video)

@@ -16,8 +16,11 @@ for f in folders:
     if os.path.isdir(path):
         if path.__contains__("damage_merged"):
             frame_rate = 10
-        else:
+        elif path.__contains__("fast"):
             frame_rate = 2
+        else:
+            print("Unrecognized group of data. Please indicate the frame rate in the code.")
+            break
         data = count_mitosis(path, stacks=True, frame_rate=frame_rate, min_roundness=r)
         data = data[np.mod(data.frame, t_factor) == 0].reset_index(drop=True)
         ## Obtain cell size

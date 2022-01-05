@@ -7,7 +7,7 @@ import numpy as np
 import os
 import sys
 main_path = sys.argv[1]
-min_roundness = [0.85, 0.9, 0.95, 0.97]
+min_roundness = [0.0, 0.5] # 0.85, 0.9, 0.95, 0.97]
 # main_path = "/Users/esti/Documents/PHX/mitosis_mediated_data/results/2021-12-20/scaled_x8/stardist_prob03"
 # main_path = "/Users/esti/Documents/PHX/mitosis_mediated_data/annotations/2021-12-20"
 folders = os.listdir(main_path)
@@ -16,8 +16,11 @@ for f in folders:
     if os.path.isdir(path):
         if path.__contains__("damage_merged"):
             frame_rate = 10
-        else:
+        elif path.__contains__("fast"):
             frame_rate = 2
+        else:
+            print("Unrecognized group of data. Please indicate the frame rate in the code.")
+            break
         for r in min_roundness:
             data = count_mitosis(path, stacks=True, frame_rate=frame_rate, min_roundness=r)
             # data['Subcategory-02'] = 'raw'
