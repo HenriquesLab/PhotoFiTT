@@ -27,6 +27,17 @@ def plot_smooth_curves(data, y_var, title, output_path, name):
     fig.savefig(os.path.join(output_path, name), format='png')
     # plt.show()
 
+def plot_conditions(data, y_var, title, condition, output_path, name, style_condition="processing"):
+    fig = plt.figure(figsize=(7, 6))
+    # Plot the results per category
+    sns.lineplot(x="frame", y=y_var, hue=condition, style=style_condition, data=data, palette="tab10",
+                 linewidth=1.5, alpha=0.75)
+    # plt.ylabel(y_label)
+    plt.xlabel("Time (min)")
+    plt.title(title)
+    # plt.legend(bbox_to_anchor=(0.85, 0.5))
+    fig.savefig(os.path.join(output_path, name), format='png')
+    # plt.show()
 
 def mosaic(stack_im, path2original, min_roundness=0.5):
     """

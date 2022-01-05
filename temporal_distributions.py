@@ -6,10 +6,12 @@ import os
 import sys
 
 main_path = sys.argv[1]
+output_path = sys.argv[2]
 # main_path = "/Users/esti/Documents/PHX/mitosis_mediated_data/results/2021-12-20/scaled_x8/stardist_prob03"
 # path = "/Users/esti/Documents/PHX/mitosis_mediated_data/annotations/2021-12-20/CHO_DIC_fast-acq_/"
+
 r = 0.0
-t_factor = 10  # In minutes
+t_factor = 2  # In minutes
 folders = os.listdir(main_path)
 for f in folders:
     path = os.path.join(main_path, f)
@@ -47,8 +49,7 @@ for f in folders:
         plot_smooth_curves(data_display, variable, "Cell size (pixels)", path, "cell_size.png")
         groups = np.unique(data_display["Subcategory-00"])
         for g in groups:
-            output_path = os.path.join(path, g)
             data = data_display[data_display["Subcategory-00"] == g]
             # Create the data
             df = pd.DataFrame(dict(variable=data[variable], frame=data["frame"]))
-            plot_distributions(df, "Cell Size (pixels)", g, output_path, smoothness=0.3)
+            plot_distributions(df, "Cell Size (pixels)", g, os.path.join(output_path, f, g), smoothness=0.3)
