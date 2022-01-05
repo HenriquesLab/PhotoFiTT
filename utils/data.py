@@ -84,7 +84,7 @@ def resize_files_in_folder(path, output_path, s, pixel_size):
             resized_video = []
             for t in range(len(video1)):
                 frame = video1[t]
-                frame = cv2.resize(frame, dsize=(frame.shape[0] // s, frame.shape[1] // s),
+                frame = cv2.resize(frame, dsize=(int(frame.shape[0] // s), int(frame.shape[1] // s)),
                                    interpolation=cv2.INTER_CUBIC)
                 resized_video.append(frame)
             tifffile.imsave(os.path.join(output_path, f),
