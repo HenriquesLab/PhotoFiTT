@@ -7,6 +7,9 @@ import numpy as np
 import os
 import sys
 main_path = sys.argv[1]
+output_path = sys.argv[2]
+if not os.path.exists(output_path):
+    os.mkdir(output_path)
 min_roundness = [0.0, 0.5, 0.85, 0.9, 0.95, 0.97]
 # main_path = "/Users/esti/Documents/PHX/mitosis_mediated_data/results/2021-12-20/scaled_x8/stardist_prob03"
 # main_path = "/Users/esti/Documents/PHX/mitosis_mediated_data/annotations/2021-12-20"
@@ -18,6 +21,8 @@ for f in folders:
             frame_rate = 10
         elif path.__contains__("fast"):
             frame_rate = 2
+        elif path.__contains__("10"):
+            frame_rate = 10
         else:
             print("Unrecognized group of data. Please indicate the frame rate in the code.")
             break
@@ -46,17 +51,17 @@ for f in folders:
                 data1 = pd.concat([data1, video]).reset_index(drop=True)
 
             # Display
+            if not os.path.exists(os.path.join(output_path, f)):
+                os.mkdir(os.path.join(output_path, f))
             title = "Minimum roundness {}".format(r)
             y_var = "mitosis"
-            output_path = path
             name = "mitosis_roundness-{}.png".format(r)
-            plot_smooth_curves(data1, y_var, title, output_path, name)
+            plot_smooth_curves(data1, y_var, title, os.path.join(output_path, f), name)
             # Display
             title = "Minimum roundness {}".format(r)
             y_var = "mitosis_normalised"
-            output_path = path
             name = "normalised_mitosis_roundness-{}.png".format(r)
-            plot_smooth_curves(data1, y_var, title, output_path, name)
+            plot_smooth_curves(data1, y_var, title, os.path.join(output_path, f), name)
 
 
         ## Display roundness
@@ -103,5 +108,5 @@ for f in folders:
         plt.xlabel("Time (min)")
         # plt.xlim([0,120])
         # plt.ylim([0.7, 1])
-        fig.savefig(os.path.join(path, "roundness_scatterplot.png"), format='png')
+        fig.savefig(os.path.join(output_path, "roundness_scatterplot.png"), format='png')
         plt.show()
