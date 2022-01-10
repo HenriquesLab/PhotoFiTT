@@ -20,6 +20,8 @@ for f in folders:
             frame_rate = 10
         elif path.__contains__("fast"):
             frame_rate = 2
+        elif path.__contains__("10"):
+            frame_rate = 10
         else:
             print("Unrecognized group of data. Please indicate the frame rate in the code.")
             break

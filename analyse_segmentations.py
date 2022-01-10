@@ -109,4 +109,4 @@ for f in folders:
         # plt.xlim([0,120])
         # plt.ylim([0.7, 1])
         fig.savefig(os.path.join(output_path, "roundness_scatterplot.png"), format='png')
-        plt.show()
+        # plt.show()
