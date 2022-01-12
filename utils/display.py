@@ -28,7 +28,7 @@ def plot_smooth_curves(data, y_var, title, output_path, name):
     # plt.show()
 
 def plot_conditions(data, y_var, title, condition, output_path, name, style_condition="processing"):
-    fig = plt.figure(figsize=(7, 6))
+    fig = plt.figure(figsize=(12, 8))
     # Plot the results per category
     sns.lineplot(x="frame", y=y_var, hue=condition, style=style_condition, data=data, palette="tab10",
                  linewidth=1.5, alpha=0.75)

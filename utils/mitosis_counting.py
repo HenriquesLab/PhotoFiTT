@@ -107,6 +107,8 @@ def count_mitosis_all(path, stacks=False, pd_dataframe=None, column_data=[], fra
                 if f.__contains__("CHO"): # folder for which the frame-rate is defined
                     if f.__contains__("fast"):
                         frame_rate = 2
+                    elif f.__contains__("4"):
+                        frame_rate = 4
                     else:
                         frame_rate = 10
                 print("Frame rate of this folder is {}".format(frame_rate))

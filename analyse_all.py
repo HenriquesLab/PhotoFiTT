@@ -8,15 +8,21 @@ import numpy as np
 main_path = "/Users/esti/Documents/PHX/mitosis_mediated_data/masks/scaled_x8/stardist_prob03"
 output_path = "/Users/esti/Documents/PHX/mitosis_mediated_data/results/scaled_x8/stardist_prob03"
 
-r = 0.0
-t_win = 5
-data = count_mitosis_all(main_path, stacks=True, min_roundness=r, t_win=t_win)
+## PARAMETERS USED TO COMPUTE PLOTS
+#--------------------------------------------------------------
+r = 0.0 # We can filter out by roundness of the segmented cells
+t_win = 5 # The size of the window (kernel) that is used to smooth the curves
+max_t = 400 # The maximum length in minutes of the videos that we will analyse
+max_frame_rate = 10 # The time gap we will use to compute all the metrics
 
-title = "Minimum roundness {}".format(r)
-max_frame_rate = 10
+# GET THE DATA AND FILTER IT WITH THE PARAMETERS
+#--------------------------------------------------------------
+data = count_mitosis_all(main_path, stacks=True, min_roundness=r, t_win=t_win)
+data = data[data.frame < max_t].reset_index(drop=True)
 data = data[np.mod(data.frame, max_frame_rate) == 0].reset_index(drop=True)
 
 ## PLOTS
+title = "Minimum roundness {}".format(r)
 condition = "Subcategory-02"
 y_var = "mitosis"
 plot_conditions(data, y_var, title, condition, output_path,  y_var + "_roundness-{}.png".format(r),

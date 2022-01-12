@@ -23,6 +23,8 @@ for f in folders:
             frame_rate = 2
         elif path.__contains__("10"):
             frame_rate = 10
+        elif path.__contains__("4"):
+            frame_rate = 4
         else:
             print("Unrecognized group of data. Please indicate the frame rate in the code.")
             break
@@ -108,5 +110,5 @@ for f in folders:
         plt.xlabel("Time (min)")
         # plt.xlim([0,120])
         # plt.ylim([0.7, 1])
-        fig.savefig(os.path.join(output_path, "roundness_scatterplot.png"), format='png')
+        fig.savefig(os.path.join(output_path, f, "roundness_scatterplot.png"), format='png')
         # plt.show()
