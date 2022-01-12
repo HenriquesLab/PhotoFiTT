@@ -39,6 +39,32 @@ def plot_conditions(data, y_var, title, condition, output_path, name, style_cond
     fig.savefig(os.path.join(output_path, name), format='png')
     # plt.show()
 
+def plot_one_condition(data, y_var, output_path, name, hue1="unique_name", hue2 = "Subcategory-02", frame_rate=10):
+    fig = plt.figure(figsize=(6, 6))
+    plt.subplot(3, 1, 1)
+    sns.lineplot(x="frame", y=y_var, hue=hue1, data=data[data["processing"] == "Raw"],
+                 linewidth=1, alpha=0.5)
+    plt.legend([])
+    plt.title("Raw data")
+
+    plt.subplot(3, 1, 2)
+    sns.lineplot(x="frame", y=y_var, hue=hue1, data=data[data["processing"] == "Averaged-kernel5"],
+                 linewidth=1.5, alpha=0.5)
+    plt.legend([])
+    plt.title("Smooth curves")
+
+    # Plot the results per category
+    ax = plt.subplot(3, 1, 3)
+    sns.lineplot(x="frame", y=y_var, hue=hue2, style="processing",
+                 data=data[np.mod(data.frame, frame_rate) == 0].reset_index(drop=True),
+                 linewidth=1, alpha=0.75)
+    plt.xlabel("Time (min)")
+    ax.legend(bbox_to_anchor=(0.85, 0.5))
+    plt.tight_layout()
+    fig.savefig(os.path.join(output_path, name), format='png')
+    # plt.show()
+
+
 def mosaic(stack_im, path2original, min_roundness=0.5):
     """
     :param stack_im: instance mask image.

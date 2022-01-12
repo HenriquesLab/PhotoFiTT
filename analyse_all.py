@@ -1,7 +1,10 @@
 import os
 import sys
+
+import matplotlib.pyplot as plt
+
 from utils.mitosis_counting import count_mitosis_all, smooth
-from utils.display import plot_conditions
+from utils.display import plot_conditions, plot_one_condition
 import numpy as np
 
 # main_path = sys.argv[1]
@@ -12,12 +15,34 @@ output_path = "/Users/esti/Documents/PHX/mitosis_mediated_data/results/scaled_x8
 #--------------------------------------------------------------
 r = 0.0 # We can filter out by roundness of the segmented cells
 t_win = 5 # The size of the window (kernel) that is used to smooth the curves
-max_t = 400 # The maximum length in minutes of the videos that we will analyse
+max_t = 300 # The maximum length in minutes of the videos that we will analyse
 max_frame_rate = 10 # The time gap we will use to compute all the metrics
 
 # GET THE DATA AND FILTER IT WITH THE PARAMETERS
 #--------------------------------------------------------------
 data = count_mitosis_all(main_path, stacks=True, min_roundness=r, t_win=t_win)
+classes = np.unique(data['Subcategory-02'])
+
+for c in classes:
+    data_c = data[data["Subcategory-02"]==c].reset_index(drop=True)
+    if c == 'Control-sync':
+        max_t = 800
+    else:
+        max_t = 300
+    data_c = data_c[data_c.frame < max_t].reset_index(drop=True)
+    data_c["Subcategory-03"] = data_c["Subcategory-03"].replace(np.nan, " ")
+    data_c["unique_name"] = data_c["Subcategory-01"] + data_c["Subcategory-02"] + data_c["Subcategory-03"] + data_c["video_name"]
+
+    y_var = "mitosis_normalised"
+    name = c + "_" + y_var + "_roundness-{}.png".format(r)
+    plot_one_condition(data_c, y_var, output_path, name, hue1="unique_name", hue2="Subcategory-02",
+                       frame_rate=max_frame_rate)
+
+    y_var = "mitosis"
+    name = c + "_" + y_var + "_roundness-{}.png".format(r)
+    plot_one_condition(data_c, y_var, output_path, name, hue1="unique_name", hue2="Subcategory-02",
+                       frame_rate=max_frame_rate)
+max_t = 300 # The maximum length in minutes of the videos that we will analyse
 data = data[data.frame < max_t].reset_index(drop=True)
 data = data[np.mod(data.frame, max_frame_rate) == 0].reset_index(drop=True)
 
