@@ -7,26 +7,29 @@ import sys
 
 main_path = sys.argv[1]
 output_path = sys.argv[2]
+frame_rate = int(sys.argv[3])
 # main_path = "/Users/esti/Documents/PHX/mitosis_mediated_data/results/2021-12-20/scaled_x8/stardist_prob03"
 # path = "/Users/esti/Documents/PHX/mitosis_mediated_data/annotations/2021-12-20/CHO_DIC_fast-acq_/"
 
 r = 0.0
-t_factor = 2  # In minutes
+t_factor = 4  # In minutes
 folders = os.listdir(main_path)
 for f in folders:
     path = os.path.join(main_path, f)
+
     if os.path.isdir(path):
-        if path.__contains__("damage_merged"):
-            frame_rate = 10
-        elif path.__contains__("fast"):
-            frame_rate = 2
-        elif path.__contains__("10"):
-            frame_rate = 10
-        elif path.__contains__("4"):
-            frame_rate = 4
-        else:
-            print("Unrecognized group of data. Please indicate the frame rate in the code.")
-            break
+        if frame_rate == "unknown":
+            if path.__contains__("damage_merged"):
+                frame_rate = 10
+            elif path.__contains__("fast"):
+                frame_rate = 2
+            elif path.__contains__("10"):
+                frame_rate = 10
+            elif path.__contains__("4"):
+                frame_rate = 4
+            else:
+                print("Unrecognized group of data. Please indicate the frame rate in the code.")
+                break
         data = count_mitosis(path, stacks=True, frame_rate=frame_rate, min_roundness=r)
         data = data[np.mod(data.frame, t_factor) == 0].reset_index(drop=True)
         ## Obtain cell size
@@ -52,6 +55,8 @@ for f in folders:
         data_display["Subcategory-02"] = "raw"
         plot_smooth_curves(data_display, variable, "Cell size (pixels)", path, "cell_size.png")
         groups = np.unique(data_display["Subcategory-00"])
+        if not os.path.exists(os.path.join(output_path, f)):
+            os.mkdir(os.path.join(output_path, f))
         for g in groups:
             data = data_display[data_display["Subcategory-00"] == g]
             # Create the data

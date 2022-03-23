@@ -16,8 +16,39 @@ Python scripts to detect cell mitosis and assess phototoxicity by arrested cell 
 1. Run `resize_data.py` script, section `READ NIKON FIELS, RESIZE AND SAVE`.
 2. Upload the new stacks to google drive and run the StarDist notebook for inference. 
 3. Download the segmentations.
-4. Classify the segmentations in folders (each folder for each condition to be analysed).
-5. Run `analyse_segmentations.py`, `create_mosaics.py` and `temporal_distributions.py`.
+4. Classify the segmentations in folders (each folder for each condition to be analysed). For example:
+   ```
+   Biological-replica-date-1
+   |
+   |-- Control-sync
+   |    |  file1.tif
+   |    |  file2.tif
+   |    |  ...
+   |
+   |-- UV10sec
+   |    |  file1.tif
+   |    |  file2.tif
+   |    |  ...
+   |
+   |-- Synchro
+   |    |  file1.tif
+   |    |  file2.tif
+   |    |  ...
+   ```
+5. Run `analyse_segmentations.py`, `create_mosaics.py` and `temporal_distributions.py`. 
+   1. Example for `analyse_segmentations.py`: It will take the conditions from the dataset (2022-01-26) and it will create a folder `2022-01-26` in which everything will be saved.
+      ```
+      cd mitosis-mediated-phototoxic
+      python3 analyse_segmentations.py ../mitosis_mediated_data/masks/scaled_x8/stardist_prob03/2022-01-26 ../mitosis_mediated_data/results/scaled_x8/stardist_prob03/2022-01-26
+      ```
+   2. Example for `create_mosaics.py`:
+      ```
+       python3 create_mosaics.py ../mitosis_mediated_data/masks/scaled_x8/stardist_prob03/2022-01-28 ../mitosis_mediated_data/input_data/2022-01-28/scaled_8 ../mitosis_mediated_data/results/scaled_x8/stardist_prob03/2022-01-28
+      ```
+   3. Example for `temporal_distributions.py`. :
+      ```
+      python3 temporal_distributions.py ../mitosis_mediated_data/masks/scaled_x8/stardist_prob03/2022-01-26 ../mitosis_mediated_data/results/scaled_x8/stardist_prob03
+      ```
 
 Each of the previous python scripts can be run in the terminal by typing:
 ```

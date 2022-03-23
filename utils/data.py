@@ -55,6 +55,7 @@ def nikon2tiff(path, output_path, s):
             if not f.__contains__('.nd2'):
                 nikon2tiff(os.path.join(path, f), os.path.join(output_path, f), s)
             else:
+                print(f)
                 video = nd2.ND2File(os.path.join(path, f))
                 pixel_size = video.metadata.channels[0].volume.axesCalibration[0]
                 video = video.to_dask()
