@@ -52,7 +52,6 @@ def smooth_labels(im_label, sigma=16, smooth_t = 0.4):
         # b_round = gaussian_blur(aux, kernel_size)
         b_round = b_round > smooth_t
         indexes = np.where(b_round)
-        print(indexes)
         smooth_im[indexes] = l
     return smooth_im
 
