@@ -1,4 +1,4 @@
-name: deepbact
+name: mit-phototoxicity
 channels:
   - defaults
 dependencies:
@@ -52,4 +52,3 @@ dependencies:
     - tiffile==2018.10.18
     - toolz==0.11.2
     - typing-extensions==4.0.1
-prefix: /Users/esti/miniconda3/envs/deepbact
