@@ -8,8 +8,8 @@ from utils.display import plot_conditions, plot_one_condition
 import numpy as np
 
 # main_path = sys.argv[1]
-main_path = "/Users/esti/Documents/PHX/mitosis_mediated_data/masks/scaled_x8/stardist_prob03"
-output_path = "/Users/esti/Documents/PHX/mitosis_mediated_data/results/scaled_x8/stardist_prob03"
+main_path = "/Users/esti/Documents/PROYECTOS/PHX/mitosis_mediated_data_initial_experiments/masks/scaled_x8/stardist_prob03"
+output_path = "/Users/esti/Documents/PROYECTOS/PHX/mitosis_mediated_data_initial_experiments/results/scaled_x8/stardist_prob03"
 
 ## PARAMETERS USED TO COMPUTE PLOTS
 #--------------------------------------------------------------
@@ -23,7 +23,7 @@ max_frame_rate = 10 # The time gap we will use to compute all the metrics
 data = count_mitosis_all(main_path, stacks=True, min_roundness=r, t_win=t_win, frame_rate=4)
 # Subcategory-02 filters out the different conditions such as control, synch, uv10sec or uv 30sec
 classes = np.unique(data['Subcategory-02'])
-
+data.to_csv("/Users/esti/Documents/PROYECTOS/PHX/mitosis_mediated_data_initial_experiments/results/scaled_x8/stardist_prob03/data.csv")
 for c in classes:
     data_c = data[data["Subcategory-02"]==c].reset_index(drop=True)
     if c == 'Control-sync':

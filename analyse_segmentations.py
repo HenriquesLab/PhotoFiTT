@@ -6,9 +6,13 @@ import pandas as pd
 import numpy as np
 import os
 import sys
-main_path = sys.argv[1]
-output_path = sys.argv[2]
-frame_rate = int(sys.argv[3]) # In minutes or "unknown" if unknown and will be taken from the folder name
+#main_path = sys.argv[1]
+#output_path = sys.argv[2]
+#frame_rate = int(sys.argv[3]) # In minutes or "unknown" if unknown and will be taken from the folder name
+
+main_path = "/Users/esti/Documents/PHX/mitosis_mediated_data_round2/masks/scaled_x8/stardist_prob03/2022-04-20"
+output_path = "/Users/esti/Documents/PHX/mitosis_mediated_data_round2/results/scaled_x8/stardist_prob03/2022-04-20_legend"
+frame_rate = 4
 
 if not os.path.exists(output_path):
     os.mkdir(output_path)

@@ -12,7 +12,7 @@ def plot_smooth_curves(data, y_var, title, output_path, name):
     plt.subplot(2, 1, 1)
     sns.lineplot(x="frame", y=y_var, hue='Subcategory-01', style='Subcategory-02', data=data, palette="tab10",
                  linewidth=1.5, alpha=0.5)
-    plt.legend([])
+    #plt.legend([])
     # plt.ylabel(y_label)
     # plt.xlabel("Time (min)")
     plt.title(title)
@@ -158,9 +158,9 @@ def label(x, color, label):
 def plot_distributions(df, xlabel, title, output_path, smoothness=.5):
     sns.set_theme(style="white", rc={"axes.facecolor": (0, 0, 0, 0)})
     # Initialize the FacetGrid object
-    pal = sns.cubehelix_palette(len(np.unique(df["frame"])), rot=-.25, light=.7)
-
-    g = sns.FacetGrid(df, row="frame", hue="frame", aspect=15, height=.5, palette=pal)
+    # pal = sns.cubehelix_palette(len(np.unique(df["frame"])), rot=-.25, light=.7)
+    pal = sns.cubehelix_palette(len(np.unique(df["frame"])), start=2.5, rot=0, light=.6, dark=.2)
+    g = sns.FacetGrid(df, row="frame", hue="frame", aspect=6, height=.5, palette="coolwarm", xlim=[0, 700])
     # Draw the densities in a few steps
     g.map(sns.kdeplot, "variable",
           bw_adjust=smoothness, clip_on=False,
@@ -178,10 +178,10 @@ def plot_distributions(df, xlabel, title, output_path, smoothness=.5):
     # Remove axes details that don't play well with overlap
     g.set_titles("")
     g.set(yticks=[], ylabel="")
-    g.set(xlabel=xlabel)
+    g.set(xlabel=xlabel, xlim=[0,700])
     g.despine(bottom=True, left=True)
     g.savefig("{}_facegrid.png".format(output_path))
-
+    g.savefig("{}_facegrid.svg".format(output_path))
 
     fig = plt.figure()
     sns.set_theme(style="white", rc={"axes.facecolor": (1, 1, 1, 0)})
@@ -191,6 +191,8 @@ def plot_distributions(df, xlabel, title, output_path, smoothness=.5):
         alpha=.5, linewidth=0, binwidth=50, binrange=(0, 1000),
     )
     plt.xlabel(xlabel)
+    plt.xlim([0,700])
     plt.title(title)
     fig.savefig("{}_histogram.png".format(output_path), format='png')
+    fig.savefig("{}_histogram.svg".format(output_path), format='svg')
     # plt.show()

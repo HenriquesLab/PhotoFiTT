@@ -30,33 +30,35 @@
 # videos2frames(path, folder, s)
 
 
-## READ NIKON FIELS, RESIZE AND SAVE
-# ===========================================
-
-# The following lines can be used to indicate the main path and the name of the nd2 file in the terminal
-import sys
-
-path = sys.argv[1]
-output_path = sys.argv[2]
-s = float(sys.argv[3])
-
-# path = "/Volumes/TOSHIBA EXT/HENRIQUES-LAB/PHOTOTOXICITY/2021-12-20/CHO_DIC_fast-acq_"
-# output_path = "/Users/esti/Documents/PHX/mitosis_mediated_data/2021-12-20/scaled_x8/CHO_DIC_fast-acq_"
-# s = 8
-from utils.data import nikon2tiff
-nikon2tiff(path, output_path, s)
-
-# NORMAL SCRIPT TO RESIZE STACKS STORE AS TIFF FILES
-# ===========================================
-# from utils.data import resize_files_in_folder
+# ## READ NIKON FIELS, RESIZE AND SAVE
+# # ===========================================
+#
+# # The following lines can be used to indicate the main path and the name of the nd2 file in the terminal
 # import sys
+#
 # path = sys.argv[1]
 # output_path = sys.argv[2]
 # s = float(sys.argv[3])
-# path = "/Volumes/TOSHIBA EXT/HENRIQUES-LAB/PHOTOTOXICITY/2021-12-20/CHO_DIC_damage_merged"
-# output_path = "/Users/esti/Documents/PHX/mitosis_mediated_data/2021-12-20/scaled_x8/CHO_DIC_damage_merged"
-# pixel_size = 0.1083333
-# resize_files_in_folder(path, output_path, s, pixel_size)
+#
+# # path = "/Volumes/TOSHIBA EXT/HENRIQUES-LAB/PHOTOTOXICITY/2021-12-20/CHO_DIC_fast-acq_"
+# # output_path = "/Users/esti/Documents/PHX/mitosis_mediated_data/2021-12-20/scaled_x8/CHO_DIC_fast-acq_"
+# # s = 8
+# from utils.data import nikon2tiff
+# nikon2tiff(path, output_path, s)
+
+# NORMAL SCRIPT TO RESIZE STACKS STORE AS TIFF FILES
+# ===========================================
+from utils.data import resize_files_in_folder
+import sys
+# path = sys.argv[1]
+# output_path = sys.argv[2]
+# s = float(sys.argv[3])
+s = (0.108*8)/0.55
+path = '/Users/esti/Documents/PROYECTOS/PHX/mitosis-mediated-data-itqb/2022-06-09'
+output_path = '/Users/esti/Documents/PROYECTOS/PHX/mitosis-mediated-data-itqb/2022-06-09/scaled_x8'
+pixel_size = 0.55 # 0.1083333
+
+resize_files_in_folder(path, output_path, s, pixel_size)
 
 ### Convert STARDIST float results to uint16
 # ===========================================

@@ -8,8 +8,8 @@ import pandas as pd
 
 # main_path = sys.argv[1]
 # output_path = sys.argv[2]
-main_path = "/Users/esti/Documents/PHX/mitosis_mediated_data/masks/scaled_x8/stardist_prob03"
-output_path = "/Users/esti/Documents/PHX/mitosis_mediated_data/results/scaled_x8/stardist_prob03"
+main_path = "/Users/esti/Documents/PHX/mitosis_mediated_data_round2/masks/scaled_x8/stardist_prob03"
+output_path = "/Users/esti/Documents/PHX/mitosis_mediated_data_round2/results/scaled_x8/stardist_prob03"
 
 ## PARAMETERS USED TO COMPUTE PLOTS
 #--------------------------------------------------------------

@@ -6,3 +6,5 @@ pandas
 seaborn
 scikit-image
 cv2
+czifile
+slideio

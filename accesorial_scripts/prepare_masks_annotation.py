@@ -12,17 +12,47 @@ from utils.morphology import smooth_labels
 #                         "12": 3,
 #                         "15": 4
 #                                 },
-files = {       "2021-11-23": {
-                        "07": 6,
-                        "14": 14,
-                        "16": 15,
-                        "17": 3
-                                }
-        }
-
+# files = {       "2021-11-23": {
+#                         "07": 6,
+#                         "14": 14,
+#                         "16": 15,
+#                         "17": 3
+#                                 }
+#         }
+# files = {       "2022-01-26": {
+#                         "11": 14,
+#                         "11": 32,
+#                         "12": 12,
+#                         "12": 20,
+#                         "13": 6,
+#                         "13": 27
+#                                 }
+#         }
+# files = {       "2022-02-02": {
+#                         "15_W5": 10,
+#                         "15_W5": 23,
+#                                 }
+#         }
+# files = {       "2022-04-20": {
+#                         "13_W3": 10,
+#                         "13_W3": 16,
+#                         "18_UV2-3": 20,
+#                         "18_UV2-3": 10,
+#                         "20_UV2-5": 12,
+#                         "20_UV2-5": 25
+#                                 }
+#         }
+# files = {       "2022-04-21": {
+#                         "17_UV2-2": 6,
+#                         "17_UV2-2": 16,
+#                         "17_UV2-2": 25,
+#                         "19_UV2-4": 30,
+#                         "19_UV2-4": 4,
+#                         "19_UV2-4": 15
+#         }}
 s = 8
 size=7885
-main_path = "/Users/esti/Documents/PHX/ground_truth/masks"
+main_path = "/Users/esti/Documents/PHX/ground_truth/masks/2do"
 output_path = "/Users/esti/Documents/PHX/ground_truth/upsampled_masks"
 if not os.path.exists(output_path):
     os.mkdir(output_path)

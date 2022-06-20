@@ -11,7 +11,7 @@ frame_rate = int(sys.argv[3])
 # main_path = "/Users/esti/Documents/PHX/mitosis_mediated_data/results/2021-12-20/scaled_x8/stardist_prob03"
 # path = "/Users/esti/Documents/PHX/mitosis_mediated_data/annotations/2021-12-20/CHO_DIC_fast-acq_/"
 
-r = 0.0
+r = 0.0 # Roundness
 t_factor = 4  # In minutes
 folders = os.listdir(main_path)
 for f in folders:
