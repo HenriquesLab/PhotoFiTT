@@ -25,7 +25,7 @@ print("{} file loaded in python".format(file_name))
 for s in range(scenes):
     # read out a single scene
     scene = slide.get_scene(s)
-    video = scene.read_block(frames=(0, scene.num_t_frames)) 
+    video = scene.read_block(frames=(0, scene.num_t_frames))
     print("Series {} loaded as numpy array".format(s))
     tifffile.imsave(os.path.join(output_path, '{:02d}.tif'.format(s)),
                     np.expand_dims(video, axis=[1, 2, -1]), # addapt the dimensions to tifffile ordering TZCYXS

@@ -5,12 +5,13 @@ import tifffile
 import numpy as np
 
 
-def videos2frames(path, folder, s):
+def videos2frames(path, folder, s=1, size=None):
     """
     Store all the frames in a video with a certain up or downsampling.
     :param path: path with the folder containing videos and where the new images will be stored
     :param folder: name of the input folder
     :param s: scale to reduce s = 10 means reduce 10 times the original size
+    :param size: alternatively, one can provide the size for the X and Y dimensions. For example size = 256
     :return:
     """
     new_folder = folder + "_2d"
@@ -21,18 +22,36 @@ def videos2frames(path, folder, s):
         seq = tifffile.imread(os.path.join(path, folder, f))
         seq = seq.astype(np.uint16)
         print(seq.shape)
-        for t in range(seq.shape[0]):
-            im = np.squeeze(seq[t])
+        if len(seq.shape)==3: # time series + T is the first dimension in tiff
+            for t in range(seq.shape[0]):
+                im = np.squeeze(seq[t])
+                if size is not None:
+                    new_size = (size, size)
+                else:
+                    new_size = (im.shape[0] // s, im.shape[1] // s)
+                if folder == "target":
+                    image_resized = cv2.resize(im, dsize=new_size,
+                                               interpolation=cv2.INTER_NEAREST)
+                else:
+                    image_resized = cv2.resize(im, dsize=new_size,
+                                               interpolation=cv2.INTER_CUBIC)
+
+                tifffile.imsave(os.path.join(path, new_folder, f.split(".tif")[0] + "_{:04d}.tif".format(t)),
+                                image_resized, imagej=True)
+        else:
+            seq = np.squeeze(seq)
+            if size is not None:
+                new_size = (size, size)
+            else:
+                new_size = (seq.shape[0] // s, seq.shape[1] // s)
             if folder == "target":
-                image_resized = cv2.resize(im, dsize=(im.shape[0] // s, im.shape[1] // s),
+                image_resized = cv2.resize(seq, dsize=new_size,
                                            interpolation=cv2.INTER_NEAREST)
             else:
-                image_resized = cv2.resize(im, dsize=(im.shape[0] // s, im.shape[1] // s),
+                image_resized = cv2.resize(seq, dsize=new_size,
                                            interpolation=cv2.INTER_CUBIC)
 
-            tifffile.imsave(os.path.join(path, new_folder, f.split(".tif")[0] + "_{:04d}.tif".format(t)),
-                            image_resized, imagej=True)
-
+            tifffile.imsave(os.path.join(path, new_folder, f), image_resized, imagej=True)
 
 def change_bitdepth(path, new_path):
     if not os.path.exists(new_path):
