@@ -18,40 +18,41 @@ def videos2frames(path, folder, s=1, size=None):
     if not os.path.exists(os.path.join(path, new_folder)):
         os.mkdir(os.path.join(path, new_folder))
     for f in os.listdir(os.path.join(path, folder)):
-        print(f)
-        seq = tifffile.imread(os.path.join(path, folder, f))
-        seq = seq.astype(np.uint16)
-        print(seq.shape)
-        if len(seq.shape)==3: # time series + T is the first dimension in tiff
-            for t in range(seq.shape[0]):
-                im = np.squeeze(seq[t])
+        if f.__contains__("tif"):
+            print(f)
+            seq = tifffile.imread(os.path.join(path, folder, f))
+            seq = seq.astype(np.uint16)
+            print(seq.shape)
+            if len(seq.shape)==3: # time series + T is the first dimension in tiff
+                for t in range(seq.shape[0]):
+                    im = np.squeeze(seq[t])
+                    if size is not None:
+                        new_size = (size, size)
+                    else:
+                        new_size = (im.shape[0] // s, im.shape[1] // s)
+                    if folder == "target":
+                        image_resized = cv2.resize(im, dsize=new_size,
+                                                   interpolation=cv2.INTER_NEAREST)
+                    else:
+                        image_resized = cv2.resize(im, dsize=new_size,
+                                                   interpolation=cv2.INTER_CUBIC)
+
+                    tifffile.imsave(os.path.join(path, new_folder, f.split(".tif")[0] + "_{:04d}.tif".format(t)),
+                                    image_resized, imagej=True)
+            else:
+                seq = np.squeeze(seq)
                 if size is not None:
                     new_size = (size, size)
                 else:
-                    new_size = (im.shape[0] // s, im.shape[1] // s)
+                    new_size = (seq.shape[0] // s, seq.shape[1] // s)
                 if folder == "target":
-                    image_resized = cv2.resize(im, dsize=new_size,
+                    image_resized = cv2.resize(seq, dsize=new_size,
                                                interpolation=cv2.INTER_NEAREST)
                 else:
-                    image_resized = cv2.resize(im, dsize=new_size,
+                    image_resized = cv2.resize(seq, dsize=new_size,
                                                interpolation=cv2.INTER_CUBIC)
 
-                tifffile.imsave(os.path.join(path, new_folder, f.split(".tif")[0] + "_{:04d}.tif".format(t)),
-                                image_resized, imagej=True)
-        else:
-            seq = np.squeeze(seq)
-            if size is not None:
-                new_size = (size, size)
-            else:
-                new_size = (seq.shape[0] // s, seq.shape[1] // s)
-            if folder == "target":
-                image_resized = cv2.resize(seq, dsize=new_size,
-                                           interpolation=cv2.INTER_NEAREST)
-            else:
-                image_resized = cv2.resize(seq, dsize=new_size,
-                                           interpolation=cv2.INTER_CUBIC)
-
-            tifffile.imsave(os.path.join(path, new_folder, f), image_resized, imagej=True)
+                tifffile.imsave(os.path.join(path, new_folder, f), image_resized, imagej=True)
 
 def change_bitdepth(path, new_path):
     if not os.path.exists(new_path):

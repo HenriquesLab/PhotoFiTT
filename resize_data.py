@@ -1,11 +1,12 @@
 ## TRAINING DATA RESAMPLING
 # ===========================================
-# from utils.data import videos2frames
-# # scaling factor
-# s = 10
-# path = "/content/gdrive/MyDrive/Projectos/DEEP-IMAGEJ/examples_of_models/ZeroCostDL4Mic/PHTX/nuclei_detection/test"
-# folder = "input"
-# videos2frames(path, folder, s)
+from utils.data import videos2frames
+# scaling factor
+# s = 1
+size = 763 # s =
+path = "/Users/esti/Documents/PROYECTOS/PHX/ground_truth_to_correct/Brightfield/"
+folder = "target"
+videos2frames(path, folder, size=size)
 #
 # path = "/content/gdrive/MyDrive/Projectos/DEEP-IMAGEJ/examples_of_models/ZeroCostDL4Mic/PHTX/nuclei_detection/test"
 # folder = "target"
@@ -53,12 +54,12 @@ import sys
 # path = sys.argv[1]
 # output_path = sys.argv[2]
 # s = float(sys.argv[3])
-s = (0.108*8)/0.55
-path = '/Users/esti/Documents/PROYECTOS/PHX/mitosis-mediated-data-itqb/2022-06-09'
-output_path = '/Users/esti/Documents/PROYECTOS/PHX/mitosis-mediated-data-itqb/2022-06-09/scaled_x8'
-pixel_size = 0.55 # 0.1083333
-
-resize_files_in_folder(path, output_path, s, pixel_size)
+# s = (0.108*8)/0.55
+# path = '/Users/esti/Documents/PROYECTOS/PHX/mitosis-mediated-data-itqb/2022-06-09'
+# output_path = '/Users/esti/Documents/PROYECTOS/PHX/mitosis-mediated-data-itqb/2022-06-09/scaled_x8'
+# pixel_size = 0.55 # 0.1083333
+#
+# resize_files_in_folder(path, output_path, s, pixel_size)
 
 ### Convert STARDIST float results to uint16
 # ===========================================
