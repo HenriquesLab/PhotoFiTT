@@ -8,8 +8,8 @@ import pandas as pd
 
 # main_path = sys.argv[1]
 # output_path = sys.argv[2]
-main_path = "/Users/esti/Documents/PROYECTOS/PHX/mitosis-mediated-data-itqb/masks/scaled_1.5709_results/stardist_prob03/HighDensity"
-output_path = "/Users/esti/Documents/PROYECTOS/PHX/mitosis-mediated-data-itqb/results/scaled_1.5709_results/stardist_prob03/HighDensity"
+main_path = "/Users/esti/Documents/PROYECTOS/PHX/mitosis-mediated-data-itqb/masks/scaled_1.5709_results/stardist_prob03/"
+output_path = "/Users/esti/Documents/PROYECTOS/PHX/mitosis-mediated-data-itqb/results/scaled_1.5709_results/stardist_prob03/"
 
 ## PARAMETERS USED TO COMPUTE PLOTS
 #--------------------------------------------------------------
@@ -21,7 +21,7 @@ max_frame_rate = 4 # The time gap we will use to compute all the metrics
 # GET THE DATA AND FILTER IT WITH THE PARAMETERS
 #--------------------------------------------------------------
 data = count_mitosis_all(main_path, stacks=True, min_roundness=r, t_win=t_win, frame_rate=4)
-
+data.to_csv(os.path.join(output_path, "data.csv"))
 
 # PLOT THE RESULTS FOR EACH CONDITION SEPARATELY
 #--------------------------------------------------------------

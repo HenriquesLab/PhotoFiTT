@@ -1,23 +1,28 @@
+import os
+import sys
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+sys.path.append(os.path.dirname(SCRIPT_DIR))
+SCRIPT_DIR = '/Users/esti/Documents/PROYECTOS/PHX/mitosis-mediated-phototoxic'
+sys.path.append(SCRIPT_DIR)
 from utils.display import plot_smooth_curves
 from utils.mitosis_counting import count_mitosis, smooth
 import seaborn as sns
 import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np
-import os
+
 import sys
 #main_path = sys.argv[1]
 #output_path = sys.argv[2]
 #frame_rate = int(sys.argv[3]) # In minutes or "unknown" if unknown and will be taken from the folder name
 
-main_path = "/Users/esti/Documents/PROYECTOS/PHX/mitosis-mediated-data-itqb/masks/scaled_1.5709_results/stardist_prob03/HighDensity/2022-06-09"
-output_path = "/Users/esti/Documents/PROYECTOS/PHX/mitosis-mediated-data-itqb/results/scaled_1.5709_results/stardist_prob03/HighDensity/2022-06-09"
+main_path = "/Users/esti/Documents/PROYECTOS/PHX/mitosis-mediated-data-itqb/masks/scaled_1.5709_results/stardist_prob03/"
+output_path = "/Users/esti/Documents/PROYECTOS/PHX/mitosis-mediated-data-itqb/results/scaled_1.5709_results/stardist_prob03/"
 frame_rate = 4
 
 if not os.path.exists(output_path):
     os.mkdir(output_path)
 min_roundness = [0.0, 0.5, 0.85, 0.9, 0.95, 0.97]
-
 folders = os.listdir(main_path)
 for f in folders:
     path = os.path.join(main_path, f)
