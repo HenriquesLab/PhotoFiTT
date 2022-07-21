@@ -4,7 +4,7 @@ from utils.data import videos2frames
 # scaling factor
 # s = 1
 size = 763 # s =
-path = "/Users/esti/Documents/PROYECTOS/PHX/ground_truth_to_correct/Brightfield/"
+path = "/ground_truth_to_correct/Brightfield/"
 folder = "target"
 videos2frames(path, folder, size=size)
 #

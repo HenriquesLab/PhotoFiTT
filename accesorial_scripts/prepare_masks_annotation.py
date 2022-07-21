@@ -71,6 +71,8 @@ import numpy as np
 #             imsave(os.path.join(output_path, f + "_" + v + "_{:03d}.tif".format(i+1)),
 #                             frame, imagej=True)
 
+##### CREATE RANDOM IMAGES FOR ANNOTATIONS
+
 main_path = "/Users/esti/Documents/PROYECTOS/PHX/mitosis-mediated-data-itqb"
 folder_name = "2022-06-09"
 output_path = "/Users/esti/Documents/PROYECTOS/PHX/ground_truth_to_correct/Brightfield"

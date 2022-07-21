@@ -16,8 +16,8 @@ import sys
 #output_path = sys.argv[2]
 #frame_rate = int(sys.argv[3]) # In minutes or "unknown" if unknown and will be taken from the folder name
 
-main_path = "/Users/esti/Documents/PROYECTOS/PHX/mitosis-mediated-data-itqb/masks/scaled_1.5709_results/stardist_prob03/"
-output_path = "/Users/esti/Documents/PROYECTOS/PHX/mitosis-mediated-data-itqb/results/scaled_1.5709_results/stardist_prob03/"
+main_path = "/Users/esti/Documents/PROYECTOS/PHX/mitosis_mediated_data_itqb_2/masks/scaled_1.5709_results/stardist_prob03/"
+output_path = "/Users/esti/Documents/PROYECTOS/PHX/mitosis_mediated_data_itqb_2/results/scaled_1.5709_results"
 frame_rate = 4
 
 if not os.path.exists(output_path):
