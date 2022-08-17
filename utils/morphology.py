@@ -45,7 +45,6 @@ def smooth_labels(im_label, sigma=16, smooth_t = 0.4):
     labels = labels[labels>0]
 
     for l in labels:
-        print(l)
         aux = (im_label == l).astype(np.float32)
         # b_round = gaussian(aux, sigma=kernel_size, mode='mirror', preserve_range=True)
         b_round = scipy.ndimage.gaussian_filter(aux, sigma=sigma)

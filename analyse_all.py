@@ -8,8 +8,9 @@ import pandas as pd
 
 # main_path = sys.argv[1]
 # output_path = sys.argv[2]
-main_path = "/Users/esti/Documents/PROYECTOS/PHX/mitosis-mediated-data-itqb/masks/scaled_1.5709_results/stardist_prob03/"
-output_path = "/Users/esti/Documents/PROYECTOS/PHX/mitosis-mediated-data-itqb/results/scaled_1.5709_results/stardist_prob03/"
+main_path = "/Users/esti/Documents/PROYECTOS/PHX/mitosis_mediated_data_itqb_3/masks/scaled_1.5709_results/stardist_prob03"
+output_path = "/Users/esti/Documents/PROYECTOS/PHX/mitosis_mediated_data_itqb_3/results/scaled_1.5709_results/stardist_prob03/"
+
 
 ## PARAMETERS USED TO COMPUTE PLOTS
 #--------------------------------------------------------------

@@ -16,13 +16,14 @@ import sys
 #output_path = sys.argv[2]
 #frame_rate = int(sys.argv[3]) # In minutes or "unknown" if unknown and will be taken from the folder name
 
-main_path = "/Users/esti/Documents/PROYECTOS/PHX/mitosis_mediated_data_itqb_2/masks/scaled_1.5709_results/stardist_prob03/"
-output_path = "/Users/esti/Documents/PROYECTOS/PHX/mitosis_mediated_data_itqb_2/results/scaled_1.5709_results"
+main_path = "/Users/esti/Documents/PROYECTOS/PHX/mitosis_mediated_data_itqb_3/masks/scaled_1.5709_results/stardist_prob03"
+output_path = "/Users/esti/Documents/PROYECTOS/PHX/mitosis_mediated_data_itqb_3/results"
 frame_rate = 4
 
 if not os.path.exists(output_path):
     os.mkdir(output_path)
-min_roundness = [0.0, 0.5, 0.85, 0.9, 0.95, 0.97]
+# min_roundness = [0.0, 0.5, 0.85, 0.9, 0.95, 0.97]
+min_roundness = [0.0]
 folders = os.listdir(main_path)
 for f in folders:
     path = os.path.join(main_path, f)
