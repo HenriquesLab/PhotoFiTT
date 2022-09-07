@@ -27,6 +27,25 @@ def plot_smooth_curves(data, y_var, title, output_path, name):
     fig.savefig(os.path.join(output_path, name), format='png')
     # plt.show()
 
+
+def plot_conditions_with_aggregates(data, y_var, title, output_path, name, hue="Subcategory-01", style="Subcategory-02"):
+    fig = plt.figure(figsize=(5, 10))
+    plt.rcParams.update({'font.size': 8})
+    plt.subplot(2, 1, 1)
+    sns.lineplot(x="frame", y=y_var, hue=hue, style=style, data=data, palette="tab10",
+                 linewidth=1.5, alpha=0.5)
+    plt.title(title)
+
+    # Plot the results per category
+    ax = plt.subplot(2, 1, 2)
+    sns.lineplot(x="frame", y=y_var, style=style, data=data, palette="tab10",
+                 linewidth=1.5, alpha=0.75)
+    plt.xlabel("Time (min)")
+    ax.legend(bbox_to_anchor=(0.85, 0.5))
+    plt.tight_layout()
+    fig.savefig(os.path.join(output_path, name), format='png')
+    # plt.show()
+
 def plot_conditions(data, y_var, title, condition, output_path, name, style_condition="processing"):
     fig = plt.figure(figsize=(12, 8))
     # Plot the results per category

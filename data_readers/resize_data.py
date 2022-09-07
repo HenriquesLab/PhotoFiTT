@@ -1,11 +1,17 @@
 ## TRAINING DATA RESAMPLING
 # ===========================================
+import sys
+import os
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+sys.path.append(os.path.dirname(SCRIPT_DIR))
+SCRIPT_DIR = '/Users/esti/Documents/PROYECTOS/PHX/mitosis-mediated-phototoxic'
+sys.path.append(SCRIPT_DIR)
 from utils.data import videos2frames
 # scaling factor
 # s = 1
 size = 763 # s =
-path = "/ground_truth_to_correct/Brightfield/"
-folder = "target"
+path = "/Users/esti/Documents/PROYECTOS/PHX/ground_truth_to_correct/Brightfield/final-annotations"
+folder = "input"
 videos2frames(path, folder, size=size)
 #
 # path = "/content/gdrive/MyDrive/Projectos/DEEP-IMAGEJ/examples_of_models/ZeroCostDL4Mic/PHTX/nuclei_detection/test"

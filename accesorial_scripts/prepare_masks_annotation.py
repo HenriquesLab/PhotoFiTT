@@ -102,11 +102,11 @@ import czifile as zis
 #         frame = smooth_labels(frame)
 #         imsave(os.path.join(output_path, "masks2clean", folder_name + "_" + file_name + "_{:03d}.tif".format(t + 1)),
 #                         frame, imagej=True)
-raw_data = "/Volumes/OCB-All/Projects/OCB004_Phototoxicity/Data/ZeissWF-ITQB/20220803_CHO_UV/2022-08-03/individual_night"
+raw_data = "/Volumes/OCB-All/Projects/OCB004_Phototoxicity/Data/ZeissWF-ITQB/20220809/individual"
 main_path = "/Users/esti/Documents/PROYECTOS/PHX/mitosis_mediated_data_itqb_3/inputs/scaled_1.5709_results/"
 masks_path = "/Users/esti/Documents/PROYECTOS/PHX/mitosis_mediated_data_itqb_3/masks/scaled_1.5709_results/stardist_prob03"
-folder_name = "2022-08-03-night"
-subfolders = os.path.join(folder_name, "High density/UV50ms")
+folder_name = "2022-08-09"
+subfolders = os.path.join(folder_name, "High density/UV25sec")
 output_path = "/Users/esti/Documents/PROYECTOS/PHX/ground_truth_to_correct/Brightfield"
 if not os.path.exists(output_path):
     os.mkdir(output_path)
