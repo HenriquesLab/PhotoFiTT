@@ -69,10 +69,14 @@ class lsq_minimiser():
             # Usually the arithmetic mean works
             # mean = sum(self.x * self.y) / sum(self.y)
             # The peak of the curves coincide with the mean of a gaussian density function
-            index = np.where(self.y == np.max(self.y))
-            index = np.squeeze(index[0][-1])
-            mean = self.x.iloc[index]
-            sigma = np.sqrt(sum(self.y * (self.x - mean) ** 2) / sum(self.y))
+            # index = np.where(self.y == np.max(self.y))
+            # index = np.squeeze(index[0][-1])
+            # mean = self.x.iloc[index]
+            # sigma = np.sqrt(sum(self.y * (self.x - mean) ** 2) / sum(self.y))
+
+            # Start with the theoretical fit
+            mean = 50
+            sigma = 10
             upper_bound = max(self.y)
             self.x0 = [upper_bound, mean, sigma]
 
@@ -100,12 +104,12 @@ def fit_probability(n, t, optimisation="gaussian_curve"):
         parameters, covariance = curve_fit(gaussian_function, t, n, p0=[max(n), mean, sigma])
     elif optimisation == "gauss-least-squares":
         lsq_gauss = lsq_minimiser(t, n)
-        lsq_result = lsq_gauss.run_minimisation(method='Nelder-Mead')
+        lsq_result = lsq_gauss.run_minimisation(method='Nelder-Mead', maxiter=1000)
         parameters = [lsq_result.x, lsq_result.fun]
     # TODO: curve fitting for other type of distributions (i.e., Poisson)
     return parameters
 
-def run_fitting(data, var0, var1, probability_function="gauss-least-squares", symmetric2padding=False):
+def run_fitting(data, var0, var1, group_var, probability_function="gauss-least-squares", symmetric2padding=False, **kwargs):
     """
     Fits a probability function to each of the videos in data using the sampling given by var0 and the counts given by var1
     :param data: pandas data frame or a path to a pandas data frame with the information for each video.
@@ -120,10 +124,7 @@ def run_fitting(data, var0, var1, probability_function="gauss-least-squares", sy
         data = pd.read_csv(data)
     data_param = []
 
-    unique_col = [i for i in data.keys() if i.__contains__("Subcategory")] + ["video_name"]
-    unique_name = data[unique_col].apply("-".join, axis=1)
-    data["unique_name"] = unique_name
-    for f in data["unique_name"].unique():
+    for f in data[group_var].unique():
         print(f)
         f_data = data[data["unique_name"] == f]
         f_data = f_data[f_data["processing"] == "Raw"]

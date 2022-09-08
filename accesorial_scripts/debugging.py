@@ -41,17 +41,6 @@ for v in np.unique(data['unique_name']):
     video = pd.concat([video, video2]).reset_index(drop=True)
     data1 = pd.concat([data1, video]).reset_index(drop=True)
 
-experiments = data1["Subcategory-00"].unique()
-for exp in experiments:
-    data_exp = data1[data1["Subcategory-00"] == exp]
-    dosage = data_exp["Subcategory-02"].unique()
-    for d in dosage:
-        data_exp_d = data_exp[data_exp["Subcategory-02"] == d]
-        wl_folder = str(np.squeeze(data_exp_d["Subcategory-01"].unique()))
-        plot_smooth_curves(data_exp_d, "mitosis", "Gaussian fit - {}".format(exp + "-" + wl_folder + "-" + d),
-                           os.path.join(main_path), "gaussian_fit_{}.png".format(exp + "-" + wl_folder + "-" + d),
-                           hue="video_name", style="Subcategory-03")
-
 v = '2022-08-03-night-WL UV - high density-Synchro-CHO_live_night_live-01-Scene-08-P8-A01'
 video = temporal_data[temporal_data["unique_name"]==v]
 yval = np.squeeze(video["mitosis"])
