@@ -24,8 +24,29 @@ data_raw = pd.read_csv(data_path)
 unique_col = [i for i in data_raw.keys() if i.__contains__("Subcategory")]
 unique_name = data_raw[unique_col].apply("-".join, axis=1)
 data_raw["unique_name"] = unique_name
+# data = run_fitting(data_raw, "frame", "mitosis", "unique_name", symmetric2padding=True)
+
 # Run the fitting
-data = run_fitting(data_raw, "frame", "mitosis", "unique_name", symmetric2padding=True)
+data_smooth = pd.DataFrame()
+for v in np.unique(data_raw['unique_name']):
+    video = data_raw[data_raw["unique_name"] == v]
+    video = video.sort_values('frame')
+    video['Subcategory-03'] = 'Raw'
+    # smooth
+    for fov_name in video["video_name"].unique():
+        t_win = 25
+        fov = video[video["video_name"]==fov_name]
+        y = smooth(fov['mitosis'], t_win)
+        # store smooth values
+        video3 = fov.copy()
+        video3['Subcategory-03'] = 'Averaged'
+        video3['mitosis'] = y
+        # video = pd.concat([video,video3]).reset_index(drop=True)
+        data_smooth = pd.concat([data_smooth, video3]).reset_index(drop=True)
+
+del video, video3
+
+data = run_fitting(data_smooth, "frame", "mitosis", "unique_name", symmetric2padding=True)
 
 ## Print the distribution of the fitted parameters
 print(data.keys())
@@ -38,14 +59,14 @@ for WL in data["Subcategory-01"].unique():
     plt.rcParams.update({'font.size': 8})
     plt.subplot(2, 2, 1)
     sns.boxplot(data=data_WL, x="upper_bound", y="Subcategory-02", order=order)
-    plt.xlim([-100, 400])
+    # plt.xlim([-100, 400])
     plt.subplot(2, 2, 2)
     sns.boxplot(data=data_WL, x="mu", y="Subcategory-02", order=order)
-    plt.xlim([-200, 1000])
+    # plt.xlim([-200, 1000])
 
     plt.subplot(2, 2, 3)
     sns.boxplot(data=data_WL, x="sigma", y="Subcategory-02", order=order)
-    plt.xlim([0, 1500])
+    # plt.xlim([0, 1500])
     plt.subplot(2, 2, 4)
     sns.boxplot(data=data_WL, x="least_squares", y="Subcategory-02", order=order)
 
@@ -76,19 +97,22 @@ for v in np.unique(data['unique_name']):
     video2['mitosis'] = gaussian_estimates
     # video = pd.concat([video, video2]).reset_index(drop=True)
     # data1 = pd.concat([data1, video]).reset_index(drop=True)
-
-    # smooth
-    t_win = 50
-    y = smooth(video['mitosis'], t_win)
-    # store smooth values
-    video3 = video.copy()
-    video3['Subcategory-03'] = 'Averaged'
-    video3['mitosis'] = y
-    video3['mitosis_normalised'] = y
+    video3 = data_smooth[data_smooth["unique_name"]==v]
     video = pd.concat([video, video2, video3]).reset_index(drop=True)
     data1 = pd.concat([data1, video]).reset_index(drop=True)
 
-
+    # # smooth
+    # video = pd.concat([video, video2]).reset_index(drop=True)
+    # for fov_name in video["video_name"].unique():
+    #     t_win = 25
+    #     fov = video[video["video_name"]==fov_name]
+    #     y = smooth(fov['mitosis'], t_win)
+    #     # store smooth values
+    #     video3 = fov.copy()
+    #     video3['Subcategory-03'] = 'Averaged'
+    #     video3['mitosis'] = y
+    #     video = pd.concat([video,video3]).reset_index(drop=True)
+    # data1 = pd.concat([data1, video]).reset_index(drop=True)
 
 del video, video2, video3
 
