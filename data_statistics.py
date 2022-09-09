@@ -7,6 +7,7 @@ SCRIPT_DIR = '/Users/esti/Documents/PROYECTOS/PHX/mitosis-mediated-phototoxic'
 sys.path.append(SCRIPT_DIR)
 from utils.statistics import run_fitting
 from utils.statistics import run_fitting, gaussian_function
+from utils.mitosis_counting import smooth
 from utils.display import plot_conditions_with_aggregates
 import matplotlib.pyplot as plt
 import pandas as pd
@@ -16,14 +17,15 @@ import seaborn as sns
 ## Main path to the data with all the mitotic counts
 main_path = "/Users/esti/Documents/PROYECTOS/PHX/mitosis_mediated_data_itqb_3/results/scaled_1.5709_results/stardist_prob03/"
 data_path = os.path.join(main_path, "data.csv")
-
+# Read the original data
 data_raw = pd.read_csv(data_path)
 
+# Create a the grouping column to run curve fitting
 unique_col = [i for i in data_raw.keys() if i.__contains__("Subcategory")]
 unique_name = data_raw[unique_col].apply("-".join, axis=1)
 data_raw["unique_name"] = unique_name
-
-data = run_fitting(data_raw, "frame", "mitosis", "unique_name")
+# Run the fitting
+data = run_fitting(data_raw, "frame", "mitosis", "unique_name", symmetric2padding=True)
 
 ## Print the distribution of the fitted parameters
 print(data.keys())
@@ -51,7 +53,7 @@ for WL in data["Subcategory-01"].unique():
     fig.savefig(os.path.join(main_path, "gaussian_params_replicates_{}.png".format(WL)), format='png')
     plt.show()
 
-## Visualize the results
+## Visualize the results with respect with the true data
 # Build data with original numbers and the fitted distributions
 # temporal_data = pd.read_csv(data_path)
 # unique_col = [i for i in temporal_data.keys() if i.__contains__("Subcategory")] #+ ["video_name"]
@@ -72,10 +74,23 @@ for v in np.unique(data['unique_name']):
     video2 = video.copy()
     video2['Subcategory-03'] = 'Gaussian'
     video2['mitosis'] = gaussian_estimates
-    video = pd.concat([video, video2]).reset_index(drop=True)
+    # video = pd.concat([video, video2]).reset_index(drop=True)
+    # data1 = pd.concat([data1, video]).reset_index(drop=True)
+
+    # smooth
+    t_win = 50
+    y = smooth(video['mitosis'], t_win)
+    # store smooth values
+    video3 = video.copy()
+    video3['Subcategory-03'] = 'Averaged'
+    video3['mitosis'] = y
+    video3['mitosis_normalised'] = y
+    video = pd.concat([video, video2, video3]).reset_index(drop=True)
     data1 = pd.concat([data1, video]).reset_index(drop=True)
 
-del video, video2
+
+
+del video, video2, video3
 
 # # Generate plots for all the videos to review the results
 # experiments = data1["Subcategory-00"].unique()

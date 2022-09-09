@@ -45,6 +45,7 @@ def plot_conditions_with_aggregates(data, y_var, title, output_path, name, hue="
     plt.tight_layout()
     fig.savefig(os.path.join(output_path, name), format='png')
     # plt.show()
+    # plt.close(fig)
 
 def plot_conditions(data, y_var, title, condition, output_path, name, style_condition="processing"):
     fig = plt.figure(figsize=(12, 8))

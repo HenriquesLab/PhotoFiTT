@@ -63,20 +63,21 @@ class lsq_minimiser():
             mu = params
             return sum((self.y - tfm_poisson_pdf(self.x, mu)) ** 2)
 
-    def run_minimisation(self, **kwargs):
+    def run_minimisation(self, options={}, **kwargs):
         # Define the starting point for minimisation
         if self.prob_dist == "gaussian":
             # Usually the arithmetic mean works
             # mean = sum(self.x * self.y) / sum(self.y)
             # The peak of the curves coincide with the mean of a gaussian density function
-            # index = np.where(self.y == np.max(self.y))
-            # index = np.squeeze(index[0][-1])
-            # mean = self.x.iloc[index]
-            # sigma = np.sqrt(sum(self.y * (self.x - mean) ** 2) / sum(self.y))
+            index = np.where(self.y == np.max(self.y))
+            index = np.squeeze(index[0][-1])
+            mean = self.x[index]
+            # sigma = np.sqrt(sum(self.y * (self.x - np.mean(self.x)) ** 2) / sum(self.y))
 
-            # Start with the theoretical fit
-            mean = 50
+            # # Start with the theoretical fit
+            # mean = 50
             sigma = 10
+
             upper_bound = max(self.y)
             self.x0 = [upper_bound, mean, sigma]
 
@@ -87,7 +88,7 @@ class lsq_minimiser():
         elif self.prob_dist == "poisson_jacobian":
             self.x0 = [sum(self.x * self.y) / sum(self.y)]
 
-        return minimize(self.__least_squares__, self.x0, **kwargs)
+        return minimize(self.__least_squares__, self.x0, options=options, **kwargs)
 
 def fit_probability(n, t, optimisation="gaussian_curve"):
     """
@@ -104,7 +105,7 @@ def fit_probability(n, t, optimisation="gaussian_curve"):
         parameters, covariance = curve_fit(gaussian_function, t, n, p0=[max(n), mean, sigma])
     elif optimisation == "gauss-least-squares":
         lsq_gauss = lsq_minimiser(t, n)
-        lsq_result = lsq_gauss.run_minimisation(method='Nelder-Mead', maxiter=1000)
+        lsq_result = lsq_gauss.run_minimisation(method='Nelder-Mead', options={'maxiter': 10000, 'xatol': 0.01})
         parameters = [lsq_result.x, lsq_result.fun]
     # TODO: curve fitting for other type of distributions (i.e., Poisson)
     return parameters
@@ -129,15 +130,14 @@ def run_fitting(data, var0, var1, group_var, probability_function="gauss-least-s
         f_data = data[data["unique_name"] == f]
         f_data = f_data[f_data["processing"] == "Raw"]
 
-        t = f_data[var0]
-        n = f_data[var1]
+        t = np.squeeze(np.array(f_data[var0]))
+        n = np.squeeze(np.array(f_data[var1]))
 
         # if f.__contains__("Control"):
         #     parameters = [np.max(n), sum(t * n) / sum(n), np.inf]
         # else:
         if symmetric2padding:
             index = np.where(n == np.max(n))
-            print(index)
             index = np.squeeze(index[0][-1])
             padding = len(n)-index
             t0 = np.zeros(padding + len(t))
