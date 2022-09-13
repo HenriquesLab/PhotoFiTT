@@ -5,28 +5,28 @@ from scipy.special import gammaln
 from scipy.stats import poisson
 
 
-def gaussian_function(x, x0, sigma, a):
+def gaussian_function(x, sigma, mu, a):
     """
     Non normalised gaussian density (area under the curve >1)
     :param x: input value
-    :param a: scaling factor and the maximum value expected for the non-normalised Gaussian density
-    :param x0: mean value
     :param sigma: standard deviation
+    :param mu: mean value
+    :param a: scaling factor and the maximum value expected for the non-normalised Gaussian density
     :return: the probability density value of a Gaussian with mean x0, and standard deviation sigma.
     """
-    return a * np.exp(-(x - x0) ** 2 / (2 * sigma ** 2))
+    return a * np.exp(-(x - mu) ** 2 / (2 * sigma ** 2))
 
 
-def gaussian_least_squares(x, y, x0, sigma, a):
+def gaussian_least_squares(x, y, sigma, mu, a):
     """
     least square function for the non-normalised gaussian probability density function
     :param x and y: input pairs for which Gaussian_pdf(x) is expected to be y. x and y are 0 dimensional numbers
+    :param mu: mean value
     :param a: scaling factor and the maximum value expected for the non-normalised Gaussian density
-    :param x0: mean value
     :param sigma: standard deviation
     :return: the probability density value of a Gaussian with mean x0, and standard deviation sigma.
     """
-    return sum((y - gaussian_function(x, x0, sigma, a)) ** 2)
+    return sum((y - gaussian_function(x, sigma, mu, a)) ** 2)
 
 
 def poisson_function(k, lamb):
@@ -44,78 +44,115 @@ def tfm_poisson_pdf(x, mu):
     return np.exp(y * np.log(mu) - mu - gammaln(y + 1.)) * J
 
 
+# class lsq_minimiser():
+#     # Pose the curve fitting as an optimisation method to minimise the least square function
+#     # It fits a gaussian curve by default.
+#     def __init__(self, x, y, prob_dist="gaussian"):
+#         # Store the parameters in the class
+#         self.x = np.squeeze(x)
+#         self.y = np.squeeze(y)
+#         self.prob_dist = prob_dist
+#
+#     def __least_squares__(self, params):
+#         # Define the function to minimise
+#         if self.prob_dist == "gaussian":
+#             # split input params
+#             x0, sigma, a = params
+#             return sum((self.y - gaussian_function(self.x, x0, sigma, a)) ** 2)
+#
+#         elif self.prob_dist == "poisson":
+#             L = params
+#             return sum((self.y - poisson_function(self.x, L)) ** 2)
+#
+#         elif self.prob_dist == "poisson_jacobian":
+#             mu = params
+#             return sum((self.y - tfm_poisson_pdf(self.x, mu)) ** 2)
+#
+#     def run_minimisation(self, options={}, **kwargs):
+#         # Define the starting point for minimisation
+#         if self.prob_dist == "gaussian":
+#             # Usually the arithmetic mean works
+#             # mean = sum(self.x * self.y) / sum(self.y)
+#             # The peak of the curves coincide with the mean of a gaussian density function
+#             index = np.where(self.y == np.max(self.y))
+#             index = np.squeeze(index[0][-1])
+#             mean = self.x[index]
+#             # sigma = np.sqrt(sum(self.y * (self.x - np.mean(self.x)) ** 2) / sum(self.y))
+#
+#             # # Start with the theoretical fit
+#             # mean = 50
+#             sigma = 10
+#
+#             upper_bound = max(self.y)
+#             self.x0 = [mean, sigma, upper_bound]
+#
+#         elif self.prob_dist == "poisson":
+#             # Define the starting point for minimisation
+#             self.x0 = [sum(self.x * self.y) / sum(self.y)]
+#
+#         elif self.prob_dist == "poisson_jacobian":
+#             self.x0 = [sum(self.x * self.y) / sum(self.y)]
+#
+#         return minimize(self.__least_squares__, self.x0, options=options, **kwargs)
+
+
 class lsq_minimiser():
-    # Pose the curve fitting as an optimisation method to minimise the least square function
-    # It fits a gaussian curve by default.
-    def __init__(self, x, y, prob_dist="gaussian"):
-        # Store the parameters in the class
-        self.x = np.squeeze(x)
-        self.y = np.squeeze(y)
-        self.prob_dist = prob_dist
-
-    def __least_squares__(self, params):
-        # Define the function to minimise
-        if self.prob_dist == "gaussian":
-            # split input params
-            x0, sigma, a = params
-            return sum((self.y - gaussian_function(self.x, x0, sigma, a)) ** 2)
-
-        elif self.prob_dist == "poisson":
-            L = params
-            return sum((self.y - poisson_function(self.x, L)) ** 2)
-
-        elif self.prob_dist == "poisson_jacobian":
-            mu = params
-            return sum((self.y - tfm_poisson_pdf(self.x, mu)) ** 2)
-
-    def run_minimisation(self, options={}, **kwargs):
-        # Define the starting point for minimisation
-        if self.prob_dist == "gaussian":
-            # Usually the arithmetic mean works
-            # mean = sum(self.x * self.y) / sum(self.y)
-            # The peak of the curves coincide with the mean of a gaussian density function
-            index = np.where(self.y == np.max(self.y))
-            index = np.squeeze(index[0][-1])
-            mean = self.x[index]
-            # sigma = np.sqrt(sum(self.y * (self.x - np.mean(self.x)) ** 2) / sum(self.y))
-
-            # # Start with the theoretical fit
-            # mean = 50
-            sigma = 10
-
-            upper_bound = max(self.y)
-            self.x0 = [mean, sigma, upper_bound]
-
-        elif self.prob_dist == "poisson":
-            # Define the starting point for minimisation
-            self.x0 = [sum(self.x * self.y) / sum(self.y)]
-
-        elif self.prob_dist == "poisson_jacobian":
-            self.x0 = [sum(self.x * self.y) / sum(self.y)]
-
-        return minimize(self.__least_squares__, self.x0, options=options, **kwargs)
-
-
-class lsq_minimiser_amplitude():
-    def __init__(self, x, y, mean, sigma):
+    def __init__(self, x, y, mean=None, sigma=None, amplitude=None, prob_dist="gaussian"):
         # Store the parameters in the class
         self.x = np.squeeze(x)
         self.y = np.squeeze(y)
         self.mean = mean
         self.sigma = sigma
-
-    def __least_squares__(self, a):
+        self.amplitude = amplitude
+        self.prob_dist = prob_dist
+    def __least_squares__(self, params):
         # Define the function to minimise
-        return sum((self.y - gaussian_function(self.x, self.mean, self.sigma, a)) ** 2)
+        if self.prob_dist == "gaussian":
+            # split input params
+            if len(params)==3:
+                sigma, mean, a = params
+                return sum((self.y - gaussian_function(self.x, sigma, mean, a)) ** 2)
+            elif len(params)==2:
+                mean, a = params
+                return sum((self.y - gaussian_function(self.x, self.sigma, mean, a)) ** 2)
+            else:
+                a = params
+                return sum((self.y - gaussian_function(self.x, self.sigma, self.mean, a)) ** 2)
+
+        elif self.prob_dist == "poisson":
+            mean = params
+            return sum((self.y - poisson_function(self.x, mean)) ** 2)
+
+        elif self.prob_dist == "poisson_jacobian":
+            mean = params
+            return sum((self.y - tfm_poisson_pdf(self.x, mean)) ** 2)
+        # # Define the function to minimise
+        # return sum((self.y - gaussian_function(self.x, self.mean, self.sigma, a)) ** 2)
 
     def run_minimisation(self, options={}, **kwargs):
         # Define the starting point for minimisation
-        a = max(self.y)
-        self.x0 = [a]
+        if self.sigma is not None:
+            if self.mean is not None:
+                amplitude = max(self.y)
+                self.x0 = [amplitude]
+            else:
+                amplitude = max(self.y)
+                mean_estimate = self.x[list(np.where(self.y == max(self.y))[0])[-1]]
+                self.x0 = [mean_estimate, amplitude]
+        else:
+            # Usually the arithmetic mean works
+            # mean = sum(self.x * self.y) / sum(self.y)
+            # The peak of the curves coincide with the mean of a gaussian density function
+            index = list(np.where(self.y == np.max(self.y))[0])[-1]
+            self.mean = self.x[index]
+            self.sigma = np.sqrt(sum(self.y * (self.x - np.mean(self.x)) ** 2) / sum(self.y))
+            # sigma = 10
+            self.amplitude = max(self.y)
+            self.x0 = [self.sigma, self.mean, self.amplitude]
         return minimize(self.__least_squares__, self.x0, options=options, **kwargs)
 
 
-def fit_probability(t, n, optimisation="gauss-least-squares"):
+def fit_probability(t, n, mean=None, sigma=None, optimisation="gauss-least-squares"):
     """
 
     :param n: 1D numpy array with the counts for the Gaussian distribution
@@ -125,37 +162,44 @@ def fit_probability(t, n, optimisation="gauss-least-squares"):
     """
     if optimisation == "gaussian_curve":
         # weighted arithmetic mean (corrected - check the section below)
-        mean = sum(t * n) / sum(n)
-        sigma = np.sqrt(sum(n * (t - mean) ** 2) / sum(n))
-        parameters, covariance = curve_fit(gaussian_function, t, n, p0=[mean, sigma, max(n)])
+        if sigma is not None:
+            if mean is not None:
+                parameters, covariance = curve_fit(gaussian_function, t, n, sigma, mean, p0=[max(n)])
+            else:
+                mean = sum(t * n) / sum(n)
+                parameters, covariance = curve_fit(gaussian_function, t, n, sigma, p0=[mean, max(n)])
+        else:
+            mean = sum(t * n) / sum(n)
+            sigma = np.sqrt(sum(n * (t - mean) ** 2) / sum(n))
+            parameters, covariance = curve_fit(gaussian_function, t, n, p0=[sigma, mean, max(n)])
     elif optimisation == "gauss-least-squares":
-        lsq_gauss = lsq_minimiser(t, n)
+        lsq_gauss = lsq_minimiser(t, n, mean=mean, sigma=sigma)
         lsq_result = lsq_gauss.run_minimisation(method='Nelder-Mead')  # , options={'maxiter': 10000, 'xatol': 0.01})
         parameters = [lsq_result.x, lsq_result.fun]
     # TODO: curve fitting for other type of distributions (i.e., Poisson)
     return parameters
 
 
-def fit_probability_amplitude(t, n, mean, sigma, optimisation="gauss-least-squares"):
-    """
-
-    :param sigma:
-    :param mean:
-    :param n: 1D numpy array with the counts for the Gaussian distribution
-    :param t: 1D numpy array of the same size as n with the instances for the gaussian distribution for the data range
-    :param probability_function: probability to fit for a given value t. Gaussian by default
-    :return: parameters of the probability function to fit.
-    """
-    if optimisation == "gaussian_curve":
-        # weighted arithmetic mean (corrected - check the section below)
-        parameters, covariance = curve_fit(gaussian_function, t, n, mean, sigma, p0=[max(n)])
-    elif optimisation == "gauss-least-squares":
-        lsq_gauss = lsq_minimiser_amplitude(t, n, mean, sigma)
-        lsq_result = lsq_gauss.run_minimisation(method='Nelder-Mead')  # , options={'maxiter': 10000, 'xatol': 0.01})
-        parameters = [lsq_result.x, lsq_result.fun]
-    # TODO: curve fitting for other type of distributions (i.e., Poisson)
-    return parameters
-
+# def fit_probability_amplitude(t, n, mean, sigma, optimisation="gauss-least-squares"):
+#     """
+#
+#     :param sigma:
+#     :param mean:
+#     :param n: 1D numpy array with the counts for the Gaussian distribution
+#     :param t: 1D numpy array of the same size as n with the instances for the gaussian distribution for the data range
+#     :param probability_function: probability to fit for a given value t. Gaussian by default
+#     :return: parameters of the probability function to fit.
+#     """
+#     if optimisation == "gaussian_curve":
+#         # weighted arithmetic mean (corrected - check the section below)
+#         parameters, covariance = curve_fit(gaussian_function, t, n, mean, sigma, p0=[max(n)])
+#     elif optimisation == "gauss-least-squares":
+#         lsq_gauss = lsq_minimiser_amplitude(t, n, mean, sigma)
+#         lsq_result = lsq_gauss.run_minimisation(method='Nelder-Mead')  # , options={'maxiter': 10000, 'xatol': 0.01})
+#         parameters = [lsq_result.x, lsq_result.fun]
+#     # TODO: curve fitting for other type of distributions (i.e., Poisson)
+#     return parameters
+#
 
 def run_fitting(data, var0, var1, group_var, probability_function="gauss-least-squares", symmetric2padding=False):
     """
@@ -237,7 +281,7 @@ class data_statistics():
         self.ref_mu = ref_mu
         self.ref_sigma = ref_sigma
 
-    def __decompose_function__(self, data, ref_lim_var0=None):
+    def __decompose_function__(self, data, ref_lim_var0=None, fixed_peak=True):
         fitted_groups = pd.DataFrame()
         for g in data[self.group_var].unique():
             print(g)
@@ -250,25 +294,32 @@ class data_statistics():
             y = np.squeeze(np.array(g_data[self.var1]))
             if ref_lim_var0 is not None:
                 lim_indexes = list(np.where(x < ref_lim_var0)[0])
-                amplitude_g = fit_probability_amplitude(x[lim_indexes], y[lim_indexes], self.ref_mu, self.ref_sigma,
-                                                    optimisation=self.probability_function)
+                x = x[lim_indexes]
+                y = y[lim_indexes]
+            if fixed_peak:
+                # amplitude_g = fit_probability_amplitude(x, y, mu=self.ref_mu, sigma=self.ref_sigma,
+                #                                         optimisation=self.probability_function)
+                amplitude_g = fit_probability(x, y, mean=self.ref_mu, sigma=self.ref_sigma,
+                                              optimisation=self.probability_function)
             else:
-                amplitude_g = fit_probability_amplitude(x, y, self.ref_mu, self.ref_sigma,
-                                                        optimisation=self.probability_function)
+                # amplitude_g = fit_probability_amplitude(x, y, sigma=self.ref_sigma,
+                #                                         optimisation=self.probability_function)
+                amplitude_g = fit_probability(x, y, sigma=self.ref_sigma,
+                                              optimisation=self.probability_function)
             if self.probability_function.__contains__("least"):
                 if self.probability_function.__contains__("gauss"):
                     amplitude_g = amplitude_g[0][0]
             else:
                 if self.probability_function.__contains__("gauss"):
                     amplitude_g = amplitude_g[0]
+
             # fit the reference gaussian with a new amplitude and store it
             ref_fit_g = g_data.copy()
-
-            ref_fit_g[self.var1] = gaussian_function(x, self.ref_mu, self.ref_sigma, amplitude_g)
+            ref_fit_g[self.var1] = gaussian_function(ref_fit_g[self.var0], self.ref_mu, self.ref_sigma, amplitude_g)
             ref_fit_g["type"] = "reference distribution"
             # estimate the bias/deviation caused by the estimulation
             bias_fit_g = g_data.copy()
-            bias_fit_g[self.var1] = y - ref_fit_g[self.var1]
+            bias_fit_g[self.var1] = bias_fit_g[self.var1] - ref_fit_g[self.var1]
             bias_fit_g["type"] = "bias"
             fitted_groups = pd.concat([fitted_groups, g_data, ref_fit_g, bias_fit_g]).reset_index(drop=True)
         return fitted_groups
@@ -295,7 +346,7 @@ class data_statistics():
                 ref_amplitude = parameters[2]
         return ref_mu, ref_sigma, ref_amplitude
 
-    def estimate_deviation(self, ref_lim_var0=None):
+    def estimate_deviation(self, ref_lim_var0=None, fixed_peak=True):
 
         if self.ref_group is not None:
             ref_indexes = list(np.where(self.data[self.group_var] == self.ref_group)[0])
@@ -303,9 +354,9 @@ class data_statistics():
             self.ref_mu, self.ref_sigma, self.ref_amplitude = self.__reference_fit__(ref_data, ref_lim_var0=ref_lim_var0)
             # Subtract the reference gaussian to the data
             self.data_no_ref = self.data.drop(self.data.index[ref_indexes], axis=0)
-            fitted_groups = self.__decompose_function__(self.data_no_ref, ref_lim_var0=ref_lim_var0)
+            fitted_groups = self.__decompose_function__(self.data_no_ref, ref_lim_var0=ref_lim_var0, fixed_peak=fixed_peak)
         else:
-            fitted_groups = self.__decompose_function__(self.data, ref_lim_var0=ref_lim_var0)
+            fitted_groups = self.__decompose_function__(self.data, ref_lim_var0=ref_lim_var0, fixed_peak=fixed_peak)
         return fitted_groups
 
         # # total area under the curve
