@@ -51,9 +51,9 @@ import czifile as zis
 #----------------------------------------------------------------------
 
 # Information about the directory and the pixel_size (height)
-MAIN = "/Volumes/OCB-All/Projects/OCB004_Phototoxicity/Data/ZeissWF-ITQB/20220812_CHO_568"
-exp = ["individual"]#, "individual - night"]
-OUT = '/Users/esti/Documents/PROYECTOS/PHX/mitosis_mediated_data_itqb_3/inputs/scaled_1.5709_results/2022-08-12'
+MAIN = "/Users/esti/Documents/PROYECTOS/PHX/mitosis_mediated_data_itqb_3/inputs/scaled_1.5709_results/2022-09-09/Individual"
+exp = [ "missing"]#,"Individual"]
+OUT = '/Users/esti/Documents/PROYECTOS/PHX/mitosis_mediated_data_itqb_3/inputs/scaled_1.5709_results/2022-09-09'
 if not os.path.exists(OUT):
     os.mkdir(OUT)
 pixel_size = 0.5500 # x20 objective
