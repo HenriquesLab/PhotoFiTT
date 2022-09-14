@@ -127,7 +127,7 @@ class lsq_minimiser():
             mean = params
             return sum((self.y - tfm_poisson_pdf(self.x, mean)) ** 2)
         # # Define the function to minimise
-        # return sum((self.y - gaussian_function(self.x, self.mean, self.sigma, a)) ** 2)
+        # return sum((self.y - gaussian_function(self.x, self.sigma, self.mean, a)) ** 2)
 
     def run_minimisation(self, options={}, **kwargs):
         # Define the starting point for minimisation
@@ -283,6 +283,7 @@ class data_statistics():
 
     def __decompose_function__(self, data, ref_lim_var0=None, fixed_peak=True):
         fitted_groups = pd.DataFrame()
+        dev = pd.DataFrame()
         for g in data[self.group_var].unique():
             print(g)
             g_indexes = list(np.where(data[self.group_var] == g)[0])
@@ -292,37 +293,52 @@ class data_statistics():
             # estimate the amplitude
             x = np.squeeze(np.array(g_data[self.var0]))
             y = np.squeeze(np.array(g_data[self.var1]))
+            # total area under the curve
+            auc_g = np.trapz(y, dx=x[1])
             if ref_lim_var0 is not None:
                 lim_indexes = list(np.where(x < ref_lim_var0)[0])
                 x = x[lim_indexes]
                 y = y[lim_indexes]
             if fixed_peak:
-                # amplitude_g = fit_probability_amplitude(x, y, mu=self.ref_mu, sigma=self.ref_sigma,
+                # params = fit_probability_amplitude(x, y, mu=self.ref_mu, sigma=self.ref_sigma,
                 #                                         optimisation=self.probability_function)
-                amplitude_g = fit_probability(x, y, mean=self.ref_mu, sigma=self.ref_sigma,
+                params = fit_probability(x, y, mean=self.ref_mu, sigma=self.ref_sigma,
                                               optimisation=self.probability_function)
             else:
-                # amplitude_g = fit_probability_amplitude(x, y, sigma=self.ref_sigma,
+                # params = fit_probability_amplitude(x, y, sigma=self.ref_sigma,
                 #                                         optimisation=self.probability_function)
-                amplitude_g = fit_probability(x, y, sigma=self.ref_sigma,
+                params = fit_probability(x, y, sigma=self.ref_sigma,
                                               optimisation=self.probability_function)
+
             if self.probability_function.__contains__("least"):
                 if self.probability_function.__contains__("gauss"):
-                    amplitude_g = amplitude_g[0][0]
+                    if fixed_peak is False:
+                        mean_g = params[0][0]
+                        amplitude_g = params[0][1]
+                    else:
+                        amplitude_g = params[0][0]
+                        mean_g = self.ref_mu
             else:
                 if self.probability_function.__contains__("gauss"):
-                    amplitude_g = amplitude_g[0]
+                    amplitude_g = params[0]
 
             # fit the reference gaussian with a new amplitude and store it
             ref_fit_g = g_data.copy()
-            ref_fit_g[self.var1] = gaussian_function(ref_fit_g[self.var0], self.ref_mu, self.ref_sigma, amplitude_g)
+            ref_fit_g[self.var1] = gaussian_function(ref_fit_g[self.var0], self.ref_sigma, mean_g, amplitude_g)
             ref_fit_g["type"] = "reference distribution"
             # estimate the bias/deviation caused by the estimulation
             bias_fit_g = g_data.copy()
             bias_fit_g[self.var1] = bias_fit_g[self.var1] - ref_fit_g[self.var1]
             bias_fit_g["type"] = "bias"
             fitted_groups = pd.concat([fitted_groups, g_data, ref_fit_g, bias_fit_g]).reset_index(drop=True)
-        return fitted_groups
+
+            auc_ref_g = np.trapz(np.squeeze(np.asarray(ref_fit_g[self.var1])),
+                                 dx=x[1])
+            d = {self.group_var: [g], "auc": [auc_g], "synchronised cells": [auc_ref_g/auc_g],
+                 "deviation": [1-auc_ref_g/auc_g], "peak": [mean_g]}
+            dev = pd.concat([dev,
+                             pd.DataFrame(data=d)]).reset_index(drop=True)
+        return fitted_groups, dev
 
     def __reference_fit__(self, ref_data, ref_lim_var0=None):
         # fit a gaussian curve to a specific group of data
@@ -354,10 +370,10 @@ class data_statistics():
             self.ref_mu, self.ref_sigma, self.ref_amplitude = self.__reference_fit__(ref_data, ref_lim_var0=ref_lim_var0)
             # Subtract the reference gaussian to the data
             self.data_no_ref = self.data.drop(self.data.index[ref_indexes], axis=0)
-            fitted_groups = self.__decompose_function__(self.data_no_ref, ref_lim_var0=ref_lim_var0, fixed_peak=fixed_peak)
+            fitted_groups, dev = self.__decompose_function__(self.data_no_ref, ref_lim_var0=ref_lim_var0, fixed_peak=fixed_peak)
         else:
-            fitted_groups = self.__decompose_function__(self.data, ref_lim_var0=ref_lim_var0, fixed_peak=fixed_peak)
-        return fitted_groups
+            fitted_groups, dev = self.__decompose_function__(self.data, ref_lim_var0=ref_lim_var0, fixed_peak=fixed_peak)
+        return fitted_groups, dev
 
         # # total area under the curve
         # auc_g = np.trapz(y, dx=x[1])

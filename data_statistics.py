@@ -34,7 +34,7 @@ group_var = "unique_name"
 probability_function = "gauss-least-squares"
 ref_lim_var0 = 80
 DS = data_statistics(data_UV, var0, var1, group_var, probability_function=probability_function, ref_group=ref_group)
-fitted_groups_UV = DS.estimate_deviation(ref_lim_var0=ref_lim_var0, fixed_peak=True)
+fitted_groups_UV, dev_UV = DS.estimate_deviation(ref_lim_var0=ref_lim_var0, fixed_peak=True)
 print("Estimated mean value: {}".format(DS.ref_mu))
 print("Estimated standard deviation: {}".format(DS.ref_sigma))
 plot_conditions_with_aggregates(fitted_groups_UV, "mitosis",
@@ -60,7 +60,7 @@ plot_conditions_with_aggregates(data_ref_group, "mitosis",
 data_568 = data_raw[data_raw["Subcategory-01"] == "WL 568 - high density"]
 ref_group = "WL 568 - high density-Synchro"
 DS = data_statistics(data_568, var0, var1, group_var, probability_function=probability_function, ref_group=ref_group)
-fitted_groups_568 = DS.estimate_deviation(ref_lim_var0=ref_lim_var0, fixed_peak=True)
+fitted_groups_568, dev_568 = DS.estimate_deviation(ref_lim_var0=ref_lim_var0, fixed_peak=True)
 print("Estimated mean value: {}".format(DS.ref_mu))
 print("Estimated standard deviation: {}".format(DS.ref_sigma))
 plot_conditions_with_aggregates(fitted_groups_568, "mitosis",
