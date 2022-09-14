@@ -307,8 +307,7 @@ class data_statistics():
             # estimate the amplitude
             x = np.squeeze(np.array(g_data[self.var0]))
             y = np.squeeze(np.array(g_data[self.var1]))
-            # total area under the curve
-            auc_g = np.trapz(y, dx=x[1])
+
             if ref_lim_var0 is not None:
                 lim_indexes = list(np.where(x < ref_lim_var0)[0])
                 x = x[lim_indexes]
@@ -345,7 +344,16 @@ class data_statistics():
             bias_fit_g["type"] = "bias"
             fitted_groups = pd.concat([fitted_groups, g_data, ref_fit_g, bias_fit_g]).reset_index(drop=True)
 
-            auc_ref_g = np.trapz(np.squeeze(np.asarray(ref_fit_g[self.var1])),
+            ##AREA CALCULATION
+            # total area under the curve
+            averages = []
+            g_data.sort_values(self.var0)
+            x = g_data[self.var0].unique()
+            for t in x:
+                index = list(np.where(g_data[self.var0] == t)[0])
+                averages.append(np.mean(g_data[self.var1].iloc[index]))
+            auc_g = np.trapz(averages, dx=x[1])
+            auc_ref_g = np.trapz(gaussian_function(x, self.ref_sigma, mean_g, amplitude_g),
                                  dx=x[1])
             d = {self.group_var: [g], "auc": [auc_g], "synchronised cells": [auc_ref_g/auc_g],
                  "deviation": [1-(auc_ref_g/auc_g)], "peak": [mean_g]}

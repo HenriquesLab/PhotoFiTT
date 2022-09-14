@@ -5,7 +5,7 @@ import sys
 # sys.path.append(os.path.dirname(SCRIPT_DIR))
 SCRIPT_DIR = '/Users/esti/Documents/PROYECTOS/PHX/mitosis-mediated-phototoxic'
 sys.path.append(SCRIPT_DIR)
-from utils.statistics import run_fitting, gaussian_function, data_statistics, wl_values
+from utils.statistics import run_fitting, gaussian_function, data_statistics
 from utils.mitosis_counting import smooth
 from utils.display import plot_conditions_with_aggregates
 import matplotlib.pyplot as plt
@@ -37,11 +37,11 @@ DS = data_statistics(data_UV, var0, var1, group_var, probability_function=probab
 fitted_groups_UV, dev_UV = DS.estimate_deviation(ref_lim_var0=ref_lim_var0, fixed_peak=True)
 print("Estimated mean value: {}".format(DS.ref_mu))
 print("Estimated standard deviation: {}".format(DS.ref_sigma))
-plot_conditions_with_aggregates(fitted_groups_UV, "mitosis",
-                                "ref and biases {}".format(ref_group),
-                                os.path.join(main_path),
-                                "ref and biases {}.png".format(ref_group),
-                                hue="unique_name", style="type")
+# plot_conditions_with_aggregates(fitted_groups_UV, "mitosis",
+#                                 "ref and biases {}".format(ref_group),
+#                                 os.path.join(main_path),
+#                                 "ref and biases {}.png".format(ref_group),
+#                                 hue="unique_name", style="type")
 ref_group_index = (np.where(data_UV[group_var] == ref_group)[0])
 data_ref_group = data_UV.iloc[ref_group_index]
 x = np.squeeze(np.array(data_ref_group[var0]))
@@ -87,8 +87,8 @@ plot_conditions_with_aggregates(data_ref_group, "mitosis",
 fig = plt.figure(figsize=(5, 5))
 plt.rcParams.update({'font.size': 8})
 ax1 = plt.subplot(1,2,1)
-sns.lineplot(data=dev_UV, x="wave length", y="deviation")
-sns.lineplot(data=dev_568, x="wave length", y="deviation")
+sns.lineplot(data=dev_UV, x="exposure time (sec)", y="deviation")
+sns.lineplot(data=dev_568, x="exposure time (sec)", y="deviation")
 plt.legend(["UV", "568"])
 ax1.set(xscale="log")
 plt.ylim([0,1])
