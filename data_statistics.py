@@ -5,7 +5,7 @@ import sys
 # sys.path.append(os.path.dirname(SCRIPT_DIR))
 SCRIPT_DIR = '/Users/esti/Documents/PROYECTOS/PHX/mitosis-mediated-phototoxic'
 sys.path.append(SCRIPT_DIR)
-from utils.statistics import run_fitting, gaussian_function, data_statistics
+from utils.statistics import run_fitting, gaussian_function, data_statistics, wl_values
 from utils.mitosis_counting import smooth
 from utils.display import plot_conditions_with_aggregates
 import matplotlib.pyplot as plt
@@ -45,7 +45,7 @@ plot_conditions_with_aggregates(fitted_groups_UV, "mitosis",
 ref_group_index = (np.where(data_UV[group_var] == ref_group)[0])
 data_ref_group = data_UV.iloc[ref_group_index]
 x = np.squeeze(np.array(data_ref_group[var0]))
-y = gaussian_function(x, DS.ref_mu, DS.ref_sigma, DS.ref_amplitude)
+y = gaussian_function(x, DS.ref_sigma, DS.ref_mu, DS.ref_amplitude)
 data_ref_gaussian = data_ref_group.copy()
 data_ref_gaussian[var1] = y
 data_ref_gaussian["processing"] = "Gaussian fit"
@@ -84,6 +84,23 @@ plot_conditions_with_aggregates(data_ref_group, "mitosis",
 
 
 
+fig = plt.figure(figsize=(5, 5))
+plt.rcParams.update({'font.size': 8})
+ax1 = plt.subplot(1,2,1)
+sns.lineplot(data=dev_UV, x="wave length", y="deviation")
+sns.lineplot(data=dev_568, x="wave length", y="deviation")
+plt.legend(["UV", "568"])
+ax1.set(xscale="log")
+plt.ylim([0,1])
+ax2 = plt.subplot(1,2,2)
+sns.lineplot(data=dev_UV, x="exposure time (sec)", y="synchronised cells")
+sns.lineplot(data=dev_568, x="exposure time (sec)", y="synchronised cells")
+plt.legend(["UV", "568"])
+ax2.set(xscale="log")
+plt.ylim([0,0.5])
+plt.tight_layout()
+fig.savefig(os.path.join(main_path, "cell_arrestment_exposition.png"), format='png')
+plt.show()
 
 
 

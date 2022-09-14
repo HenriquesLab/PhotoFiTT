@@ -5,6 +5,20 @@ from scipy.special import gammaln
 from scipy.stats import poisson
 
 
+def wl_values(dev):
+    WL = []
+    for i in dev["unique_name"]:
+        wl = i.split("-UV")[-1]
+        if wl.__contains__("ms"):
+            wl = 0.001 * int(wl.split("ms")[0])
+        elif wl.__contains__("sec"):
+            wl = int(wl.split("sec")[0])
+        else:
+            wl = .0
+        WL.append(wl)
+    dev["exposure time (sec)"] = WL
+    return dev
+
 def gaussian_function(x, sigma, mu, a):
     """
     Non normalised gaussian density (area under the curve >1)
@@ -312,7 +326,7 @@ class data_statistics():
 
             if self.probability_function.__contains__("least"):
                 if self.probability_function.__contains__("gauss"):
-                    if fixed_peak is False:
+                    if not fixed_peak:
                         mean_g = params[0][0]
                         amplitude_g = params[0][1]
                     else:
@@ -321,7 +335,6 @@ class data_statistics():
             else:
                 if self.probability_function.__contains__("gauss"):
                     amplitude_g = params[0]
-
             # fit the reference gaussian with a new amplitude and store it
             ref_fit_g = g_data.copy()
             ref_fit_g[self.var1] = gaussian_function(ref_fit_g[self.var0], self.ref_sigma, mean_g, amplitude_g)
@@ -335,7 +348,7 @@ class data_statistics():
             auc_ref_g = np.trapz(np.squeeze(np.asarray(ref_fit_g[self.var1])),
                                  dx=x[1])
             d = {self.group_var: [g], "auc": [auc_g], "synchronised cells": [auc_ref_g/auc_g],
-                 "deviation": [1-auc_ref_g/auc_g], "peak": [mean_g]}
+                 "deviation": [1-(auc_ref_g/auc_g)], "peak": [mean_g]}
             dev = pd.concat([dev,
                              pd.DataFrame(data=d)]).reset_index(drop=True)
         return fitted_groups, dev
@@ -352,27 +365,31 @@ class data_statistics():
         # extract the parameters according to the optimisation procedure
         if self.probability_function.__contains__("least"):
             if self.probability_function.__contains__("gauss"):
-                ref_mu = parameters[0][0]
-                ref_sigma = parameters[0][1]
+                ref_sigma = parameters[0][0]
+                ref_mu = parameters[0][1]
                 ref_amplitude = parameters[0][2]
         else:
             if self.probability_function.__contains__("gauss"):
-                ref_mu = parameters[0]
-                ref_sigma = parameters[1]
+                ref_sigma = parameters[0]
+                ref_mu = parameters[1]
                 ref_amplitude = parameters[2]
-        return ref_mu, ref_sigma, ref_amplitude
+        return ref_sigma, ref_mu, ref_amplitude
 
     def estimate_deviation(self, ref_lim_var0=None, fixed_peak=True):
 
         if self.ref_group is not None:
             ref_indexes = list(np.where(self.data[self.group_var] == self.ref_group)[0])
             ref_data = self.data[[self.var0, self.var1]].iloc[ref_indexes]
-            self.ref_mu, self.ref_sigma, self.ref_amplitude = self.__reference_fit__(ref_data, ref_lim_var0=ref_lim_var0)
+            self.ref_sigma, self.ref_mu, self.ref_amplitude = self.__reference_fit__(ref_data,
+                                                                                     ref_lim_var0=ref_lim_var0)
             # Subtract the reference gaussian to the data
             self.data_no_ref = self.data.drop(self.data.index[ref_indexes], axis=0)
-            fitted_groups, dev = self.__decompose_function__(self.data_no_ref, ref_lim_var0=ref_lim_var0, fixed_peak=fixed_peak)
+            fitted_groups, dev = self.__decompose_function__(self.data_no_ref, ref_lim_var0=ref_lim_var0,
+                                                             fixed_peak=fixed_peak)
         else:
-            fitted_groups, dev = self.__decompose_function__(self.data, ref_lim_var0=ref_lim_var0, fixed_peak=fixed_peak)
+            fitted_groups, dev = self.__decompose_function__(self.data, ref_lim_var0=ref_lim_var0,
+                                                             fixed_peak=fixed_peak)
+        dev = wl_values(dev)
         return fitted_groups, dev
 
         # # total area under the curve
@@ -381,3 +398,4 @@ class data_statistics():
         # y_max = np.max(y)
         # y_reduction = y - ref_fit_g
         # auc_ref_g = np.trapz(ref_fit_g, dx=x[1])/auc_g
+
