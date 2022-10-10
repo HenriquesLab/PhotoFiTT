@@ -24,6 +24,10 @@ max_frame_rate = 4 # The time gap we will use to compute all the metrics
 data = count_mitosis_all(main_path, stacks=True, min_roundness=r, t_win=t_win, frame_rate=4)
 data.to_csv(os.path.join(output_path, "data.csv"))
 
+# # Read the original data
+# data = pd.read_csv(os.path.join(output_path, "data.csv"))
+
+
 # PLOT THE RESULTS FOR EACH CONDITION SEPARATELY
 #--------------------------------------------------------------
 # Subcategory-02 filters out the different conditions such as control, synch, uv10sec or uv 30sec

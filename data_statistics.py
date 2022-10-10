@@ -15,7 +15,7 @@ import seaborn as sns
 
 ## Main path to the data with all the mitotic counts
 main_path = "/Users/esti/Documents/PROYECTOS/PHX/mitosis_mediated_data_itqb_3/results/scaled_1.5709_results/stardist_prob03/"
-data_path = os.path.join(main_path, "data_old.csv")
+data_path = os.path.join(main_path, "data.csv")
 # Read the original data
 data_raw = pd.read_csv(data_path)
 data_raw = data_raw[data_raw["processing"] == "Raw"]
@@ -33,8 +33,9 @@ var1 = "mitosis"
 group_var = "unique_name"
 probability_function = "gauss-least-squares"
 ref_lim_var0 = 80
+fixed_peak = False
 DS = data_statistics(data_UV, var0, var1, group_var, probability_function=probability_function, ref_group=ref_group)
-fitted_groups_UV, dev_UV = DS.estimate_deviation(ref_lim_var0=ref_lim_var0, fixed_peak=True)
+fitted_groups_UV, dev_UV = DS.estimate_deviation(ref_lim_var0=ref_lim_var0, fixed_peak=fixed_peak)
 print("Estimated mean value: {}".format(DS.ref_mu))
 print("Estimated standard deviation: {}".format(DS.ref_sigma))
 # plot_conditions_with_aggregates(fitted_groups_UV, "mitosis",
@@ -49,24 +50,49 @@ y = gaussian_function(x, DS.ref_sigma, DS.ref_mu, DS.ref_amplitude)
 data_ref_gaussian = data_ref_group.copy()
 data_ref_gaussian[var1] = y
 data_ref_gaussian["processing"] = "Gaussian fit"
+data_ref_group = pd.concat([data_ref_group, data_ref_gaussian]).reset_index(drop=fixed_peak)
+plot_conditions_with_aggregates(data_ref_group, "mitosis",
+                                "ref {}".format(ref_group),
+                                os.path.join(main_path),
+                                "ref {}-{}.png".format(ref_group, fixed_peak),
+                                hue="Subcategory-00", style="processing")
+### Data WL = 475
+data_475 = data_raw[data_raw["Subcategory-01"] == "WL 475 - high density"]
+ref_group = "WL 475 - high density-Synchro"
+DS = data_statistics(data_475, var0, var1, group_var, probability_function=probability_function, ref_group=ref_group)
+fitted_groups_475, dev_475 = DS.estimate_deviation(ref_lim_var0=ref_lim_var0, fixed_peak=fixed_peak)
+print("Estimated mean value: {}".format(DS.ref_mu))
+print("Estimated standard deviation: {}".format(DS.ref_sigma))
+plot_conditions_with_aggregates(fitted_groups_475, "mitosis",
+                                "ref and biases {}".format(ref_group),
+                                os.path.join(main_path),
+                                "ref and biases {}-{}.png".format(ref_group, fixed_peak),
+                                hue="unique_name", style="type")
+ref_group_index = (np.where(data_475[group_var] == ref_group)[0])
+data_ref_group = data_475.iloc[ref_group_index]
+x = np.squeeze(np.array(data_ref_group[var0]))
+y = gaussian_function(x, DS.ref_mu, DS.ref_sigma, DS.ref_amplitude)
+data_ref_gaussian = data_ref_group.copy()
+data_ref_gaussian[var1] = y
+data_ref_gaussian["processing"] = "Gaussian fit"
 data_ref_group = pd.concat([data_ref_group, data_ref_gaussian]).reset_index(drop=True)
 plot_conditions_with_aggregates(data_ref_group, "mitosis",
                                 "ref {}".format(ref_group),
                                 os.path.join(main_path),
-                                "ref {}.png".format(ref_group),
+                                "reef {}-{}.png".format(ref_group, fixed_peak),
                                 hue="Subcategory-00", style="processing")
 
 ### Data WL = 568
 data_568 = data_raw[data_raw["Subcategory-01"] == "WL 568 - high density"]
 ref_group = "WL 568 - high density-Synchro"
 DS = data_statistics(data_568, var0, var1, group_var, probability_function=probability_function, ref_group=ref_group)
-fitted_groups_568, dev_568 = DS.estimate_deviation(ref_lim_var0=ref_lim_var0, fixed_peak=True)
+fitted_groups_568, dev_568 = DS.estimate_deviation(ref_lim_var0=ref_lim_var0, fixed_peak=fixed_peak)
 print("Estimated mean value: {}".format(DS.ref_mu))
 print("Estimated standard deviation: {}".format(DS.ref_sigma))
 plot_conditions_with_aggregates(fitted_groups_568, "mitosis",
                                 "ref and biases {}".format(ref_group),
                                 os.path.join(main_path),
-                                "ref and biases {}.png".format(ref_group),
+                                "ref and biases {}-{}.png".format(ref_group, fixed_peak),
                                 hue="unique_name", style="type")
 ref_group_index = (np.where(data_568[group_var] == ref_group)[0])
 data_ref_group = data_568.iloc[ref_group_index]
@@ -79,27 +105,56 @@ data_ref_group = pd.concat([data_ref_group, data_ref_gaussian]).reset_index(drop
 plot_conditions_with_aggregates(data_ref_group, "mitosis",
                                 "ref {}".format(ref_group),
                                 os.path.join(main_path),
-                                "reef {}.png".format(ref_group),
+                                "ref {}-{}.png".format(ref_group, fixed_peak),
                                 hue="Subcategory-00", style="processing")
 
+### Data WL = 630
+data_630 = data_raw[data_raw["Subcategory-01"] == "WL 630 - high density"]
+ref_group = "WL 630 - high density-Synchro"
+DS = data_statistics(data_630, var0, var1, group_var, probability_function=probability_function, ref_group=ref_group)
+fitted_groups_630, dev_630 = DS.estimate_deviation(ref_lim_var0=ref_lim_var0, fixed_peak=fixed_peak)
+print("Estimated mean value: {}".format(DS.ref_mu))
+print("Estimated standard deviation: {}".format(DS.ref_sigma))
+plot_conditions_with_aggregates(fitted_groups_630, "mitosis",
+                                "ref and biases {}".format(ref_group),
+                                os.path.join(main_path),
+                                "ref and biases {}-{}.png".format(ref_group, fixed_peak),
+                                hue="unique_name", style="type")
+ref_group_index = (np.where(data_630[group_var] == ref_group)[0])
+data_ref_group = data_630.iloc[ref_group_index]
+x = np.squeeze(np.array(data_ref_group[var0]))
+y = gaussian_function(x, DS.ref_mu, DS.ref_sigma, DS.ref_amplitude)
+data_ref_gaussian = data_ref_group.copy()
+data_ref_gaussian[var1] = y
+data_ref_gaussian["processing"] = "Gaussian fit"
+data_ref_group = pd.concat([data_ref_group, data_ref_gaussian]).reset_index(drop=True)
+plot_conditions_with_aggregates(data_ref_group, "mitosis",
+                                "ref {}".format(ref_group),
+                                os.path.join(main_path),
+                                "ref {}-{}.png".format(ref_group, fixed_peak),
+                                hue="Subcategory-00", style="processing")
 
 
 fig = plt.figure(figsize=(5, 5))
 plt.rcParams.update({'font.size': 8})
 ax1 = plt.subplot(1,2,1)
 sns.lineplot(data=dev_UV, x="exposure time (sec)", y="deviation")
+sns.lineplot(data=dev_475, x="exposure time (sec)", y="deviation")
 sns.lineplot(data=dev_568, x="exposure time (sec)", y="deviation")
-plt.legend(["UV", "568"])
+sns.lineplot(data=dev_630, x="exposure time (sec)", y="deviation")
+#plt.legend(["UV", "475", "568", "630"])
 ax1.set(xscale="log")
-plt.ylim([0,1])
+#plt.ylim([0,1])
 ax2 = plt.subplot(1,2,2)
 sns.lineplot(data=dev_UV, x="exposure time (sec)", y="synchronised cells")
+sns.lineplot(data=dev_475, x="exposure time (sec)", y="synchronised cells")
 sns.lineplot(data=dev_568, x="exposure time (sec)", y="synchronised cells")
-plt.legend(["UV", "568"])
+sns.lineplot(data=dev_630, x="exposure time (sec)", y="synchronised cells")
+plt.legend(["UV", "475", "568", "630"])
 ax2.set(xscale="log")
-plt.ylim([0,0.5])
+#plt.ylim([0,1])
 plt.tight_layout()
-fig.savefig(os.path.join(main_path, "cell_arrestment_exposition.png"), format='png')
+fig.savefig(os.path.join(main_path, "cell_arrestment_exposition-{}.png".format(fixed_peak)), format='png')
 plt.show()
 
 
