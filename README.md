@@ -53,3 +53,24 @@ For example:
    - `resize_data.py`: Data has been resized before any analysis. It contains the script used to resize training and final data.
 
 - `notebooks`: notebooks used to train and do inference.
+
+
+# Package installation
+
+The code provides an `environment.yaml` file with most of the dependencies needed. As some dependencies might not be installed for all the operating system, we provide longer but still general enough guidelines.
+
+- Create a new environment using `environment.yaml`. All the packages will be installed from conda-forge.
+  Place your terminal in the `mitosis-mediated-phototoxic` folder. Use either conda or mamba:
+  ```
+  mamba env create -n mitphoto -f environment.yml  
+  mamba activate mitphoto
+  ```
+- The current code uses `connected-components-3d `, which is not available for osx-arm64 (MacOS M1). 
+  Thus, we need to install it manually in the environment that we have just created.
+  ```
+  git clone https://github.com/seung-lab/connected-components-3d.git
+  pip install -r requirements.txt
+  python setup.py develop
+  
+  ```
+- Similar to `slideio`, which is not existing for MacOS M1. Check out their documentation for your OS: https://pypi.org/project/slideio/
