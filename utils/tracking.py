@@ -3,7 +3,8 @@ import numpy as np
 import cc3d
 from numba import njit
 from scipy.ndimage import gaussian_filter
-
+import pandas as pd
+from tifffile import imread
 
 @njit()
 def stack_pixelwise_average(A):
@@ -48,6 +49,7 @@ def remove_exisitng_labels(bin_mask, instance_mask):
     new_mask = np.zeros_like(instance_mask)
     for t in range(intersection.shape[0]):
         labels = np.unique(intersection[t])
+        #  we copy and flatten because of numba
         aux = np.copy(instance_mask[t].flatten())
         for l in labels:
             indexes = np.where((aux == l))
@@ -86,7 +88,8 @@ def fill_gaps(inst_mask, sigma=2, track_threshold=0.25):
     ### Estimation 1: fill in gaps
     # Each frame t is the result of averaging t-1 and t+1. The information from frame t is not considered.
     average_mask = stack_pixelwise_average(bin_mask)
-    # Threshold all those values where there has been a gap to estimate missing labels. Missing label is considered when t-1 = t+1 and t may or may not have a positive pixel.
+    # Threshold all those values where there has been a gap to estimate missing labels.
+    # Missing label is considered when t-1 = t+1 and t may or may not have a positive pixel.
     # 0.5*(t-1 - t+1):  (1 + 0)/2 = 0.5, (1+1)/2 = 1, (0+0)/2=0
     average_mask = (average_mask >= 1).astype(np.uint8)
     # get the instances of the estimated cells
@@ -119,11 +122,11 @@ def fill_gaps(inst_mask, sigma=2, track_threshold=0.25):
     return average_mask, tracks_3D
 
 
-def count_tracked_divisions(tracks_3D, average_mask):
+def count_tracked_divisions(tracks_3D, average_mask, frame_rate=4):
     # We use average_mask because it has some correction of false negatives
     length = tracks_3D.shape[0]
     counts = np.zeros([length, 2])
-    counts[:, 0] = 4*np.arange(length)
+    counts[:, 0] = frame_rate*np.arange(length)
 
     for t in range(length):
         tracks = np.unique(tracks_3D[t])
@@ -136,15 +139,69 @@ def count_tracked_divisions(tracks_3D, average_mask):
                     tracks_3D[tracks_3D == cell] = 0
     return counts
 
+def track_video(path, track_threshold=0.25, frame_rate=4):
+    inst_mask = imread(path)
+    average_mask, tracks_3D = fill_gaps(inst_mask, track_threshold=track_threshold)
+    counts = count_tracked_divisions(tracks_3D, average_mask, frame_rate=frame_rate)
+    return counts
 
-from tifffile import imread, imsave
+
+def tracking_metrics(path, track_info=None, column_data=[], frame_rate=4, track_threshold=0.25):
+    folders = os.listdir(path)
+    folders.sort
+    print(folders)
+    for f in folders:
+        if f[0] != '.':
+            if not f.__contains__('.'):
+                track_info = tracking_metrics(os.path.join(path, f),track_info=track_info,
+                                             column_data=column_data + [f], frame_rate=frame_rate,
+                                             track_threshold=track_threshold)
+            elif f.__contains__('.tif'):
+                print(f)
+                counts = track_video(os.path.join(path, f), track_threshold=track_threshold, frame_rate=frame_rate)
+                ### convert counts together with the column information into a dataframe. After updating the dataframe,
+                # update the general dataframe. We only need the info of the columns (each has a category) + the file name
+                t = counts[:, 0]
+                mitoses = counts[:, 1]
+                data = [[t, mitoses] + column_data]
+                columns = ["Subcategory-{:02d}".format(i) for i in range(len(column_data))]
+                aux = pd.DataFrame(data, columns=['frame', 'mitoses'] + columns)
+                aux['video_name'] = f.split('.tif')[0]
+                # Concatenate pandas data frame to the previous one
+                if track_info is None:
+                    track_info = aux
+                else:
+                    track_info = pd.concat([track_info, aux]).reset_index(drop=True)
+                #     aux = None
+                #     for t in range(len(im)):
+                #         frame = im[t]
+                #         aux_t = extract_info(frame, t, frame_rate, min_roundness, column_data + [f.split('.tif')[0]])
+                #         if aux is None:
+                #             aux = aux_t
+                #         else:
+                #             aux = pd.concat([aux, aux_t]).reset_index(drop=True)
+                # # Concatenate pandas data frame to the previous one
+                # if pd_dataframe is None:
+                #     pd_dataframe = aux
+                # else:
+                #     pd_dataframe = pd.concat([pd_dataframe, aux]).reset_index(drop=True)
+    return track_info
+
+
 
 main_path = "/Users/esti/Documents/PROYECTOS/PHX/mitosis_mediated_data_itqb_3/masks/scaled_1.5709_results/stardist_prob03/"
-file = "2022-09-07-day/WL 475 - high density/Synchro/CHO_day_475_live-01-Scene-74-P10-B01.tif"
-inst_mask = imread(os.path.join(main_path, file))
-average_mask, tracks_3D = fill_gaps(inst_mask, track_threshold=0.25)
-imsave("/Users/esti/Downloads/prueba_tracks_{}.tif".format(file.split("Scene")[-1]), tracks_3D)
-counts = count_tracked_divisions(tracks_3D, average_mask)
-import matplotlib.pyplot as plt
-plt.plot(counts[:, 0], counts[:, 1], '-')
-plt.show()
+folder = "2022-09-07-day/WL 475 - high density/"
+path = os.path.join(main_path, folder)
+tracking_metrics(path, frame_rate=4, track_threshold=0.25)
+#
+
+# file = "2022-09-07-day/WL 475 - high density/Synchro/CHO_day_475_live-01-Scene-74-P10-B01.tif"
+# inst_mask = imread(os.path.join(main_path, file))
+# average_mask, tracks_3D = fill_gaps(inst_mask, track_threshold=0.25)
+# imsave("/Users/esti/Downloads/prueba_tracks_{}.tif".format(file.split("Scene")[-1]), tracks_3D)
+# imsave("/Users/esti/Downloads/prueba_average_{}.tif".format(file.split("Scene")[-1]), average_mask)
+# imsave("/Users/esti/Downloads/prueba_raw_{}.tif".format(file.split("Scene")[-1]), inst_mask)
+# counts = count_tracked_divisions(tracks_3D, average_mask)
+# import matplotlib.pyplot as plt
+# plt.plot(counts[:, 0], counts[:, 1], '-')
+# plt.show()

@@ -67,6 +67,8 @@ The code provides an `environment.yaml` file with most of the dependencies neede
   ```
 - The current code uses `connected-components-3d `, which is not available for osx-arm64 (MacOS M1). 
   Thus, we need to install it manually in the environment that we have just created.
+- Place the terminal in the package folder of your environment (*e.g.*, `/Users/esti/mambaforge/envs/mitphoto/lib/python3.9/site-packages`) and run the following
+- 
   ```
   git clone https://github.com/seung-lab/connected-components-3d.git
   pip install -r requirements.txt
