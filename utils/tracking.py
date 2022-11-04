@@ -1,10 +1,19 @@
 import os
+import sys
+## Include the following lines to access the code in Python Console
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+sys.path.append(os.path.dirname(SCRIPT_DIR))
+SCRIPT_DIR = '/Users/esti/Documents/PROYECTOS/PHX/mitosis-mediated-phototoxic'
+sys.path.append(SCRIPT_DIR)
+
 import numpy as np
 import cc3d
 from numba import njit
 from scipy.ndimage import gaussian_filter
 import pandas as pd
 from tifffile import imread
+from utils.display import plot_smooth_curves
+
 
 @njit()
 def stack_pixelwise_average(A):
@@ -121,22 +130,30 @@ def fill_gaps(inst_mask, sigma=2, track_threshold=0.25):
     tracks_3D = cc3d.connected_components((average_mask2 > 0).astype(np.int32), connectivity=26)
     return average_mask, tracks_3D
 
-
+@njit()
 def count_tracked_divisions(tracks_3D, average_mask, frame_rate=4):
     # We use average_mask because it has some correction of false negatives
     length = tracks_3D.shape[0]
-    counts = np.zeros([length, 2])
+    counts = np.zeros((length, 2)) # for numpy: np.zeros([length, 2], dtype=np.float32)
     counts[:, 0] = frame_rate*np.arange(length)
-
+    tracks_3D_updated = np.copy(tracks_3D)
     for t in range(length):
-        tracks = np.unique(tracks_3D[t])
+        # Get the tracks present in t
+        tracks = np.unique(tracks_3D_updated[t])
         # tracks contains the value 0 and has all the values in inst_mask
         for cell in tracks:
             if cell > 0:
-                instances = np.multiply(average_mask[t], tracks_3D[t] == cell)
+                # Check if track belongs to one or two (mitosis) cells.
+                instances = np.multiply(average_mask[t], tracks_3D_updated[t] == cell)
                 if len(np.unique(instances)) > 2:
+                    # If track contains two cells, there's a mitosis, we count it and we do not need to count again in the future
                     counts[t, 1] += 1
-                    tracks_3D[tracks_3D == cell] = 0
+                    ## update tracks to be compatible with numba. Otherwise, do:
+                    # tracks_3D[tracks_3D == cell] = 0
+                    aux = np.copy(tracks_3D_updated.flatten())
+                    indexes = np.where((aux == cell))
+                    aux[indexes] = 0
+                    tracks_3D_updated = np.reshape(aux, tracks_3D_updated.shape)
     return counts
 
 def track_video(path, track_threshold=0.25, frame_rate=4):
@@ -159,13 +176,12 @@ def tracking_metrics(path, track_info=None, column_data=[], frame_rate=4, track_
             elif f.__contains__('.tif'):
                 print(f)
                 counts = track_video(os.path.join(path, f), track_threshold=track_threshold, frame_rate=frame_rate)
-                ### convert counts together with the column information into a dataframe. After updating the dataframe,
-                # update the general dataframe. We only need the info of the columns (each has a category) + the file name
-                t = counts[:, 0]
-                mitoses = counts[:, 1]
-                data = [[t, mitoses] + column_data]
-                columns = ["Subcategory-{:02d}".format(i) for i in range(len(column_data))]
-                aux = pd.DataFrame(data, columns=['frame', 'mitoses'] + columns)
+                # convert counts together with the column information into a dataframe.
+                aux = pd.DataFrame(counts, columns=['frame', 'mitoses'])
+
+                for i in range(len(column_data)):
+                    aux["Subcategory-{:02d}".format(i)] = column_data[i]
+
                 aux['video_name'] = f.split('.tif')[0]
                 # Concatenate pandas data frame to the previous one
                 if track_info is None:
@@ -188,12 +204,18 @@ def tracking_metrics(path, track_info=None, column_data=[], frame_rate=4, track_
     return track_info
 
 
+## This code will be move to the main scripts
 
 main_path = "/Users/esti/Documents/PROYECTOS/PHX/mitosis_mediated_data_itqb_3/masks/scaled_1.5709_results/stardist_prob03/"
-folder = "2022-09-07-day/WL 475 - high density/"
-path = os.path.join(main_path, folder)
-tracking_metrics(path, frame_rate=4, track_threshold=0.25)
-#
+output_path = "/Users/esti/Documents/PROYECTOS/PHX/mitosis_mediated_data_itqb_3/results/scaled_1.5709_results/stardist_prob03"
+folder = "tracking"
+if not os.path.exists(os.path.join(output_path, folder)):
+    os.mkdir(os.path.join(output_path, folder))
+track_info = tracking_metrics(main_path, frame_rate=4, track_threshold=0.25)
+track_info.to_csv(os.path.join(output_path, "data_tracking.csv"))
+plot_smooth_curves(track_info, "mitoses", "Distribution of mitoses", output_path, "Distribution of mitoses.png")
+
+## Use this code to check what are the trackings being recovered
 
 # file = "2022-09-07-day/WL 475 - high density/Synchro/CHO_day_475_live-01-Scene-74-P10-B01.tif"
 # inst_mask = imread(os.path.join(main_path, file))
