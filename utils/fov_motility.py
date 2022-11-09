@@ -61,13 +61,13 @@ def bleach_correction(im, sigma=60, keep_mean = False):
         light_artifact_correct = im.astype(np.float32) - light_artifact
     return light_artifact_correct
 
-def normalise_phc_timelapse(stack):
+def normalise_phc_timelapse(stack, pmin=0, pmax=100, sigma=60, keep_mean = False):
     stack = stack.astype(np.float32)
     T = stack.shape[0]
     new_im = []
     for t in range(T):
-        normalised_im = normalizePercentile(stack[t], pmin=0, pmax=100)
-        light_correct = bleach_correction(normalised_im, keep_mean=False)
+        normalised_im = normalizePercentile(stack[t], pmin=pmin, pmax=pmax)
+        light_correct = bleach_correction(normalised_im, sigma=sigma, keep_mean=keep_mean)
         new_im.append(light_correct)
     return np.array(new_im)
 
