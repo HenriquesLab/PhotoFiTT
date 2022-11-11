@@ -5,15 +5,18 @@ import sys
 ## Include the following lines to access the code in Python Console
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(os.path.dirname(SCRIPT_DIR))
-SCRIPT_DIR = '/Users/esti/Documents/PROYECTOS/PHX/mitosis-mediated-phototoxic'
+SCRIPT_DIR = '/mitosis-mediated-phototoxic'
 sys.path.append(SCRIPT_DIR)
 from utils.fov_motility import normalise_phc_timelapse, time_intensity_variability
 
 
+
+
+
 # Synchro
-im_control_path = "/Users/esti/Documents/PROYECTOS/PHX/mitosis_mediated_data_itqb_3/inputs/scaled_1.5709_results/2022-09-08-night/WL UV - high density/Synchro/CHO_live_UV_live-01-Scene-02-P3-A01.tif"
+im_control_path = "/mitosis_mediated_data_itqb_3/inputs/scaled_1.5709_results/2022-09-08-night/WL UV - high density/Synchro/CHO_live_UV_live-01-Scene-02-P3-A01.tif"
 # High UV radiation
-im_UV_path = "/Users/esti/Documents/PROYECTOS/PHX/mitosis_mediated_data_itqb_3/inputs/scaled_1.5709_results/2022-09-08-night/WL UV - high density/UV20sec/CHO_live_UV_live-01-Scene-58-P4-B03.tif"
+im_UV_path = "/mitosis_mediated_data_itqb_3/inputs/scaled_1.5709_results/2022-09-08-night/WL UV - high density/UV20sec/CHO_live_UV_live-01-Scene-58-P4-B03.tif"
 
 im_control = imread(im_control_path)
 new_im = normalise_phc_timelapse(im_control)
