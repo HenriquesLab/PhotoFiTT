@@ -180,17 +180,4 @@ def tracking_metrics(path, track_info=None, column_data=[], frame_rate=4, track_
                     track_info = aux
                 else:
                     track_info = pd.concat([track_info, aux]).reset_index(drop=True)
-                #     aux = None
-                #     for t in range(len(im)):
-                #         frame = im[t]
-                #         aux_t = extract_info(frame, t, frame_rate, min_roundness, column_data + [f.split('.tif')[0]])
-                #         if aux is None:
-                #             aux = aux_t
-                #         else:
-                #             aux = pd.concat([aux, aux_t]).reset_index(drop=True)
-                # # Concatenate pandas data frame to the previous one
-                # if pd_dataframe is None:
-                #     pd_dataframe = aux
-                # else:
-                #     pd_dataframe = pd.concat([pd_dataframe, aux]).reset_index(drop=True)
     return track_info

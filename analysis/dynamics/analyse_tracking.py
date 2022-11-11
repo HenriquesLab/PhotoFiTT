@@ -9,8 +9,6 @@ from utils.tracking import tracking_metrics
 from utils.display import plot_smooth_curves,  plot_conditions_with_aggregates
 import numpy as np
 
-## This code will be move to the main scripts
-
 main_path = "/mitosis_mediated_data_itqb_3/masks/scaled_1.5709_results/stardist_prob03/"
 output_path = "/mitosis_mediated_data_itqb_3/results/scaled_1.5709_results/stardist_prob03"
 folder = "tracking"
