@@ -27,15 +27,15 @@ def extract_dynamics_metrics(path, dynamics_info=None, column_data=[], frame_rat
                 print(f)
                 im = imread(os.path.join(path, f))
                 new_im = normalise_phc_timelapse(im)
-                im_control_val, diff = time_intensity_variability(new_im)
+                dynamics_val, diff = time_intensity_variability(new_im)
                 if save_steps:
                     os.makedirs(os.path.join(output_path, f), exist_ok=True)
                     imsave(os.path.join(output_path, "normalised_" + f), new_im)
                     imsave(os.path.join(output_path, "diff_" + f), diff)
 
-                data = np.zeros((len(diff), 2))
-                data[:, 0] = frame_rate * np.arange(len(diff))
-                data[:, 1] = diff
+                data = np.zeros((len(dynamics_val), 2))
+                data[:, 0] = frame_rate * np.arange(len(dynamics_val))
+                data[:, 1] = dynamics_val
                 # convert counts together with the column information into a dataframe.
                 aux = pd.DataFrame(data, columns=['frame', 'time_variance'])
 
