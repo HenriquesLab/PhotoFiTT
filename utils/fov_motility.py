@@ -19,7 +19,7 @@ def time_intensity_variability(im):
 
 def time_crosscorrelation_variability(im):
     xc = CrossCorrelationMap()
-    xc_time = [xc.calculate_ccm(im[i], im[i+1], normalize=True) for i in range(im.shape[0]-1)]
+    xc_time = [xc.calculate_ccm(im[i], im[i+1], normalize=False) for i in range(im.shape[0]-1)]
     xc_mean = [np.mean(x) for x in xc_time]
     xc_time = np.array(xc_time)
     return xc_mean, xc_time
