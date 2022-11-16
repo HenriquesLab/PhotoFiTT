@@ -1,6 +1,12 @@
+"""
+Created on 2022
+Henriques Lab
+
+This script is meant to run automatically. Results are stored as csv files with the corresponding conditions, dates and
+video names so all the results can be fully tracked.
+"""
+
 import os
-import sys
-import matplotlib.pyplot as plt
 from utils.mitosis_counting import count_mitosis_all, smooth
 from utils.display import plot_conditions, plot_one_condition, plot_distributions
 import numpy as np
@@ -23,7 +29,6 @@ max_frame_rate = 4 # The time gap we will use to compute all the metrics
 #--------------------------------------------------------------
 data = count_mitosis_all(main_path, stacks=True, min_roundness=r, t_win=t_win, frame_rate=4)
 data.to_csv(os.path.join(output_path, "data.csv"))
-
 # # Read the original data
 # data = pd.read_csv(os.path.join(output_path, "data.csv"))
 

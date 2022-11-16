@@ -1,3 +1,13 @@
+"""
+Created on 2022
+Henriques Lab
+
+This script is meant to run automatically. It computes the tracking of identified cell division events.
+It analyses full directories and stores the data with the corresponding conditions, dates and video names so all the
+results can be fully tracked.
+
+It stores a csv file in the chosen output directory.
+"""
 import os
 import sys
 ## Include the following lines to access the code in Python Console

@@ -1,3 +1,11 @@
+"""
+Created on 2021
+Henriques Lab
+
+This script is meant to run automatically.
+"""
+
+
 from utils.display import build_mosaics
 import os
 

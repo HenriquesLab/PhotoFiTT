@@ -1,9 +1,17 @@
+"""
+Created on 2022
+Henriques Lab
+
+The script is not meant to run automatically. It computes statistical analysis and tries to fit mathematical models to
+the temporal data.
+"""
+
 import os
 import sys
 
 # SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 # sys.path.append(os.path.dirname(SCRIPT_DIR))
-SCRIPT_DIR = '/Users/esti/Documents/PROYECTOS/PHX/mitosis-mediated-phototoxic'
+SCRIPT_DIR = '/mitosis-mediated-phototoxic'
 sys.path.append(SCRIPT_DIR)
 from utils.statistics import run_fitting, gaussian_function, data_statistics
 from utils.mitosis_counting import smooth
@@ -14,7 +22,7 @@ import numpy as np
 import seaborn as sns
 
 ## Main path to the data with all the mitotic counts
-main_path = "/Users/esti/Documents/PROYECTOS/PHX/mitosis_mediated_data_itqb_3/results/scaled_1.5709_results/stardist_prob03/"
+main_path = "/mitosis_mediated_data_itqb_3/results/scaled_1.5709_results/stardist_prob03/"
 data_path = os.path.join(main_path, "data.csv")
 # Read the original data
 data_raw = pd.read_csv(data_path)

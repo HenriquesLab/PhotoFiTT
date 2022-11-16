@@ -1,3 +1,11 @@
+"""
+Created on 2022
+Henriques Lab
+
+This script is meant to run automatically. However, it will not analyse full directories or take into account different
+conditions. This script is only meant for exploratory analysis.
+"""
+
 import os
 import sys
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))

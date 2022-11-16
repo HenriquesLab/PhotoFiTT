@@ -1,8 +1,11 @@
+"""
+Created on 2021
+Henriques Lab
+
+This script is meant to run automatically. Results are stored as csv files with the corresponding conditions, dates and
+video names so all the results can be fully tracked.
+"""
 import os
-import sys
-
-import matplotlib.pyplot as plt
-
 from utils.mitosis_counting import count_mitosis_all, smooth
 from utils.display import plot_conditions, plot_one_condition
 import numpy as np
