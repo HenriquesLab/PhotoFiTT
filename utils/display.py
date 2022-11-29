@@ -10,7 +10,7 @@ from utils.morphology import roundnessCalculator
 def plot_smooth_curves(data, y_var, title, output_path, name):
     fig = plt.figure(figsize=(7, 6))
     plt.subplot(2, 1, 1)
-    sns.lineplot(x="frame", y=y_var, hue='Subcategory-01', style='Subcategory-02', data=data, palette="tab10",
+    sns.lineplot(x="frame", y=y_var, hue='Subcategory-01', style='Subcategory-02', data=data, palette="tab20",
                  linewidth=1.5, alpha=0.5)
     #plt.legend([])
     # plt.ylabel(y_label)
@@ -19,7 +19,7 @@ def plot_smooth_curves(data, y_var, title, output_path, name):
 
     # Plot the results per category
     ax = plt.subplot(2, 1, 2)
-    sns.lineplot(x="frame", y=y_var, hue='Subcategory-00', style='Subcategory-02', data=data, palette="tab10",
+    sns.lineplot(x="frame", y=y_var, hue='Subcategory-00', style='Subcategory-02', data=data, palette="tab20",
                  linewidth=1.5, alpha=0.75)
     # plt.ylabel(y_label)
     plt.xlabel("Time (min)")
@@ -32,13 +32,13 @@ def plot_conditions_with_aggregates(data, y_var, title, output_path, name, hue="
     fig = plt.figure(figsize=(5, 10))
     plt.rcParams.update({'font.size': 8})
     plt.subplot(2, 1, 1)
-    sns.lineplot(x="frame", y=y_var, hue=hue, style=style, data=data, palette="tab10",
+    sns.lineplot(x="frame", y=y_var, hue=hue, style=style, data=data, palette="tab20",
                  linewidth=1.5, alpha=0.5)
     plt.title(title)
 
     # Plot the results per category
     ax = plt.subplot(2, 1, 2)
-    sns.lineplot(x="frame", y=y_var, style=style, data=data, palette="tab10",
+    sns.lineplot(x="frame", y=y_var, style=style, data=data, palette="tab20",
                  linewidth=1.5, alpha=0.75)
     plt.xlabel("Time (min)")
     ax.legend(bbox_to_anchor=(0.85, 0.5))
@@ -50,7 +50,7 @@ def plot_conditions_with_aggregates(data, y_var, title, output_path, name, hue="
 def plot_conditions(data, y_var, title, condition, output_path, name, style_condition="processing"):
     fig = plt.figure(figsize=(12, 8))
     # Plot the results per category
-    sns.lineplot(x="frame", y=y_var, hue=condition, style=style_condition, data=data, palette="tab10",
+    sns.lineplot(x="frame", y=y_var, hue=condition, style=style_condition, data=data, palette="tab20",
                  linewidth=1.5, alpha=0.75)
     # plt.ylabel(y_label)
     plt.xlabel("Time (min)")

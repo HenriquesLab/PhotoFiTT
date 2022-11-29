@@ -14,10 +14,13 @@ import seaborn as sns
 
 output_path = "/Users/esti/Documents/PROYECTOS/PHX/mitosis_mediated_data_itqb_3/results/scaled_1.5709_results/stardist_prob03"
 folder = "dynamics_clahe"
+condition = "UV"
+# dynamics_metrics = pd.read_csv(os.path.join(output_path, folder, "data_dynamics_intensity_{}.csv".format(condition)))
+dynamics_metrics = pd.read_csv(os.path.join(output_path, folder, "data_dynamics_intensity_{}_clean.csv".format(condition)))
+
 #
 # # EXAMPLE OF HOW TO CLEAN DATA
 # # ---------------------------------------
-# dynamics_metrics = pd.read_csv(os.path.join(output_path, folder, "data_dynamics_intensity_475.csv"))
 # print(len(dynamics_metrics))
 # dynamics_metrics_data = dynamics_metrics[dynamics_metrics['Subcategory-00']=="2022-09-07-night"]
 #
@@ -72,12 +75,60 @@ folder = "dynamics_clahe"
 # dynamics_metrics = dynamics_metrics.reset_index(drop=True)
 # print(len(dynamics_metrics))
 # dynamics_metrics.to_csv(os.path.join(output_path, folder, "data_dynamics_intensity_475_clean.csv"))
+#
 
 
-dynamics_metrics = dynamics_metrics.drop(index)
-dynamics_metrics = dynamics_metrics.reset_index(drop=True)
-print(len(dynamics_metrics))
-dynamics_metrics.to_csv(os.path.join(output_path, folder, "data_dynamics_intensity_475_clean.csv"))
+# dynamics_metrics_data = dynamics_metrics[dynamics_metrics['Subcategory-01']=='WL UV - high density']
+# dynamics_metrics_data = dynamics_metrics_data.reset_index(drop=True)
+# dynamics_metrics_data.to_csv(os.path.join(output_path, folder, "data_dynamics_intensity_{}.csv".format("UV")))
+#
+# dynamics_metrics_data = dynamics_metrics[dynamics_metrics["Subcategory-00"]=='2022-09-08-night']
+# dynamics_metrics_video = dynamics_metrics_data[dynamics_metrics_data['video_name']=="CHO_live_UV_live-01-Scene-52-P10-B03"]
+# index = dynamics_metrics_video.index.to_list()
+# dynamics_metrics = dynamics_metrics.drop(index)
+# dynamics_metrics.to_csv(os.path.join(output_path, folder, "data_dynamics_intensity_{}_clean.csv".format("UV")))
+#
+# dynamics_metrics_data = dynamics_metrics[dynamics_metrics["Subcategory-00"]=='2022-08-09']
+# dynamics_metrics_video = dynamics_metrics_data[dynamics_metrics_data['video_name']=="CHO_live-01-Scene-47-P8-B04"]
+# index = dynamics_metrics_video.index.to_list()
+# dynamics_metrics = dynamics_metrics.drop(index)
+# dynamics_metrics.to_csv(os.path.join(output_path, folder, "data_dynamics_intensity_{}_clean.csv".format("UV")))
+#
+# dynamics_metrics_data = dynamics_metrics[dynamics_metrics["Subcategory-00"]=='2022-09-08-night']
+# dynamics_metrics_video = dynamics_metrics_data[dynamics_metrics_data['video_name']=="CHO_live_UV_live-01-Scene-48-P10-B04"]
+# index = dynamics_metrics_video.index.to_list()
+# dynamics_metrics = dynamics_metrics.drop(index)
+# dynamics_metrics.to_csv(os.path.join(output_path, folder, "data_dynamics_intensity_{}_clean.csv".format("UV")))
+# dynamics_metrics_data = dynamics_metrics[dynamics_metrics["Subcategory-00"]=='2022-08-09']
+# dynamics_metrics_video = dynamics_metrics_data[dynamics_metrics_data['video_name']=="CHO_live-01-Scene-58-P9-B03"]
+# index = dynamics_metrics_video.index.to_list()
+# dynamics_metrics = dynamics_metrics.drop(index)
+# dynamics_metrics.to_csv(os.path.join(output_path, folder, "data_dynamics_intensity_{}_clean.csv".format("UV")))
+
+# dynamics_metrics_data = dynamics_metrics[dynamics_metrics["Subcategory-00"]=='2022-09-08-night']
+# dynamics_metrics_video = dynamics_metrics_data[dynamics_metrics_data['video_name']=="CHO_live_UV_live-01-Scene-50-P6-B04"]
+# index = dynamics_metrics_video.index.to_list()
+# dynamics_metrics = dynamics_metrics.drop(index)
+# dynamics_metrics.to_csv(os.path.join(output_path, folder, "data_dynamics_intensity_{}_clean.csv".format("UV")))
+
+# dynamics_metrics_data = dynamics_metrics[dynamics_metrics["Subcategory-00"]=='2022-09-08-night']
+# dynamics_metrics_video = dynamics_metrics_data[dynamics_metrics_data['video_name']=="CHO_live_UV_live-01-Scene-29-P3-A03"]
+# index = dynamics_metrics_video.index.to_list()
+# dynamics_metrics = dynamics_metrics.drop(index)
+# dynamics_metrics.to_csv(os.path.join(output_path, folder, "data_dynamics_intensity_{}_clean.csv".format("UV")))
+#
+# dynamics_metrics_data = dynamics_metrics[dynamics_metrics["Subcategory-00"]=='2022-08-09-night']
+# dynamics_metrics_video = dynamics_metrics_data[dynamics_metrics_data['video_name']=="CHO_live_night_-01-Scene-49-P1-B04"]
+# index = dynamics_metrics_video.index.to_list()
+# dynamics_metrics = dynamics_metrics.drop(index)
+# dynamics_metrics_video = dynamics_metrics_data[dynamics_metrics_data['video_name']=="CHO_live_night_-01-Scene-47-P10-B04"]
+# index = dynamics_metrics_video.index.to_list()
+# dynamics_metrics = dynamics_metrics.drop(index)
+# dynamics_metrics_video = dynamics_metrics_data[dynamics_metrics_data['video_name']=="CHO_live_night_-01-Scene-44-P5-B04"]
+# index = dynamics_metrics_video.index.to_list()
+# dynamics_metrics = dynamics_metrics.drop(index)
+#
+# dynamics_metrics.to_csv(os.path.join(output_path, folder, "data_dynamics_intensity_{}_clean.csv".format("UV")))
 
 aux = None
 for v in np.unique(dynamics_metrics["video_name"]):
@@ -108,6 +159,7 @@ for v in np.unique(dynamics_metrics["video_name"]):
         aux = pd.concat([aux,
                          pd.DataFrame(np.expand_dims(np.array(data), axis=0), columns=columns)]).reset_index(drop=True)
 aux = aux.astype({'ratio': 'float32', 'alpha': 'float32', 'beta': 'float32'})
+
 # plt.figure()
 # sns.set_theme(style="whitegrid")
 # # Draw a nested barplot by species and sex
@@ -123,55 +175,86 @@ aux = aux.astype({'ratio': 'float32', 'alpha': 'float32', 'beta': 'float32'})
 # plt.show()
 
 ### points
-plt.figure()
+plt.figure(figsize=(10,5))
+sns.set(font_scale=1)
 # conditions = ['Control-sync', 'Synchro', 'UV50ms', 'UV100ms', 'UV200ms', 'UV400ms', 'UV800ms', 'UV1000ms']
-conditions = ['Control-sync', 'Synchro', 'UV50ms', 'UV100ms', 'UV200ms', 'UV400ms', 'UV800ms', 'UV1000ms', 'UV01sec',
-                    'UV05sec', 'UV10sec', 'UV15sec', 'UV20sec', 'UV25ms', 'UV25sec']
-ax = sns.swarmplot(data=aux, x="Subcategory-02", y="ratio", hue="Subcategory-02", order=conditions, palette="dark")
-# plt.ylim([0,10])
+conditions = ['Control-sync', 'Synchro', 'UV25ms', 'UV50ms', 'UV100ms', 'UV200ms', 'UV400ms', 'UV800ms', 'UV01sec',
+                    'UV05sec', 'UV10sec', 'UV15sec', 'UV20sec', 'UV25sec']
+g = sns.swarmplot(data=aux, x="Subcategory-02", y="ratio", hue="Subcategory-02", order=conditions, palette="dark", legend=None)
+plt.ylim([0.1,50])
 plt.yscale("log")
+plt.tight_layout()
 plt.show()
 
 ### POINTS
 # conditions = ['Control-sync', 'Synchro', 'UV50ms', 'UV100ms', 'UV200ms', 'UV400ms', 'UV800ms', 'UV1000ms']
-conditions = ['Control-sync', 'Synchro', 'UV50ms', 'UV100ms', 'UV200ms', 'UV400ms', 'UV800ms', 'UV1000ms', 'UV01sec',
-                    'UV05sec', 'UV10sec', 'UV15sec', 'UV20sec', 'UV25ms', 'UV25sec']
-g = sns.catplot(data=aux, x="Subcategory-02", y="ratio", hue="Subcategory-00", order=conditions, height=5, aspect=2,)
-# g.set_axis_labels("", "Survival Rate")
-# g.set_xticklabels()
+conditions = ['Control-sync', 'Synchro', 'UV25ms', 'UV50ms', 'UV100ms', 'UV200ms', 'UV400ms', 'UV800ms', 'UV01sec',
+                    'UV05sec', 'UV10sec', 'UV15sec', 'UV20sec', 'UV25sec']
+sns.set(font_scale=0.9)
+g = sns.catplot(data=aux, x="Subcategory-02", y="alpha", hue="Subcategory-00", order=conditions, height=5, aspect=2)
+g.set_axis_labels("Exposure times", "Alpha")
 g.despine(left=True)
-# plt.ylim([0,10])
+plt.ylim([0.00001,0.1])
+plt.yscale("log")
+plt.show()
+
+### POINTS
+sns.set(font_scale=0.9)
+g = sns.catplot(data=aux, x="Subcategory-02", y="beta", hue="Subcategory-00", order=conditions, height=5, aspect=2)
+g.set_axis_labels("Exposure times", "Beta")
+g.despine(left=True)
+plt.ylim([0.00001,0.1])
+plt.yscale("log")
+plt.show()
+
+### POINTS
+sns.set(font_scale=0.9)
+g = sns.catplot(data=aux, x="Subcategory-02", y="ratio", hue="Subcategory-00", order=conditions, height=5, aspect=2)
+g.set_axis_labels("Exposure times", "Ratio = alpha / beta")
+g.despine(left=True)
+plt.ylim([0.1,50])
 plt.yscale("log")
 plt.show()
 
 ### BARS
 # conditions = ['Control-sync', 'Synchro', 'UV50ms', 'UV100ms', 'UV200ms', 'UV400ms', 'UV800ms', 'UV1000ms']
-conditions = ['Control-sync', 'Synchro', 'UV50ms', 'UV100ms', 'UV200ms', 'UV400ms', 'UV800ms', 'UV1000ms', 'UV01sec',
-                    'UV05sec', 'UV10sec', 'UV15sec', 'UV20sec', 'UV25ms', 'UV25sec']
+conditions = ['Control-sync', 'Synchro', 'UV25ms', 'UV50ms', 'UV100ms', 'UV200ms', 'UV400ms', 'UV800ms', 'UV1000ms', 'UV01sec',
+                    'UV05sec', 'UV10sec', 'UV15sec', 'UV20sec', 'UV25sec']
 g = sns.catplot(
     data=aux, x="Subcategory-02", y="ratio", hue="Subcategory-00", order=conditions,kind="bar",
-   height=5, aspect=2,
-)
-# g.set_axis_labels("", "Survival Rate")
+   height=4, aspect=3)
+g.set_axis_labels("", "Ratio = alpha / beta")
 # g.set_xticklabels()
 g.despine(left=True)
 # plt.ylim([0,10])
 plt.yscale("log")
+sns.set(font_scale=1)
 plt.show()
 
 ### BARS COLUMNS
 # conditions = ['Control-sync', 'Synchro', 'UV50ms', 'UV100ms', 'UV200ms', 'UV400ms', 'UV800ms', 'UV1000ms']
-conditions = ['Control-sync', 'Synchro', 'UV50ms', 'UV100ms', 'UV200ms', 'UV400ms', 'UV800ms', 'UV1000ms', 'UV01sec',
-                    'UV05sec', 'UV10sec', 'UV15sec', 'UV20sec', 'UV25ms', 'UV25sec']
+conditions = ['Control-sync', 'Synchro', 'UV25ms', 'UV50ms', 'UV100ms', 'UV200ms', 'UV400ms', 'UV800ms', 'UV1000ms', 'UV01sec',
+                    'UV05sec', 'UV10sec', 'UV15sec', 'UV20sec', 'UV25sec']
+sns.set(font_scale=0.8)
 g = sns.catplot(
     data=aux, x="Subcategory-02", y="ratio", col="Subcategory-00", order=conditions,
     kind="bar", height=5, aspect=2,
 )
-# g.set_axis_labels("", "Survival Rate")
+g.set_axis_labels("", "Ratio = alpha / beta")
 # g.set_xticklabels()
 g.despine(left=True)
 # plt.ylim([0,10])
 plt.yscale("log")
 plt.show()
 #
-
+#
+# # aux = aux[aux["Subcategory-00"]=='2022-08-09-night']
+# aux1 = dynamics_metrics_data[dynamics_metrics_data["Subcategory-02"]=='UV25sec']
+# plt.figure()
+# # ax = sns.swarmplot(data=aux1, x="Subcategory-02", y="ratio", hue="video_name", palette="dark")
+# ax = sns.lineplot(data=aux1, x="frame", y="time_variance", hue="video_name", palette="dark")
+# plt.yscale("log")
+# sns.set(font_scale=1)
+# # plt.ylim([0,10])
+# # plt.yscale("log")
+# plt.show()

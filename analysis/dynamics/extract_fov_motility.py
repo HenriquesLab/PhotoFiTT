@@ -36,7 +36,7 @@ dynamics_metrics = extract_dynamics_metrics(main_path, method=method, save_steps
 dynamics_metrics.to_csv(os.path.join(output_path, folder, "data_dynamics_{0}_{1}.csv".format(method, condition)))
 plot_conditions_with_aggregates(dynamics_metrics, "time_variance", "Dynamics_{0}_variance_{1}".format(method, condition),
                                 os.path.join(output_path, folder),
-                                "Dynamics_{0}_variance_2_{1}.png".format(method, condition), hue="Subcategory-02",
+                                "Dynamics_{0}_variance_0_{1}.png".format(method, condition), hue="Subcategory-02",
                                 style="Subcategory-01")
 #
 # for c in np.unique(dynamics_metrics["Subcategory-01"]):

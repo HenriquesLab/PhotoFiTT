@@ -3,8 +3,9 @@ dask
 nd2
 tifffile
 pandas
-seaborn
+seaborn==0.12.1
 scikit-image
 opencv
 czifile
 slideio
+numba
