@@ -20,5 +20,7 @@ dependencies:
   - pillow==8.4.0
   - pip:
     - opencv-python==4.5.3.56
+    - opencv
     - nd2==0.1.6
     - slideio
+    - nd2==0.1.6

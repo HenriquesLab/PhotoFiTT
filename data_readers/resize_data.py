@@ -10,8 +10,8 @@ from utils.data import videos2frames
 # scaling factor
 # s = 1
 size = 763 # s =
-path = "/Users/esti/Documents/PROYECTOS/PHX/ground_truth_to_correct/Brightfield/HeLa data/input"
-folder = "input"
+path = "/Users/esti/Documents/PROYECTOS/PHX/ground_truth_to_correct/Brightfield/HeLa data/"
+folder = "mask"
 videos2frames(path, folder, size=size)
 #
 # path = "/content/gdrive/MyDrive/Projectos/DEEP-IMAGEJ/examples_of_models/ZeroCostDL4Mic/PHTX/nuclei_detection/test"
