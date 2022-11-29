@@ -16,7 +16,8 @@ output_path = "/Users/esti/Documents/PROYECTOS/PHX/mitosis_mediated_data_itqb_3/
 folder = "dynamics_clahe"
 condition = "UV"
 # dynamics_metrics = pd.read_csv(os.path.join(output_path, folder, "data_dynamics_intensity_{}.csv".format(condition)))
-dynamics_metrics = pd.read_csv(os.path.join(output_path, folder, "data_dynamics_intensity_{}_clean.csv".format(condition)))
+dynamics_metrics = pd.read_csv(
+    os.path.join(output_path, folder, "data_dynamics_intensity_{}_clean.csv".format(condition)))
 
 #
 # # EXAMPLE OF HOW TO CLEAN DATA
@@ -130,13 +131,28 @@ dynamics_metrics = pd.read_csv(os.path.join(output_path, folder, "data_dynamics_
 #
 # dynamics_metrics.to_csv(os.path.join(output_path, folder, "data_dynamics_intensity_{}_clean.csv".format("UV")))
 
+conditions = ['Control-sync', 'Synchro', 'UV25ms', 'UV50ms', 'UV100ms', 'UV200ms', 'UV400ms', 'UV800ms', 'UV01sec',
+              'UV05sec', 'UV10sec', 'UV15sec', 'UV20sec', 'UV25sec']
+
+fig = plt.figure(figsize=(10, 8))
+plt.rcParams.update({'font.size': 12})
+sns.lineplot(x="frame", y="time_variance", hue="Subcategory-02", data=dynamics_metrics,
+             palette=sns.color_palette("husl", 14),
+             hue_order=conditions, linewidth=1.5, alpha=1)
+plt.tight_layout()
+plt.title("Dynamics_{0}_variance_{1}".format("intensity", condition))
+fig.savefig(os.path.join(output_path, folder, "data_dynamics_intensity_{}_clean.png".format(condition)), format='png',
+            transparent=True)
+plt.show()
+
 aux = None
 for v in np.unique(dynamics_metrics["video_name"]):
-    video_data = dynamics_metrics[dynamics_metrics["video_name"]==v]
+    video_data = dynamics_metrics[dynamics_metrics["video_name"] == v].reset_index(drop=True)
     frame_rate = 4
-    init_mit = int(30/frame_rate)
-    final_mit = int(80/frame_rate)
+    init_mit = int(25 / frame_rate) #30
+    final_mit = int(180 / frame_rate) #80
     alpha = np.max(video_data.iloc[init_mit:final_mit]["time_variance"])
+    peak_time = video_data.loc[video_data.iloc[init_mit:final_mit]["time_variance"].idxmax(skipna=True), "frame"]
     init_mit = int(250 / frame_rate)
     final_mit = int(300 / frame_rate)
     beta = np.mean(video_data.iloc[init_mit:]["time_variance"])
@@ -148,10 +164,10 @@ for v in np.unique(dynamics_metrics["video_name"]):
         print(v)
         ratio = np.infty
     else:
-        ratio = alpha/beta
-    #ratio = (alpha - beta) / (alpha + beta)
-    data += [v, alpha, beta, ratio]
-    columns += ["video_name", "alpha", "beta", "ratio"]
+        ratio = alpha / beta
+    # ratio = (alpha - beta) / (alpha + beta)
+    data += [v, alpha, beta, ratio, peak_time]
+    columns += ["video_name", "alpha", "beta", "ratio", "peak_time"]
 
     if aux is None:
         aux = pd.DataFrame(np.expand_dims(np.array(data), axis=0), columns=columns)
@@ -175,13 +191,14 @@ aux = aux.astype({'ratio': 'float32', 'alpha': 'float32', 'beta': 'float32'})
 # plt.show()
 
 ### points
-plt.figure(figsize=(10,5))
+plt.figure(figsize=(10, 5))
 sns.set(font_scale=1)
 # conditions = ['Control-sync', 'Synchro', 'UV50ms', 'UV100ms', 'UV200ms', 'UV400ms', 'UV800ms', 'UV1000ms']
 conditions = ['Control-sync', 'Synchro', 'UV25ms', 'UV50ms', 'UV100ms', 'UV200ms', 'UV400ms', 'UV800ms', 'UV01sec',
-                    'UV05sec', 'UV10sec', 'UV15sec', 'UV20sec', 'UV25sec']
-g = sns.swarmplot(data=aux, x="Subcategory-02", y="ratio", hue="Subcategory-02", order=conditions, palette="dark", legend=None)
-plt.ylim([0.1,50])
+              'UV05sec', 'UV10sec', 'UV15sec', 'UV20sec', 'UV25sec']
+g = sns.swarmplot(data=aux, x="Subcategory-02", y="ratio", hue="Subcategory-02", order=conditions, palette="dark",
+                  legend=None)
+plt.ylim([0.1, 50])
 plt.yscale("log")
 plt.tight_layout()
 plt.show()
@@ -189,12 +206,12 @@ plt.show()
 ### POINTS
 # conditions = ['Control-sync', 'Synchro', 'UV50ms', 'UV100ms', 'UV200ms', 'UV400ms', 'UV800ms', 'UV1000ms']
 conditions = ['Control-sync', 'Synchro', 'UV25ms', 'UV50ms', 'UV100ms', 'UV200ms', 'UV400ms', 'UV800ms', 'UV01sec',
-                    'UV05sec', 'UV10sec', 'UV15sec', 'UV20sec', 'UV25sec']
+              'UV05sec', 'UV10sec', 'UV15sec', 'UV20sec', 'UV25sec']
 sns.set(font_scale=0.9)
 g = sns.catplot(data=aux, x="Subcategory-02", y="alpha", hue="Subcategory-00", order=conditions, height=5, aspect=2)
 g.set_axis_labels("Exposure times", "Alpha")
 g.despine(left=True)
-plt.ylim([0.00001,0.1])
+plt.ylim([0.00001, 0.1])
 plt.yscale("log")
 plt.show()
 
@@ -203,7 +220,7 @@ sns.set(font_scale=0.9)
 g = sns.catplot(data=aux, x="Subcategory-02", y="beta", hue="Subcategory-00", order=conditions, height=5, aspect=2)
 g.set_axis_labels("Exposure times", "Beta")
 g.despine(left=True)
-plt.ylim([0.00001,0.1])
+plt.ylim([0.00001, 0.1])
 plt.yscale("log")
 plt.show()
 
@@ -212,17 +229,18 @@ sns.set(font_scale=0.9)
 g = sns.catplot(data=aux, x="Subcategory-02", y="ratio", hue="Subcategory-00", order=conditions, height=5, aspect=2)
 g.set_axis_labels("Exposure times", "Ratio = alpha / beta")
 g.despine(left=True)
-plt.ylim([0.1,50])
+plt.ylim([0.1, 50])
 plt.yscale("log")
 plt.show()
 
 ### BARS
 # conditions = ['Control-sync', 'Synchro', 'UV50ms', 'UV100ms', 'UV200ms', 'UV400ms', 'UV800ms', 'UV1000ms']
-conditions = ['Control-sync', 'Synchro', 'UV25ms', 'UV50ms', 'UV100ms', 'UV200ms', 'UV400ms', 'UV800ms', 'UV1000ms', 'UV01sec',
-                    'UV05sec', 'UV10sec', 'UV15sec', 'UV20sec', 'UV25sec']
+conditions = ['Control-sync', 'Synchro', 'UV25ms', 'UV50ms', 'UV100ms', 'UV200ms', 'UV400ms', 'UV800ms', 'UV1000ms',
+              'UV01sec',
+              'UV05sec', 'UV10sec', 'UV15sec', 'UV20sec', 'UV25sec']
 g = sns.catplot(
-    data=aux, x="Subcategory-02", y="ratio", hue="Subcategory-00", order=conditions,kind="bar",
-   height=4, aspect=3)
+    data=aux, x="Subcategory-02", y="ratio", hue="Subcategory-00", order=conditions, kind="bar",
+    height=4, aspect=3)
 g.set_axis_labels("", "Ratio = alpha / beta")
 # g.set_xticklabels()
 g.despine(left=True)
@@ -233,8 +251,9 @@ plt.show()
 
 ### BARS COLUMNS
 # conditions = ['Control-sync', 'Synchro', 'UV50ms', 'UV100ms', 'UV200ms', 'UV400ms', 'UV800ms', 'UV1000ms']
-conditions = ['Control-sync', 'Synchro', 'UV25ms', 'UV50ms', 'UV100ms', 'UV200ms', 'UV400ms', 'UV800ms', 'UV1000ms', 'UV01sec',
-                    'UV05sec', 'UV10sec', 'UV15sec', 'UV20sec', 'UV25sec']
+conditions = ['Control-sync', 'Synchro', 'UV25ms', 'UV50ms', 'UV100ms', 'UV200ms', 'UV400ms', 'UV800ms', 'UV1000ms',
+              'UV01sec',
+              'UV05sec', 'UV10sec', 'UV15sec', 'UV20sec', 'UV25sec']
 sns.set(font_scale=0.8)
 g = sns.catplot(
     data=aux, x="Subcategory-02", y="ratio", col="Subcategory-00", order=conditions,
