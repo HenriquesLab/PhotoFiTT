@@ -30,7 +30,7 @@ def videos2frames(path, folder, s=1, size=None):
                         new_size = (size, size)
                     else:
                         new_size = (im.shape[0] // s, im.shape[1] // s)
-                    if folder == "target":
+                    if folder.__contains__("target") or folder.__contains__("mask"):
                         image_resized = cv2.resize(im, dsize=new_size,
                                                    interpolation=cv2.INTER_NEAREST)
                     else:

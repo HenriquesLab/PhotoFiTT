@@ -5,6 +5,6 @@ tifffile
 pandas
 seaborn
 scikit-image
-cv2
+opencv
 czifile
 slideio

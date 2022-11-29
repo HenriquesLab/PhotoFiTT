@@ -10,7 +10,7 @@ from utils.data import videos2frames
 # scaling factor
 # s = 1
 size = 763 # s =
-path = "/Users/esti/Documents/PROYECTOS/PHX/ground_truth_to_correct/Brightfield/final-annotations"
+path = "/Users/esti/Documents/PROYECTOS/PHX/ground_truth_to_correct/Brightfield/HeLa data/input"
 folder = "input"
 videos2frames(path, folder, size=size)
 #
