@@ -18,21 +18,23 @@ SCRIPT_DIR = '/Users/esti/Documents/PROYECTOS/PHX/mitosis-mediated-phototoxic'
 sys.path.append(SCRIPT_DIR)
 from utils.fov_motility import extract_dynamics_metrics
 from utils.display import plot_smooth_curves, plot_conditions_with_aggregates
-
-main_path = "/Users/esti/Documents/PROYECTOS/PHX/mitosis_mediated_data_itqb_3/masks/scaled_1.5709_results/stardist_prob03/"
+main_path = sys.argv[1]
+output_path = sys.argv[2]
+condition = sys.argv[3] # "630"
+# main_path = "/Users/esti/Documents/PROYECTOS/PHX/mitosis_mediated_data_itqb_3/masks/scaled_1.5709_results/stardist_prob03/"
 # main_path = "/Users/esti/Documents/PROYECTOS/PHX/mitosis_mediated_data_itqb_3/inputs/scaled_1.5709_results/2022-08-10/"
 # main_path = "/Users/esti/Documents/PROYECTOS/PHX/mitosis_mediated_data_itqb_3/inputs/scaled_1.5709_results/2022-08-10/WL UV - high density/Synchro"
 
-output_path = "/Users/esti/Documents/PROYECTOS/PHX/mitosis_mediated_data_itqb_3/results/scaled_1.5709_results/stardist_prob03"
+# output_path = "/Users/esti/Documents/PROYECTOS/PHX/mitosis_mediated_data_itqb_3/results/scaled_1.5709_results/stardist_prob03"
 folder = "dynamics_clahe"
 if not os.path.exists(os.path.join(output_path, folder)):
     os.mkdir(os.path.join(output_path, folder))
 
 method = "intensity"
-condition = sys.argv[1] # "630"
+
 dynamics_metrics = extract_dynamics_metrics(main_path, method=method, save_steps=False, enhance_contrast=True,
                                             output_path=os.path.join(output_path, folder), condition=condition)
-
+print(dynamics_metrics)
 dynamics_metrics.to_csv(os.path.join(output_path, folder, "data_dynamics_{0}_{1}.csv".format(method, condition)))
 plot_conditions_with_aggregates(dynamics_metrics, "time_variance", "Dynamics_{0}_variance_{1}".format(method, condition),
                                 os.path.join(output_path, folder),

@@ -6,7 +6,7 @@ import os
 import sys
 SCRIPT_DIR = "/Users/esti/Documents/PROYECTOS/PHX/NanoPyx/src"
 sys.path.append(SCRIPT_DIR)
-from enanoscopy.methods.image.transform.cross_correlation_map import CrossCorrelationMap
+
 from skimage.exposure import equalize_adapthist
 from scipy.ndimage import gaussian_filter
 from numba import njit
@@ -19,6 +19,7 @@ def time_intensity_variability(im):
     return mean_variability, diff
 
 def time_crosscorrelation_variability(im):
+    from enanoscopy.methods.image.transform.cross_correlation_map import CrossCorrelationMap
     xc = CrossCorrelationMap()
     xc_time = [np.squeeze(xc.calculate_ccm(im[i], im[i+1], normalize=True)) for i in range(im.shape[0]-1)]
     # xcorr is in the Fourier Space.

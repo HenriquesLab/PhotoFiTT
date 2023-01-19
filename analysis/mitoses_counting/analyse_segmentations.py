@@ -8,8 +8,6 @@ conditions. This script is only meant for exploratory analysis.
 
 import os
 import sys
-SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-sys.path.append(os.path.dirname(SCRIPT_DIR))
 SCRIPT_DIR = '/Users/esti/Documents/PROYECTOS/PHX/mitosis-mediated-phototoxic'
 sys.path.append(SCRIPT_DIR)
 from utils.display import plot_smooth_curves
@@ -19,7 +17,6 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np
 
-import sys
 main_path = sys.argv[1]
 output_path = sys.argv[2]
 frame_rate = int(sys.argv[3]) # In minutes or "unknown" if unknown and will be taken from the folder name

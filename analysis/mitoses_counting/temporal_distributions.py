@@ -5,6 +5,10 @@ Henriques Lab
 This script is meant to run automatically. Results are stored as png and svg figures. It will calculate the
 morphological measures of the segmented cells and display their distribution in time.
 """
+import sys
+import os
+## Include the following lines to access the code in Python Console
+sys.path.append("/Users/esti/Documents/PROYECTOS/PHX/mitosis-mediated-phototoxic")
 from utils.display import plot_distributions, plot_smooth_curves
 from utils.mitosis_counting import count_mitosis
 import pandas as pd

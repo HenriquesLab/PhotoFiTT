@@ -13,14 +13,15 @@ import sys
 ## Include the following lines to access the code in Python Console
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(os.path.dirname(SCRIPT_DIR))
-SCRIPT_DIR = '/mitosis-mediated-phototoxic'
+SCRIPT_DIR = '/Users/esti/Documents/PROYECTOS/PHX/mitosis-mediated-phototoxic'
 sys.path.append(SCRIPT_DIR)
 from utils.tracking import tracking_metrics
 from utils.display import plot_smooth_curves,  plot_conditions_with_aggregates
 import numpy as np
-
-main_path = "/mitosis_mediated_data_itqb_3/masks/scaled_1.5709_results/stardist_prob03/"
-output_path = "/mitosis_mediated_data_itqb_3/results/scaled_1.5709_results/stardist_prob03"
+main_path = sys.argv[1]
+output_path = sys.argv[2]
+# main_path = "/mitosis_mediated_data_itqb_3/masks/scaled_1.5709_results/stardist_prob03/"
+# output_path = "/mitosis_mediated_data_itqb_3/results/scaled_1.5709_results/stardist_prob03"
 folder = "tracking"
 if not os.path.exists(os.path.join(output_path, folder)):
     os.mkdir(os.path.join(output_path, folder))

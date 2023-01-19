@@ -137,31 +137,31 @@ dynamics_metrics = pd.read_csv(
 
 # dynamics_metrics.to_csv(os.path.join(output_path, folder, "data_dynamics_intensity_{}_clean.csv".format("UV")))
 
-conditions = ['Control-sync', 'Synchro', 'UV25ms', 'UV50ms', 'UV100ms', 'UV200ms', 'UV400ms', 'UV800ms', 'UV01sec',
-              'UV05sec', 'UV10sec', 'UV15sec', 'UV20sec', 'UV25sec']
-
-fig = plt.figure(figsize=(10, 8))
-plt.rcParams.update({'font.size': 12})
-sns.lineplot(x="frame", y="time_variance", hue="Subcategory-02", data=dynamics_metrics,
-             palette=sns.color_palette("husl", 14),
-             hue_order=conditions, linewidth=1.5, alpha=1)
-plt.tight_layout()
-plt.title("Dynamics_{0}_variance_{1}".format("intensity", condition))
-fig.savefig(os.path.join(output_path, folder, "data_dynamics_intensity_{}_clean.png".format(condition)), format='png',
-            transparent=True)
-plt.show()
-for date in np.unique(dynamics_metrics["Subcategory-00"]):
-    date_dynamics = dynamics_metrics[dynamics_metrics["Subcategory-00"]==date].reset_index(drop=True)
-    fig = plt.figure(figsize=(10, 8))
-    plt.rcParams.update({'font.size': 12})
-    sns.lineplot(x="frame", y="time_variance", hue="Subcategory-02", data=date_dynamics,
-                 palette=sns.color_palette("husl", 14),
-                 hue_order=conditions, linewidth=1.5, alpha=1)
-    plt.tight_layout()
-    plt.title("Dynamics_variance_{0}_{1}".format(condition, date))
-    fig.savefig(os.path.join(output_path, folder, "data_dynamics_intensity_{0}_clean_{1}.png".format(condition, date)), format='png',
-                transparent=False)
-    plt.show()
+# conditions = ['Control-sync', 'Synchro', 'UV25ms', 'UV50ms', 'UV100ms', 'UV200ms', 'UV400ms', 'UV800ms', 'UV01sec',
+#               'UV05sec', 'UV10sec', 'UV15sec', 'UV20sec', 'UV25sec']
+#
+# fig = plt.figure(figsize=(10, 8))
+# plt.rcParams.update({'font.size': 12})
+# sns.lineplot(x="frame", y="time_variance", hue="Subcategory-02", data=dynamics_metrics,
+#              palette=sns.color_palette("husl", 14),
+#              hue_order=conditions, linewidth=1.5, alpha=1)
+# plt.tight_layout()
+# plt.title("Dynamics_{0}_variance_{1}".format("intensity", condition))
+# fig.savefig(os.path.join(output_path, folder, "data_dynamics_intensity_{}_clean.png".format(condition)), format='png',
+#             transparent=True)
+# plt.show()
+# for date in np.unique(dynamics_metrics["Subcategory-00"]):
+#     date_dynamics = dynamics_metrics[dynamics_metrics["Subcategory-00"]==date].reset_index(drop=True)
+#     fig = plt.figure(figsize=(10, 8))
+#     plt.rcParams.update({'font.size': 12})
+#     sns.lineplot(x="frame", y="time_variance", hue="Subcategory-02", data=date_dynamics,
+#                  palette=sns.color_palette("husl", 14),
+#                  hue_order=conditions, linewidth=1.5, alpha=1)
+#     plt.tight_layout()
+#     plt.title("Dynamics_variance_{0}_{1}".format(condition, date))
+#     fig.savefig(os.path.join(output_path, folder, "data_dynamics_intensity_{0}_clean_{1}.png".format(condition, date)), format='png',
+#                 transparent=False)
+#     plt.show()
 
 
 aux = None
@@ -199,7 +199,8 @@ aux_1 = None
 for f in np.unique(aux["Subcategory-00"]):
     folder_wise = aux[aux["Subcategory-00"]==f].reset_index(drop=True)
     s_mean = np.mean(folder_wise[folder_wise["Subcategory-02"] == "Synchro"]["peak_time"])
-    folder_wise["difference_synchro"] = (folder_wise["peak_time"] - s_mean)#*(1/s_mean)
+    folder_wise["delay_synchro"] = (folder_wise["peak_time"] - s_mean)
+    folder_wise["proportional_delay_synchro"] = (folder_wise["peak_time"] - s_mean)*(100/s_mean)
     if aux_1 is None:
         aux_1 = folder_wise
     else:
@@ -223,6 +224,7 @@ g = sns.catplot(data=aux, x="Subcategory-02", y="peak_time", hue="Subcategory-00
                 )
 g.set_axis_labels("Exposure times", "Time point of maximum peak")
 g.despine(left=True)
+plt.ylim([-50, 190])
 # plt.yscale("log")
 plt.show()
 
@@ -233,25 +235,48 @@ g = sns.catplot(data=aux, x="Subcategory-02", y="peak_time",
                 )
 g.set_axis_labels("Exposure times", "Time point of maximum peak (minutes)")
 g.despine(left=True)
+plt.ylim([-50, 190])
 # plt.yscale("log")
 plt.show()
 
 # BOXPLOTS TIME POINTS
 sns.set(font_scale=0.9)
-g = sns.catplot(data=aux_1, x="Subcategory-02", y="difference_synchro", hue="Subcategory-00",
+g = sns.catplot(data=aux_1, x="Subcategory-02", y="delay_synchro", hue="Subcategory-00",
                 order=conditions, hue_order=conditions_folders,  kind="box", height=5, aspect=2, palette="rainbow"
                 )
 g.set_axis_labels("Exposure times", "Delay for the maximum peak (minutes)")
+g.despine(left=True)
+plt.ylim([-50, 190])
+# plt.yscale("log")
+plt.show()
+
+# BOXPLOTS TIME POINTS
+sns.set(font_scale=0.9)
+g = sns.catplot(data=aux_1, x="Subcategory-02", y="delay_synchro",
+                order=conditions, kind="box", height=5, aspect=2, palette="rainbow_r"
+                )
+g.set_axis_labels("Exposure times", "Delay for the maximum peak (minutes)")
+g.despine(left=True)
+plt.ylim([-50, 190])
+# plt.yscale("log")
+plt.show()
+
+# BOXPLOTS TIME POINTS
+sns.set(font_scale=0.9)
+g = sns.catplot(data=aux_1, x="Subcategory-02", y="proportional_delay_synchro", hue="Subcategory-00",
+                order=conditions, hue_order=conditions_folders,  kind="box", height=5, aspect=2, palette="rainbow"
+                )
+g.set_axis_labels("Exposure times", "Delay proportion for the maximum peak (minutes)")
 g.despine(left=True)
 # plt.yscale("log")
 plt.show()
 
 # BOXPLOTS TIME POINTS
 sns.set(font_scale=0.9)
-g = sns.catplot(data=aux_1, x="Subcategory-02", y="difference_synchro",
+g = sns.catplot(data=aux_1, x="Subcategory-02", y="proportional_delay_synchro",
                 order=conditions, kind="box", height=5, aspect=2, palette="rainbow_r"
                 )
-g.set_axis_labels("Exposure times", "Delay for the maximum peak (minutes)")
+g.set_axis_labels("Exposure times", "Delay proportion for the maximum peak (minutes)")
 g.despine(left=True)
 # plt.yscale("log")
 plt.show()

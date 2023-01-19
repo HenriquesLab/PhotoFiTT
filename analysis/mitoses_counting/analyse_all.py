@@ -5,8 +5,10 @@ Henriques Lab
 This script is meant to run automatically. Results are stored as csv files with the corresponding conditions, dates and
 video names so all the results can be fully tracked.
 """
-
+import sys
 import os
+## Include the following lines to access the code in Python Console
+sys.path.append("/Users/esti/Documents/PROYECTOS/PHX/mitosis-mediated-phototoxic")
 from utils.mitosis_counting import count_mitosis_all, smooth
 from utils.display import plot_conditions, plot_one_condition, plot_distributions
 import numpy as np
@@ -14,8 +16,8 @@ import pandas as pd
 
 # main_path = sys.argv[1]
 # output_path = sys.argv[2]
-main_path = "/Users/esti/Documents/PROYECTOS/PHX/mitosis_mediated_data_itqb_3/masks/scaled_1.5709_results/stardist_prob03"
-output_path = "/Users/esti/Documents/PROYECTOS/PHX/mitosis_mediated_data_itqb_3/results/scaled_1.5709_results/stardist_prob03/"
+main_path = "/Users/esti/Documents/PROYECTOS/PHX/mitosis_mediated_data_itqb_3/HELA/masks/scaled_1.5709_results/stardist_prob03"
+output_path = "/Users/esti/Documents/PROYECTOS/PHX/mitosis_mediated_data_itqb_3/HELA/results/scaled_1.5709_results/stardist_prob03/"
 
 
 ## PARAMETERS USED TO COMPUTE PLOTS

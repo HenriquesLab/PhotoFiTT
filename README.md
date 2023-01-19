@@ -35,7 +35,7 @@ Python scripts to detect cell mitosis, measure cell arrestment and assess the te
       ```
        python3 create_mosaics.py ../mitosis_mediated_data/masks/scaled_x8/stardist_prob03/2022-01-28 ../mitosis_mediated_data/input_data/2022-01-28/scaled_8 ../mitosis_mediated_data/results/scaled_x8/stardist_prob03/2022-01-28
       ```
-   3. Example for `temporal_distributions.py`. :
+   3. Example for `analyse_all.py`. :
       ```
       python3 temporal_distributions.py ../mitosis_mediated_data/masks/scaled_x8/stardist_prob03/2022-01-26 ../mitosis_mediated_data/results/scaled_x8/stardist_prob03
       ```
@@ -43,7 +43,7 @@ Python scripts to detect cell mitosis, measure cell arrestment and assess the te
 
 - `analyse_segmentations.py`: Scripts to extract different curves with information about the number of mitosis. It will contain the main code of the analysis. 
 - `create_mosaics.py`: Code to generate mosaics with detected rounded cells (*i.e.,* mitoses).
-- `temporal_distributions.py`: Displays the distribution of a specific measure (cell size) at each time point. It also plots the average values as a time-dependent function. 
+- `analyse_all.py`: Displays the distribution of a specific measure (cell size) at each time point. It also plots the average values as a time-dependent function. 
 
 ### Folder structure
 - `utils`: folder with all the functions.

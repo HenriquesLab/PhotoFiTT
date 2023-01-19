@@ -1,4 +1,4 @@
-import slideio
+#import slideio
 import tifffile
 import os
 import numpy as np
@@ -47,41 +47,83 @@ import czifile as zis
 
 
 
-### THIS FILE WILL CONVERT EACH CZI FILE INTO A DOWN/UP-SAMPLED TIFF FILE
+# ### THIS FILE WILL CONVERT EACH CZI FILE INTO A DOWN/UP-SAMPLED TIFF FILE
+# #----------------------------------------------------------------------
+#
+# # Information about the directory and the pixel_size (height)
+# MAIN = "/Users/esti/Documents/PROYECTOS/PHX/mitosis_mediated_data_itqb_3/inputs/scaled_1.5709_results/2022-09-09/Individual"
+# exp = [ "missing"]#,"Individual"]
+# OUT = '/Users/esti/Documents/PROYECTOS/PHX/mitosis_mediated_data_itqb_3/inputs/scaled_1.5709_results/2022-09-09'
+# if not os.path.exists(OUT):
+#     os.mkdir(OUT)
+# pixel_size = 0.5500 # x20 objective
+# time_interval = 240 # seconds (4 mins)
+# scale = 1.5709
+#
+# for e in exp:
+#     main_path = os.path.join(MAIN, e)
+#     output_path = os.path.join(OUT, e)
+#     if not os.path.exists(output_path):
+#         os.mkdir(output_path)
+#     files = os.listdir(main_path)
+#     # Get CZI object to recover the number of scenes of this file
+#     for file_name in files:
+#         if file_name.__contains__(".czi"):
+#             f = zis.CziFile(os.path.join(main_path, file_name))
+#             video = f.asarray()
+#             video = video.squeeze()
+#             print("{} file loaded in python".format(file_name))
+#             resized_video = []
+#             for t in range(len(video)):
+#                 frame = video[t]
+#                 frame = cv2.resize(frame, dsize=(int(frame.shape[0] // scale), int(frame.shape[1] // scale)),
+#                                    interpolation=cv2.INTER_CUBIC)
+#                 resized_video.append(frame)
+#             tifffile.imsave(os.path.join(output_path, '{}.tif'.format(file_name.split(".czi")[0])),
+#                             np.expand_dims(resized_video, axis=[1, 2, -1]), # addapt the dimensions to tifffile ordering TZCYXS
+#                             resolution=(1 / (pixel_size*scale), 1 / (pixel_size*scale)),
+#                             imagej=True,
+#                             metadata={'spacing': 1, 'unit': 'um'})
+#             del video
+
+### GO THROUGH ALL THE FOLDERS AND DOWNSAMPLE THE DATA
 #----------------------------------------------------------------------
 
 # Information about the directory and the pixel_size (height)
-MAIN = "/Users/esti/Documents/PROYECTOS/PHX/mitosis_mediated_data_itqb_3/inputs/scaled_1.5709_results/2022-09-09/Individual"
-exp = [ "missing"]#,"Individual"]
-OUT = '/Users/esti/Documents/PROYECTOS/PHX/mitosis_mediated_data_itqb_3/inputs/scaled_1.5709_results/2022-09-09'
-if not os.path.exists(OUT):
-    os.mkdir(OUT)
+MAIN = "/Volumes/TOSHIBA EXT/HENRIQUES-LAB/PROJECTS/PHOTOTOXICITY/DATA/HeLa/NEW"
+OUT = "/Volumes/TOSHIBA EXT/HENRIQUES-LAB/PROJECTS/PHOTOTOXICITY/DATA/HeLa/NEW"
+exp = [i for i in os.listdir(MAIN) if i.__contains__("2022") and i[0]!='.']
+folder_name = "Individual"
 pixel_size = 0.5500 # x20 objective
 time_interval = 240 # seconds (4 mins)
 scale = 1.5709
 
 for e in exp:
+    print(e)
     main_path = os.path.join(MAIN, e)
-    output_path = os.path.join(OUT, e)
-    if not os.path.exists(output_path):
-        os.mkdir(output_path)
-    files = os.listdir(main_path)
-    # Get CZI object to recover the number of scenes of this file
-    for file_name in files:
-        if file_name.__contains__(".czi"):
-            f = zis.CziFile(os.path.join(main_path, file_name))
-            video = f.asarray()
-            video = video.squeeze()
-            print("{} file loaded in python".format(file_name))
-            resized_video = []
-            for t in range(len(video)):
-                frame = video[t]
-                frame = cv2.resize(frame, dsize=(int(frame.shape[0] // scale), int(frame.shape[1] // scale)),
-                                   interpolation=cv2.INTER_CUBIC)
-                resized_video.append(frame)
-            tifffile.imsave(os.path.join(output_path, '{}.tif'.format(file_name.split(".czi")[0])),
-                            np.expand_dims(resized_video, axis=[1, 2, -1]), # addapt the dimensions to tifffile ordering TZCYXS
-                            resolution=(1 / (pixel_size*scale), 1 / (pixel_size*scale)),
-                            imagej=True,
-                            metadata={'spacing': 1, 'unit': 'um'})
-            del video
+    sub_folder = [i for i in os.listdir(main_path) if i.__contains__("2022") and i[0]!='.']
+    for s in sub_folder:
+        final_path = os.path.join(main_path, s, folder_name)
+        if os.path.exists(final_path):
+            output_path = os.path.join(OUT, e, s, "downsampled_{}".format(scale))
+            os.makedirs(output_path, exist_ok=True)
+            files = os.listdir(final_path)
+            # Get CZI object to recover the number of scenes of this file
+            for file_name in files:
+                if file_name.__contains__(".czi") and file_name[0] != '.':
+                    f = zis.CziFile(os.path.join(final_path, file_name))
+                    video = f.asarray()
+                    video = video.squeeze()
+                    print("{} file loaded in python".format(file_name))
+                    resized_video = []
+                    for t in range(len(video)):
+                        frame = video[t]
+                        frame = cv2.resize(frame, dsize=(int(frame.shape[0] // scale), int(frame.shape[1] // scale)),
+                                           interpolation=cv2.INTER_CUBIC)
+                        resized_video.append(frame)
+                    tifffile.imsave(os.path.join(output_path, '{}.tif'.format(file_name.split(".czi")[0])),
+                                    np.expand_dims(resized_video, axis=[1, 2, -1]), # addapt the dimensions to tifffile ordering TZCYXS
+                                    resolution=(1 / (pixel_size*scale), 1 / (pixel_size*scale)),
+                                    imagej=True,
+                                    metadata={'spacing': 1, 'unit': 'um'})
+                    del video
