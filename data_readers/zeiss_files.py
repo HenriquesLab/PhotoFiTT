@@ -91,8 +91,7 @@ import czifile as zis
 
 # Information about the directory and the pixel_size (height)
 MAIN = "/Volumes/TOSHIBA EXT/HENRIQUES-LAB/PROJECTS/PHOTOTOXICITY/DATA/HeLa/NEW"
-OUT = "/Volumes/TOSHIBA EXT/HENRIQUES-LAB/PROJECTS/PHOTOTOXICITY/DATA/HeLa/NEW"
-exp = [i for i in os.listdir(MAIN) if i.__contains__("2022") and i[0]!='.']
+OUT = "/Volumes/TOSHIBA EXT/HENRIQUES-LAB/PROJECTS/PHOTOTOXICITY/DATA/HeLa/NEW"exp = [i for i in os.listdir(MAIN) if i.__contains__("2022") and i[0]!='.']
 folder_name = "Individual"
 pixel_size = 0.5500 # x20 objective
 time_interval = 240 # seconds (4 mins)

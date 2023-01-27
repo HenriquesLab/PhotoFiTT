@@ -6,7 +6,6 @@ from skimage.measure import regionprops
 from tifffile import imread, imsave
 from utils.morphology import roundnessCalculator
 
-
 def plot_smooth_curves(data, y_var, title, output_path, name):
     fig = plt.figure(figsize=(7, 6))
     plt.subplot(2, 1, 1)
@@ -26,7 +25,6 @@ def plot_smooth_curves(data, y_var, title, output_path, name):
     ax.legend(bbox_to_anchor=(0.85, 0.5))
     fig.savefig(os.path.join(output_path, name), format='png')
     # plt.show()
-
 
 def plot_conditions_with_aggregates(data, y_var, title, output_path, name, hue="Subcategory-01", style="Subcategory-02"):
     fig = plt.figure(figsize=(5, 10))
@@ -83,7 +81,6 @@ def plot_one_condition(data, y_var, output_path, name, hue1="unique_name", hue2 
     plt.tight_layout()
     fig.savefig(os.path.join(output_path, name), format='png')
     # plt.show()
-
 
 def mosaic(stack_im, path2original, min_roundness=0.5):
     """
@@ -148,7 +145,6 @@ def mosaic(stack_im, path2original, min_roundness=0.5):
     else:
         mosaic_stack = 0
     return mosaic_stack
-
 
 def build_mosaics(path, path2original, output_path, min_roundness=0.85):
     """"""
@@ -215,4 +211,174 @@ def plot_distributions(df, xlabel, title, output_path, smoothness=.5):
     plt.title(title)
     fig.savefig("{}_histogram.png".format(output_path), format='png')
     fig.savefig("{}_histogram.svg".format(output_path), format='svg')
+    # plt.show()
+
+def plot_motility(data, output_path, hue_order):
+
+    fig = plt.figure(figsize=(10, 8))
+    plt.rcParams.update({'font.size': 12})
+    sns.lineplot(x="frame", y="time_variance", hue="Subcategory-02", data=data,
+                 palette=sns.color_palette("husl", 14),
+                 hue_order=hue_order, linewidth=1.5, alpha=1)
+    plt.tight_layout()
+    plt.title("Dynamics_{0}_variance".format("intensity"))
+    fig.savefig(os.path.join(output_path, "data_dynamics_intensity.png"), format='png',
+                transparent=True)
+
+    for d in np.unique(data["Subcategory-00"]):
+        data_folderwise = data[data["Subcategory-00"] == d].reset_index(drop=True)
+        fig = plt.figure(figsize=(10, 8))
+        plt.rcParams.update({'font.size': 12})
+        sns.lineplot(x="frame", y="time_variance", hue="Subcategory-02", data=data_folderwise,
+                     palette=sns.color_palette("husl", 14),
+                     hue_order=hue_order, linewidth=1.5, alpha=1)
+        plt.tight_layout()
+        plt.title("Dynamics_variance_{0}".format(d))
+        fig.savefig(os.path.join(output_path, "data_dynamics_intensity_clean_{}.png".format(d)), format='png',
+                    transparent=False)
+
+def plot_motility_peak_measurements(data, x_labels, hue_order, output_path):
+
+    # PEAK TIME
+    # fig = plt.figure()
+    sns.set(font_scale=0.9)
+    g = sns.catplot(data=data, x="Subcategory-02", y="peak_time", hue="Subcategory-00",
+                    order=x_labels, hue_order=hue_order, kind="box", height=5,
+                    aspect=2, palette="rainbow"
+                    )
+    g.set_axis_labels("Exposure times", "Time point of maximum peak")
+    g.despine(left=True)
+    # plt.ylim([-50, 190])
+    # plt.yscale("log")
+    g.savefig(os.path.join(output_path, "peak_folderwise.png"), format='png')
+    # plt.show()
+
+    #
+    # fig = plt.figure()
+    sns.set(font_scale=0.9)
+    g = sns.catplot(data=data, x="Subcategory-02", y="peak_time",
+                    order=x_labels, kind="box", height=5, aspect=2, palette="rainbow_r"
+                    )
+    g.set_axis_labels("Exposure times", "Time point of maximum peak (minutes)")
+    g.despine(left=True)
+    # plt.ylim([-50, 190])
+    # plt.yscale("log")
+    g.savefig(os.path.join(output_path, "peak.png"), format='png')
+    # plt.show()
+
+    # DELAY W.R.T. SYNCHRO
+    # fig = plt.figure()
+    sns.set(font_scale=0.9)
+    g = sns.catplot(data=data, x="Subcategory-02", y="delay_synchro", hue="Subcategory-00",
+                    order=x_labels, hue_order=hue_order, kind="box", height=5, aspect=2, palette="rainbow"
+                    )
+    g.set_axis_labels("Exposure times", "Delay for the maximum peak (minutes)")
+    g.despine(left=True)
+    # plt.ylim([-50, 190])
+    # plt.yscale("log")
+    g.savefig(os.path.join(output_path, "delay_folderwise.png"), format='png')
+    # plt.show()
+    #
+    # fig = plt.figure()
+    sns.set(font_scale=0.9)
+    g = sns.catplot(data=data, x="Subcategory-02", y="delay_synchro",
+                    order=x_labels, kind="box", height=5, aspect=2, palette="rainbow_r"
+                    )
+    g.set_axis_labels("Exposure times", "Delay for the maximum peak (minutes)")
+    g.despine(left=True)
+    # plt.ylim([-50, 190])
+    # plt.yscale("log")
+    g.savefig(os.path.join(output_path, "delay_folderwise.png"), format='png')
+    # plt.show()
+    #
+    # PROPORTIONAL DELAY W.R.T. SYNCHRO
+    # fig = plt.figure()
+    sns.set(font_scale=0.9)
+    g = sns.catplot(data=data, x="Subcategory-02", y="proportional_delay_synchro", hue="Subcategory-00",
+                    order=x_labels, hue_order=hue_order, kind="box", height=5, aspect=2, palette="rainbow"
+                    )
+    g.set_axis_labels("Exposure times", "Delay proportion for the maximum peak (minutes)")
+    g.despine(left=True)
+    # plt.yscale("log")
+    g.savefig(os.path.join(output_path, "proportional_delay_folderwise.png"), format='png')
+    # plt.show()
+    #
+    # fig = plt.figure()
+    sns.set(font_scale=0.9)
+    g = sns.catplot(data=data, x="Subcategory-02", y="proportional_delay_synchro",
+                    order=x_labels, kind="box", height=5, aspect=2, palette="rainbow_r"
+                    )
+    g.set_axis_labels("Exposure times", "Delay proportion for the maximum peak (minutes)")
+    g.despine(left=True)
+    # plt.yscale("log")
+    g.savefig(os.path.join(output_path, "proportional_delay.png"), format='png')
+    # plt.show()
+
+    # # PLOTS WITH INDIVIDUAL POINTS
+    # ### points
+    # plt.figure(figsize=(10, 5))
+    # sns.set(font_scale=1)
+    # g = sns.swarmplot(data=data, x="Subcategory-02", y="ratio", hue="Subcategory-02",
+    #                   order=x_labels, palette="dark",
+    #                   legend=None)
+    # plt.ylim([0.1, 50])
+    # plt.yscale("log")
+    # plt.tight_layout()
+    # plt.show()
+    #
+    # plt.figure(figsize=(10, 5))
+    # sns.set(font_scale=0.9)
+    # g = sns.catplot(data=data, x="Subcategory-02", y="alpha", hue="Subcategory-00",
+    #                 order=x_labels, height=5, aspect=2)
+    # g.set_axis_labels("Exposure times", "Alpha")
+    # g.despine(left=True)
+    # plt.ylim([0.00001, 0.1])
+    # plt.yscale("log")
+    # plt.show()
+    #
+    # plt.figure(figsize=(10, 5))
+    # sns.set(font_scale=0.9)
+    # g = sns.catplot(data=data, x="Subcategory-02", y="beta", hue="Subcategory-00",
+    #                 order=x_labels, height=5, aspect=2)
+    # g.set_axis_labels("Exposure times", "Beta")
+    # g.despine(left=True)
+    # plt.ylim([0.00001, 0.1])
+    # plt.yscale("log")
+    # plt.show()
+    #
+    # plt.figure(figsize=(10, 5))
+    # sns.set(font_scale=0.9)
+    # g = sns.catplot(data=data, x="Subcategory-02", y="ratio", hue="Subcategory-00",
+    #                 order=x_labels, height=5, aspect=2)
+    # g.set_axis_labels("Exposure times", "Ratio = alpha / beta")
+    # g.despine(left=True)
+    # plt.ylim([0.1, 50])
+    # plt.yscale("log")
+    # plt.show()
+    ### BARS
+    # plt.figure()
+    # g = sns.catplot(
+    #     data=data, x="Subcategory-02", y="ratio", hue="Subcategory-00", order=x_labels, kind="bar",
+    #     height=4, aspect=3)
+    # g.set_axis_labels("", "Ratio = alpha / beta")
+    # # g.set_xticklabels()
+    # g.despine(left=True)
+    # # plt.ylim([0,10])
+    # plt.yscale("log")
+    # sns.set(font_scale=1)
+    # plt.show()
+    #
+    # ### BARS COLUMNS
+    # # conditions = ['Control-sync', 'Synchro', 'UV50ms', 'UV100ms', 'UV200ms', 'UV400ms', 'UV800ms', 'UV1000ms']
+    # plt.figure()
+    # sns.set(font_scale=0.8)
+    # g = sns.catplot(
+    #     data=data, x="Subcategory-02", y="ratio", col="Subcategory-00", order=x_labels,
+    #     kind="bar", height=5, aspect=2,
+    # )
+    # g.set_axis_labels("", "Ratio = alpha / beta")
+    # # g.set_xticklabels()
+    # g.despine(left=True)
+    # # plt.ylim([0,10])
+    # plt.yscale("log")
     # plt.show()
