@@ -26,7 +26,7 @@ Python scripts to detect cell mitosis, measure cell arrestment and assess the te
    |    |  ...
    ```
 5. Run `analyse_segmentations.py`, `create_mosaics.py` and `temporal_distributions.py`. 
-   1. Example for `analyse_segmentations.py`: It will take the conditions from the dataset (2022-01-26) and it will create a folder `2022-01-26` in which everything will be saved.
+   1. Example for `analyse_segmentations.py`: It will take the conditions from the dataset (2022-01-26) and it will create a folder `2022-01-26` with the information about the number of detected cells per frame and the distribution of their size and roundness.
       ```
       cd mitosis-mediated-phototoxic
       python3 analyse_segmentations.py ../mitosis_mediated_data/masks/scaled_x8/stardist_prob03/2022-01-26 ../mitosis_mediated_data/results/scaled_x8/stardist_prob03/2022-01-26
@@ -35,9 +35,13 @@ Python scripts to detect cell mitosis, measure cell arrestment and assess the te
       ```
        python3 create_mosaics.py ../mitosis_mediated_data/masks/scaled_x8/stardist_prob03/2022-01-28 ../mitosis_mediated_data/input_data/2022-01-28/scaled_8 ../mitosis_mediated_data/results/scaled_x8/stardist_prob03/2022-01-28
       ```
-   3. Example for `analyse_all.py`. :
+   3. Example for `temporal_distributions.py`:
       ```
-      python3 temporal_distributions.py ../mitosis_mediated_data/masks/scaled_x8/stardist_prob03/2022-01-26 ../mitosis_mediated_data/results/scaled_x8/stardist_prob03
+      python3 temporal_distributions.py ../mitosis_mediated_data/masks/scaled_x8/stardist_prob03/ ../mitosis_mediated_data/results/scaled_x8/stardist_prob03
+      ```
+   4Example for `analyse_all.py`: It will analyse all the conditions, from all the replicas in a folder, save a csv file with the information and create plots for each of the experimental conditions.
+      ```
+      python3 analyse_all.py ../mitosis_mediated_data/masks/scaled_x8/stardist_prob03/ ../mitosis_mediated_data/results/scaled_x8/stardist_prob03
       ```
 ## Description of the content
 

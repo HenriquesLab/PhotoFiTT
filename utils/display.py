@@ -213,31 +213,31 @@ def plot_distributions(df, xlabel, title, output_path, smoothness=.5):
     fig.savefig("{}_histogram.svg".format(output_path), format='svg')
     # plt.show()
 
-def plot_motility(data, output_path, hue_order):
+def plot_mitosis(data, output_path, hue_order, y_variable):
 
     fig = plt.figure(figsize=(10, 8))
     plt.rcParams.update({'font.size': 12})
-    sns.lineplot(x="frame", y="time_variance", hue="Subcategory-02", data=data,
+    sns.lineplot(x="frame", y=y_variable, hue="Subcategory-02", data=data,
                  palette=sns.color_palette("husl", 14),
                  hue_order=hue_order, linewidth=1.5, alpha=1)
     plt.tight_layout()
-    plt.title("Dynamics_{0}_variance".format("intensity"))
-    fig.savefig(os.path.join(output_path, "data_dynamics_intensity.png"), format='png',
+    plt.title("{0} along time".format(y_variable))
+    fig.savefig(os.path.join(output_path, "data_mitosis_counting.png"), format='png',
                 transparent=True)
 
     for d in np.unique(data["Subcategory-00"]):
         data_folderwise = data[data["Subcategory-00"] == d].reset_index(drop=True)
         fig = plt.figure(figsize=(10, 8))
         plt.rcParams.update({'font.size': 12})
-        sns.lineplot(x="frame", y="time_variance", hue="Subcategory-02", data=data_folderwise,
+        sns.lineplot(x="frame", y=y_variable, hue="Subcategory-02", data=data_folderwise,
                      palette=sns.color_palette("husl", 14),
                      hue_order=hue_order, linewidth=1.5, alpha=1)
         plt.tight_layout()
-        plt.title("Dynamics_variance_{0}".format(d))
-        fig.savefig(os.path.join(output_path, "data_dynamics_intensity_clean_{}.png".format(d)), format='png',
+        plt.title("{0} along time".format(d))
+        fig.savefig(os.path.join(output_path, "data_mitosis_counting_{}.png".format(d)), format='png',
                     transparent=False)
 
-def plot_motility_peak_measurements(data, x_labels, hue_order, output_path):
+def plot_info_wrt_peak(data, x_labels, hue_order, output_path):
 
     # PEAK TIME
     # fig = plt.figure()

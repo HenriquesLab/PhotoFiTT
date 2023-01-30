@@ -2,7 +2,7 @@
 Created on 2022
 Henriques Lab
 
-This scripts extracts analyses the motility metrics extracted with `extract_fov_motility`.
+This script analyses the motility metrics extracted with `extract_fov_motility`.
 
 The script is not meant to run automatically. It has sections to clean the data or concatenate it.
 """
