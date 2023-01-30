@@ -58,7 +58,7 @@ def mean_match(im, mean_val=0):
     return out_im
 
 
-def bleach_correction(im, sigma=120, keep_mean=False):
+def bleach_correction(im, sigma=60, keep_mean=False):
     light_artifact = gaussian_filter(im.astype(np.float32), sigma)
     if keep_mean:
         light_artifact_correct = im.astype(np.float32) - light_artifact + np.mean(light_artifact)
@@ -67,7 +67,7 @@ def bleach_correction(im, sigma=120, keep_mean=False):
     return light_artifact_correct
 
 
-def normalise_phc_timelapse(stack, pmin=0, pmax=100, sigma=120, keep_mean=False):
+def normalise_phc_timelapse(stack, pmin=0, pmax=100, sigma=60, keep_mean=True):
     stack = stack.astype(np.float32)
     T = stack.shape[0]
     new_im = []

@@ -20,8 +20,7 @@ from utils.fov_motility import extract_dynamics_metrics
 from utils.display import plot_smooth_curves, plot_conditions_with_aggregates
 main_path = sys.argv[1]
 output_path = sys.argv[2]
-condition = sys.argv[3] # "630"
-# main_path = "/Users/esti/Documents/PROYECTOS/PHX/mitosis_mediated_data_itqb_3/masks/scaled_1.5709_results/stardist_prob03/"
+condition = sys.argv[3] # "630", "WL UV - high..."
 # main_path = "/Users/esti/Documents/PROYECTOS/PHX/mitosis_mediated_data_itqb_3/inputs/scaled_1.5709_results/2022-08-10/"
 # main_path = "/Users/esti/Documents/PROYECTOS/PHX/mitosis_mediated_data_itqb_3/inputs/scaled_1.5709_results/2022-08-10/WL UV - high density/Synchro"
 

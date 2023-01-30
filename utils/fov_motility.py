@@ -4,9 +4,6 @@ import pandas as pd
 from utils.normalisation import normalise_phc_timelapse
 import os
 import sys
-SCRIPT_DIR = "/Users/esti/Documents/PROYECTOS/PHX/NanoPyx/src"
-sys.path.append(SCRIPT_DIR)
-
 from skimage.exposure import equalize_adapthist
 from scipy.ndimage import gaussian_filter
 from numba import njit
