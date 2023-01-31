@@ -23,38 +23,39 @@ def plot_smooth_curves(data, y_var, title, output_path, name):
     # plt.ylabel(y_label)
     plt.xlabel("Time (min)")
     ax.legend(bbox_to_anchor=(0.85, 0.5))
-    fig.savefig(os.path.join(output_path, name), format='png')
+    fig.savefig(os.path.join(output_path, name), format='png', transparent=True)
     # plt.show()
 
 def plot_conditions_with_aggregates(data, y_var, title, output_path, name, hue="Subcategory-01", style="Subcategory-02"):
     fig = plt.figure(figsize=(5, 10))
     plt.rcParams.update({'font.size': 8})
     plt.subplot(2, 1, 1)
-    sns.lineplot(x="frame", y=y_var, hue=hue, style=style, data=data, palette="tab20",
+    sns.lineplot(x="frame", y=y_var, hue=hue, style=style, data=data, palette=sns.color_palette("husl", 14),
                  linewidth=1.5, alpha=0.5)
     plt.title(title)
 
     # Plot the results per category
     ax = plt.subplot(2, 1, 2)
-    sns.lineplot(x="frame", y=y_var, style=style, data=data, palette="tab20",
+    sns.lineplot(x="frame", y=y_var, style=style, data=data, palette=sns.color_palette("husl", 14),
                  linewidth=1.5, alpha=0.75)
     plt.xlabel("Time (min)")
     ax.legend(bbox_to_anchor=(0.85, 0.5))
     plt.tight_layout()
-    fig.savefig(os.path.join(output_path, name), format='png')
+    fig.savefig(os.path.join(output_path, name), format='png', transparent=True)
     # plt.show()
     # plt.close(fig)
 
 def plot_conditions(data, y_var, title, condition, output_path, name, style_condition="processing"):
     fig = plt.figure(figsize=(12, 8))
     # Plot the results per category
-    sns.lineplot(x="frame", y=y_var, hue=condition, style=style_condition, data=data, palette="tab20",
-                 linewidth=1.5, alpha=0.75)
+    sns.set(font_scale=0.9)
+    sns.lineplot(x="frame", y=y_var, hue=condition, style=style_condition, data=data,
+                 palette=sns.color_palette("husl", 14), linewidth=1.5, alpha=0.75)
     # plt.ylabel(y_label)
     plt.xlabel("Time (min)")
     plt.title(title)
     # plt.legend(bbox_to_anchor=(0.85, 0.5))
-    fig.savefig(os.path.join(output_path, name), format='png')
+    fig.savefig(os.path.join(output_path, name), format='png', transparent=True)
     # plt.show()
 
 def plot_one_condition(data, y_var, output_path, name, hue1="unique_name", hue2 = "Subcategory-02", frame_rate=10):
@@ -216,25 +217,25 @@ def plot_distributions(df, xlabel, title, output_path, smoothness=.5):
 def plot_mitosis(data, output_path, hue_order, y_variable):
 
     fig = plt.figure(figsize=(10, 8))
-    plt.rcParams.update({'font.size': 12})
+    plt.rcParams.update({'font.size': 0.9})
     sns.lineplot(x="frame", y=y_variable, hue="Subcategory-02", data=data,
                  palette=sns.color_palette("husl", 14),
                  hue_order=hue_order, linewidth=1.5, alpha=1)
     plt.tight_layout()
     plt.title("{0} along time".format(y_variable))
-    fig.savefig(os.path.join(output_path, "data_mitosis_counting.png"), format='png',
+    fig.savefig(os.path.join(output_path, "data_{}_counting.png".format(y_variable)), format='png',
                 transparent=True)
 
     for d in np.unique(data["Subcategory-00"]):
         data_folderwise = data[data["Subcategory-00"] == d].reset_index(drop=True)
         fig = plt.figure(figsize=(10, 8))
-        plt.rcParams.update({'font.size': 12})
+        plt.rcParams.update({'font.size': 0.9})
         sns.lineplot(x="frame", y=y_variable, hue="Subcategory-02", data=data_folderwise,
                      palette=sns.color_palette("husl", 14),
                      hue_order=hue_order, linewidth=1.5, alpha=1)
         plt.tight_layout()
-        plt.title("{0} along time".format(d))
-        fig.savefig(os.path.join(output_path, "data_mitosis_counting_{}.png".format(d)), format='png',
+        plt.title("{0} - {1} along time".format(y_variable, d))
+        fig.savefig(os.path.join(output_path, "data_{0}_counting_{1}.png".format(y_variable, d)), format='png',
                     transparent=False)
 
 def plot_info_wrt_peak(data, x_labels, hue_order, output_path):

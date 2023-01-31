@@ -25,20 +25,20 @@ data = pd.read_csv(
 data = data[data["processing"]=="Raw"].reset_index(drop=True)
 aux = data[data["Subcategory-02"] == 'UV1000ms']
 data.loc[aux.index.to_list(), ["Subcategory-02"]] = ['UV01sec']
-#
-# for c in np.unique(data["Subcategory-01"]):
-#     data_c = data[data["Subcategory-01"]==c].reset_index(drop=True)
-#
-#     output_path_plots = os.path.join(output_path, folder, c)
-#     os.makedirs(output_path_plots, exist_ok=True)
-#
-#     conditions = ['Control-sync', 'Synchro', 'UV25ms', 'UV50ms', 'UV100ms', 'UV200ms', 'UV400ms', 'UV800ms', 'UV01sec',
-#                     'UV05sec',  'UV10sec', 'UV15sec', 'UV20sec', 'UV25sec']
-#     plot_mitosis(data_c, output_path_plots, conditions, "mitosis")
-#
-#     data_c = quantify_peaks(data_c, "mitosis")
-#     hue_order = np.unique(data_c["Subcategory-00"])
-#     plot_info_wrt_peak(data_c, conditions, hue_order, output_path_plots)
+conditions = ['Control-sync', 'Synchro', 'UV25ms', 'UV50ms', 'UV100ms', 'UV200ms', 'UV400ms', 'UV800ms', 'UV01sec',
+                'UV05sec',  'UV10sec', 'UV15sec', 'UV20sec', 'UV25sec']
+
+for c in np.unique(data["Subcategory-01"]):
+    data_c = data[data["Subcategory-01"]==c].reset_index(drop=True)
+
+    output_path_plots = os.path.join(output_path, folder, c)
+    os.makedirs(output_path_plots, exist_ok=True)
+
+    plot_mitosis(data_c, output_path_plots, conditions, "mitosis")
+
+    data_c = quantify_peaks(data_c, "mitosis")
+    hue_order = np.unique(data_c["Subcategory-00"])
+    plot_info_wrt_peak(data_c, conditions, hue_order, output_path_plots)
 
 
 ## Model cell size distribution
@@ -49,6 +49,8 @@ distribution_data.to_csv(os.path.join(output_path, folder, "cell_size_statistics
 
 for g in np.unique(distribution_data["Subcategory-01"]):
     aux = distribution_data[distribution_data["Subcategory-01"] == g].reset_index(drop=True)
-    aux["ratio"] = aux["GaussianMixtureMean_0"] / aux["GaussianMixtureMean_1"]
+    aux["ratio"] = aux["GaussianMixtureCovariance_0"] / aux["GaussianMixtureCovariance_1"]
+    output_path_plots = os.path.join(output_path, folder, g)
+    plot_mitosis(aux, output_path_plots, conditions, "ratio")
     plot_conditions(aux, "ratio", "Cell size average", "Subcategory-02", os.path.join(output_path, folder),
                     "size_ratio_{}.png".format(g), style_condition="Subcategory-01")
