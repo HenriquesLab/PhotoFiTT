@@ -15,7 +15,7 @@ SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(os.path.dirname(SCRIPT_DIR))
 SCRIPT_DIR = '/Users/esti/Documents/PROYECTOS/PHX/mitosis-mediated-phototoxic'
 sys.path.append(SCRIPT_DIR)
-from utils.display import plot_info_wrt_peak, plot_mitosis
+from utils.display import plot_info_wrt_peak, plot_mitosis, plot_size_chnage_wrt_peak
 from utils.mitosis_counting import quantify_peaks
 
 ## GENERAL INFORMATION
@@ -48,45 +48,33 @@ for c in condition:
         os.path.join(output_path, folder, "data_dynamics_intensity_{}.csv".format(c)))
     aux = dynamics_metrics[dynamics_metrics["Subcategory-02"] == 'UV1000ms']
     dynamics_metrics.loc[aux.index.to_list(), ["Subcategory-02"]] = ['UV01sec']
-    plot_mitosis(dynamics_metrics, output_path_plots, conditions, "time_variance")
+    # plot_mitosis(dynamics_metrics, output_path_plots, conditions, "time_variance")
 
     ## Get motility peaks (may not make sense) and plot it.
     data_dynamics_peaks = quantify_peaks(dynamics_metrics, "time_variance")
     hue_order = np.unique(dynamics_metrics["Subcategory-00"])
-    plot_info_wrt_peak(data_dynamics_peaks, conditions, hue_order, output_path_plots)
+    # plot_info_wrt_peak(data_dynamics_peaks, conditions, hue_order, output_path_plots)
 
 
     ## Calculate the mitoses peaks
     data_c = data[data["Subcategory-01"] == c].reset_index(drop=True)
     data_c = quantify_peaks(data_c, "mitosis")
-
+    motility = []
     for f in np.unique(data_c["Subcategory-00"]):
         data_cf = data_c[data_c["Subcategory-00"]==f].reset_index(drop=True)
         dynamics_metrics_f = dynamics_metrics[dynamics_metrics["Subcategory-00"]==f].reset_index(drop=True)
         for v in np.unique(data_cf["video_name"]):
             data_cfv = data_cf[data_cf["video_name"] == v].reset_index(drop=True)
             dynamics_metrics_fv = dynamics_metrics_f[dynamics_metrics_f["video_name"] == v].reset_index(drop=True)
-
-
-    data_synchro = data_c[data_c["Subcategory-02"] == "Synchro"]
-    peak_timepoint = np.percentile(data_synchro["peak_time"], 75)
-    data_synchro = aux[aux["Subcategory-02"] == "Synchro"]
-    time_point = np.where(
-        abs(data_synchro["frame"] - peak_timepoint) == np.min(abs(data_synchro["frame"] - peak_timepoint)))
-    synchro_mean_size = np.mean(data_synchro["average"].iloc[time_point])
-    peak_data = []
-    for exp in np.unique(aux["Subcategory-02"]):
-        data_exp = aux[aux["Subcategory-02"] == exp]
-        data_exp["compared_peak"] = data_exp["average"] - synchro_mean_size
-        data_exp = data_exp[data_exp["frame"] > 60]
-        for f in np.unique(data_exp["Subcategory-00"]):
-            data_f = data_exp[data_exp["Subcategory-00"] == f]
-            t = np.min(data_f[data_f["compared_peak"] < 0]["frame"])
-            peak_data.append([t] + [f] + [exp])
-    peak_dataframe = pd.DataFrame(peak_data, columns=['mitosis_t', 'Subcategory-00', 'Subcategory-02'])
-    plot_size_chnage_wrt_peak(peak_dataframe, conditions, "mitosis_t", np.unique(data_exp["Subcategory-00"]),
-                              output_path_plots)
-
+            peak = data_cfv["peak_time"].iloc[0]
+            #peak=120
+            mean_dynamics = np.mean(dynamics_metrics_fv[dynamics_metrics_fv["frame"]>peak]["time_variance"])
+            motility.append([peak, mean_dynamics, f, v, c, dynamics_metrics_fv["Subcategory-02"].iloc[0]])
+    motility_dataframe = pd.DataFrame(motility, columns=['peak', 'averaged_time_variance', 'Subcategory-00',
+                                                         "video_name", 'Subcategory-01', "Subcategory-02"])
+    plot_size_chnage_wrt_peak(motility_dataframe, conditions, "averaged_time_variance",
+                              np.unique(motility_dataframe["Subcategory-00"]),
+                              output_path_plots, y_lim=[0, 0.004])
 #
 #
 # conditions = ['Control-sync', 'Synchro', 'UV25ms', 'UV50ms', 'UV100ms', 'UV200ms', 'UV400ms', 'UV800ms', 'UV01sec',

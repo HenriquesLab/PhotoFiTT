@@ -22,7 +22,7 @@ dynamics_metrics = pd.read_csv(
 ## ---------------------------------------
 ## ---------- 475 -----------------
 print(len(dynamics_metrics))
-data = dynamics_metrics[dynamics_metrics['Subcategory-01']=='WL 475 - high density'].reset_index(drop=True)
+data = dynamics_metrics[dynamics_metrics['Subcategory-01']=='WL 475 - high density']
 
 dynamics_metrics_data = data[data['Subcategory-00']=="2022-09-07-night"]
 

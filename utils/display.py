@@ -388,14 +388,14 @@ def plot_info_wrt_peak(data, x_labels, hue_order, output_path):
     # plt.yscale("log")
     # plt.show()
 
-def plot_size_chnage_wrt_peak(data, x_labels, y_variable, hue_order, output_path):
+def plot_size_chnage_wrt_peak(data, x_labels, y_variable, hue_order, output_path, y_lim=[0, 300]):
     sns.set(font_scale=0.9)
     g = sns.catplot(data=data, x="Subcategory-02", y=y_variable, kind="box",
                     order=x_labels, height=5, aspect=2, palette="rainbow"
                     )
-    g.set_axis_labels("Exposure times", "Time point of mitosisk")
+    g.set_axis_labels("Exposure times", "{}".format(y_variable))
     g.despine(left=True)
-    plt.ylim([-5, 300])
+    plt.ylim(y_lim)
     # plt.yscale("log")
     g.savefig(os.path.join(output_path, "mitosis_time.png"), format='png')
     # plt.show()
@@ -404,9 +404,9 @@ def plot_size_chnage_wrt_peak(data, x_labels, y_variable, hue_order, output_path
     g = sns.catplot(data=data, x="Subcategory-02", y=y_variable, hue="Subcategory-00",
                     order=x_labels, hue_order=hue_order, height=5, aspect=2, palette="rainbow"
                     )
-    g.set_axis_labels("Exposure times", "Time point of mitosisk")
+    g.set_axis_labels("Exposure times", "{}".format(y_variable))
     g.despine(left=True)
-    plt.ylim([-5, 300])
+    plt.ylim(y_lim)
     # plt.yscale("log")
     g.savefig(os.path.join(output_path, "mitosis_time_folderwise.png"), format='png')
     # plt.show()
