@@ -45,12 +45,16 @@ def plot_conditions_with_aggregates(data, y_var, title, output_path, name, hue="
     # plt.show()
     # plt.close(fig)
 
-def plot_conditions(data, y_var, title, condition, output_path, name, style_condition="processing"):
+def plot_conditions(data, y_var, title, condition, output_path, name, style_condition="processing", hue_order=None):
     fig = plt.figure(figsize=(12, 8))
     # Plot the results per category
     sns.set(font_scale=0.9)
-    sns.lineplot(x="frame", y=y_var, hue=condition, style=style_condition, data=data,
-                 palette=sns.color_palette("husl", 14), linewidth=1.5, alpha=0.75)
+    if hue_order is None:
+        sns.lineplot(x="frame", y=y_var, hue=condition, style=style_condition, data=data,
+                     palette=sns.color_palette("husl", 14), linewidth=1.5, alpha=0.75)
+    else:
+        sns.lineplot(x="frame", y=y_var, hue=condition, style=style_condition, data=data,
+                     palette=sns.color_palette("husl", 14), linewidth=1.5, alpha=0.75, hue_order=hue_order)
     # plt.ylabel(y_label)
     plt.xlabel("Time (min)")
     plt.title(title)

@@ -440,9 +440,11 @@ def GaussianMixtureTime(data, variable_name, random_state=0):
             cov_1 = 0
 
         mean_t.append([t] + [np.mean(data_t)] + [np.var(data_t)] + [mean_0] + [mean_1] + [cov_0] + [cov_1])
-
-    return pd.DataFrame(mean_t, columns=['frame', 'average', 'variance', 'GaussianMixtureMean_0', 'GaussianMixtureMean_1',
+    output_data = pd.DataFrame(mean_t, columns=['frame', 'average', 'variance', 'GaussianMixtureMean_0', 'GaussianMixtureMean_1',
                                          'GaussianMixtureCovariance_0', 'GaussianMixtureCovariance_1'])
+
+    output_data["derivative-average"] = np.concatenate([[0],np.diff(output_data["average"])])
+    return output_data
 
 def extract_gaussian_params(data, variable):
     """
