@@ -15,7 +15,6 @@ SCRIPT_DIR = '/Users/esti/Documents/PROYECTOS/PHX/mitosis-mediated-phototoxic'
 sys.path.append(SCRIPT_DIR)
 from utils.mitosis_counting import quantify_peaks
 from utils.display import plot_info_wrt_peak, plot_mitosis, plot_conditions, plot_size_chnage_wrt_peak
-from utils.statistics import extract_gaussian_params
 
 output_path = "/Users/esti/Documents/PROYECTOS/PHX/mitosis_mediated_data_itqb_3/CHO/results/scaled_1.5709_results/stardist_prob03/"
 folder = "mitosis_mediated_analysis"
@@ -39,24 +38,24 @@ for c in np.unique(data["Subcategory-01"]):
     output_path_plots = os.path.join(output_path, folder, c)
     os.makedirs(output_path_plots, exist_ok=True)
 
-    # plot_mitosis(data_c, output_path_plots, conditions, "mitosis")
+    plot_mitosis(data_c, output_path_plots, conditions, "mitosis")
 
     data_c = quantify_peaks(data_c, "mitosis")
-    # hue_order = np.unique(data_c["Subcategory-00"])
-    # plot_info_wrt_peak(data_c, conditions, hue_order, output_path_plots)
+    hue_order = np.unique(data_c["Subcategory-00"])
+    plot_info_wrt_peak(data_c, conditions, hue_order, output_path_plots)
 
     aux = distribution_data[distribution_data["Subcategory-01"] == c].reset_index(drop=True)
     # aux["ratio"] = aux["GaussianMixtureCovariance_0"] / aux["GaussianMixtureCovariance_1"]
     # aux["subt_0"] = abs(aux["average"] - aux["GaussianMixtureMean_0"])
     # aux["subt_1"] = abs(aux["average"] - aux["GaussianMixtureMean_1"])
 
-    # # plot_mitosis(aux, output_path_plots, conditions, "average")
-    # values = ["average", "derivative-average", "variance", 'GaussianMixtureMean_0', 'GaussianMixtureMean_1',
-    #           'GaussianMixtureCovariance_0', 'GaussianMixtureCovariance_1']
-    # for v in values:
-    #     print(v)
-    #     plot_conditions(aux, v, "Cell size {}".format(v), "Subcategory-02", output_path_plots,
-    #                     "size_{0}_{1}.png".format(v, c), style_condition="Subcategory-01", hue_order=conditions)
+    # plot_mitosis(aux, output_path_plots, conditions, "average")
+    values = ["average", "derivative-average", "variance", 'GaussianMixtureMean_0', 'GaussianMixtureMean_1',
+              'GaussianMixtureCovariance_0', 'GaussianMixtureCovariance_1']
+    for v in values:
+        print(v)
+        plot_conditions(aux, v, "Cell size {}".format(v), "Subcategory-02", output_path_plots,
+                        "size_{0}_{1}.png".format(v, c), style_condition="Subcategory-01", hue_order=conditions)
 
     data_synchro = data_c[data_c["Subcategory-02"]=="Synchro"]
     peak_timepoint = np.percentile(data_synchro["peak_time"], 75)

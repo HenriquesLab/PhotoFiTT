@@ -168,7 +168,7 @@ def quantify_peaks(input_data, variable, frame_rate=4, alpha_init=25, alpha_end=
     aux = None
     for f in np.unique(input_data["Subcategory-00"]):
         input_data_f = input_data[input_data["Subcategory-00"] == f].reset_index(drop=True)
-        for v in np.unique(input_data["video_name"]):
+        for v in np.unique(input_data_f["video_name"]):
             video_data = input_data_f[input_data_f["video_name"] == v].reset_index(drop=True)
             frame_rate = frame_rate
             init_mit = int(alpha_init / frame_rate)  # 30
