@@ -408,6 +408,13 @@ class data_statistics():
         # auc_ref_g = np.trapz(ref_fit_g, dx=x[1])/auc_g
 
 def GaussianMixtureTime(data, variable_name, random_state=0):
+    """
+    The function will fit a gaussian mixture model with two gaussian distributions for each time point.
+    :param data:
+    :param variable_name:
+    :param random_state:
+    :return:
+    """
     mean_t = []
     for t in np.unique(data["frame"]):
         data_t = data[data["frame"]==t][variable_name]
@@ -415,47 +422,62 @@ def GaussianMixtureTime(data, variable_name, random_state=0):
         if len(data_t) > 1:
             gmm_t = GaussianMixture(n_components=2, random_state=random_state).fit(data_t.reshape(-1, 1))
 
-            index = np.where(gmm_t.means_.flatten()==np.min(gmm_t.means_.flatten()))
-            mean_0 = gmm_t.means_.flatten()[index]
-            cov_0 = gmm_t.covariances_.flatten()[index]
+            index = np.where(gmm_t.means_ == np.min(gmm_t.means_))
+            mean_0 = gmm_t.means_[index].flatten()
+            mean_0 = mean_0[0]
+            cov_0 = gmm_t.covariances_[index].flatten()
+            cov_0 = cov_0[0]
 
-            index = np.where(gmm_t.means_.flatten() == np.max(gmm_t.means_.flatten()))
-            mean_1 = gmm_t.means_.flatten()[index]
-            cov_1 = gmm_t.covariances_.flatten()[index]
+            index = np.where(gmm_t.means_ == np.max(gmm_t.means_))
+            mean_1 = gmm_t.means_[index].flatten()
+            mean_1 = mean_1[0]
+            cov_1 = gmm_t.covariances_[index].flatten()
+            cov_1 = cov_1[0]
         else:
             mean_0 = np.mean(data_t)
             cov_0 = 0
             mean_1 = np.mean(data_t)
             cov_1 = 0
+
         mean_t.append([t] + [np.mean(data_t)] + [np.var(data_t)] + [mean_0] + [mean_1] + [cov_0] + [cov_1])
 
     return pd.DataFrame(mean_t, columns=['frame', 'average', 'variance', 'GaussianMixtureMean_0', 'GaussianMixtureMean_1',
                                          'GaussianMixtureCovariance_0', 'GaussianMixtureCovariance_1'])
 
 def extract_gaussian_params(data, variable):
+    """
+    It will run the gaussian mixture model fit considering the condition of each experiment
+    :param data:
+    :param variable:
+    :return:
+    """
     distribution_data = None
     data = data[data[variable] != "[]"].reset_index(drop=True)
-    for c in np.unique(data["Subcategory-01"]):
-        print(c)
-        data_c = data[data["Subcategory-01"] == c].reset_index(drop=True)
-        for g in np.unique(data_c["Subcategory-02"]):
-            print(g)
-            data_g = data_c[data_c["Subcategory-02"] == g].reset_index(drop=True)
-            data_r = None
-            for r in range(len(data_g)):
-                values = data_g.iloc[r][variable][1:-1].split(",")
-                aux = pd.DataFrame([[np.float32(k), data_g.iloc[r].frame] for k in values],
-                                   columns=[variable, "frame"])
-                if data_r is None:
-                    data_r = aux
+    for f in np.unique(data["Subcategory-00"]):
+        print(f)
+        data_f = data[data["Subcategory-00"] == f].reset_index(drop=True)
+        for c in np.unique(data_f["Subcategory-01"]):
+            print(c)
+            data_c = data_f[data_f["Subcategory-01"] == c].reset_index(drop=True)
+            for g in np.unique(data_c["Subcategory-02"]):
+                print(g)
+                data_g = data_c[data_c["Subcategory-02"] == g].reset_index(drop=True)
+                data_r = None
+                for r in range(len(data_g)):
+                    values = data_g.iloc[r][variable][1:-1].split(",")
+                    aux = pd.DataFrame([[np.float32(k), data_g.iloc[r].frame] for k in values],
+                                       columns=[variable, "frame"])
+                    if data_r is None:
+                        data_r = aux
+                    else:
+                        data_r = pd.concat([data_r, aux]).reset_index(drop=True)
+                # Create the data
+                v_dist = GaussianMixtureTime(data_r, variable)
+                v_dist["Subcategory-00"] = f
+                v_dist["Subcategory-01"] = c
+                v_dist["Subcategory-02"] = g
+                if distribution_data is None:
+                    distribution_data = v_dist
                 else:
-                    data_r = pd.concat([data_r, aux]).reset_index(drop=True)
-            # Create the data
-            v_dist = GaussianMixtureTime(data_r, variable)
-            v_dist["Subcategory-01"] = c
-            v_dist["Subcategory-02"] = g
-            if distribution_data is None:
-                distribution_data = v_dist
-            else:
-                distribution_data = pd.concat([distribution_data, v_dist]).reset_index(drop=True)
+                    distribution_data = pd.concat([distribution_data, v_dist]).reset_index(drop=True)
     return distribution_data
