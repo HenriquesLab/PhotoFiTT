@@ -6,9 +6,7 @@ import os
 import sys
 from skimage.exposure import equalize_adapthist
 from scipy.ndimage import gaussian_filter
-from numba import njit
 
-@njit()
 def time_intensity_variability(im):
     diff = im[:-1] - im[1:]
     diff = np.multiply(diff, diff)

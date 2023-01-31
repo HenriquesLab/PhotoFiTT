@@ -1,5 +1,4 @@
 import numpy as np
-from numba import njit, jit
 from skimage.measure import regionprops
 import scipy
 def roundnessCalculator(object_matrix, projected=False):
@@ -30,7 +29,7 @@ def roundnessCalculator(object_matrix, projected=False):
     else:
         roundness = 0
     return roundness
-@jit
+
 def smooth_labels(im_label, sigma=16, smooth_t = 0.4):
     """
     Takes each of the unique labelled objects and smooths its boundary. This function is recommended specially for
@@ -70,7 +69,6 @@ def smooth_labels(im_label, sigma=16, smooth_t = 0.4):
 #             outimg[i, j]= px/(amt*amt)
 #     return outimg
 
-@njit
 def convolution2D_numba(image, kernel):
     image_row, image_col = image.shape
     kernel_row, kernel_col = kernel.shape
@@ -91,11 +89,9 @@ def convolution2D_numba(image, kernel):
             output[row, col] /= kernel.shape[0] * kernel.shape[1]
     return output
 
-@njit
 def dnorm(x, mu, sd):
     return 1 / (np.sqrt(2 * np.pi) * sd) * np.e ** (-np.power((x - mu) / sd, 2) / 2)
 
-@njit
 def gaussian_kernel(size, sigma=1):
     kernel_1D = np.linspace(-(size // 2), size // 2, size)
     for i in range(size):
@@ -105,7 +101,6 @@ def gaussian_kernel(size, sigma=1):
     kernel_2D *= 1.0 / kernel_2D.max()
     return kernel_2D
 
-@njit
 def gaussian_blur(image, kernel_size):
     kernel = gaussian_kernel(kernel_size, sigma=np.sqrt(kernel_size))
     return convolution2D_numba(image, kernel)

@@ -149,7 +149,7 @@ def count_mitosis_all(path, stacks=False, pd_dataframe=None, column_data=[], fra
     return pd_dataframe
 
 
-def quantify_peaks(data, variable, frame_rate=4, alpha_init=25, alpha_end=100, beta_init=250, beta_end=300):
+def quantify_peaks(input_data, variable, frame_rate=4, alpha_init=25, alpha_end=100, beta_init=250, beta_end=300):
     """
     This is to calculate the motility peak and the ratio between
     the first part of the video and the second one.
@@ -166,8 +166,8 @@ def quantify_peaks(data, variable, frame_rate=4, alpha_init=25, alpha_end=100, b
     :return:
     """
     aux = None
-    for v in np.unique(data["video_name"]):
-        video_data = data[data["video_name"] == v].reset_index(drop=True)
+    for v in np.unique(input_data["video_name"]):
+        video_data = input_data[input_data["video_name"] == v].reset_index(drop=True)
         frame_rate = frame_rate
         init_mit = int(alpha_init / frame_rate)  # 30
         final_mit = int(alpha_end / frame_rate)  # 80
@@ -188,7 +188,6 @@ def quantify_peaks(data, variable, frame_rate=4, alpha_init=25, alpha_end=100, b
         # ratio = (alpha - beta) / (alpha + beta)
         data += [v, alpha, beta, ratio, peak_time]
         columns += ["video_name", "alpha", "beta", "ratio", "peak_time"]
-
         if aux is None:
             aux = pd.DataFrame(np.expand_dims(np.array(data), axis=0), columns=columns)
         else:
