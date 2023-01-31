@@ -14,7 +14,7 @@ sys.path.append(os.path.dirname(SCRIPT_DIR))
 SCRIPT_DIR = '/Users/esti/Documents/PROYECTOS/PHX/mitosis-mediated-phototoxic'
 sys.path.append(SCRIPT_DIR)
 from utils.mitosis_counting import quantify_peaks
-from utils.display import plot_info_wrt_peak, plot_mitosis, plot_conditions
+from utils.display import plot_info_wrt_peak, plot_mitosis, plot_conditions, plot_size_chnage_wrt_peak
 from utils.statistics import extract_gaussian_params
 
 output_path = "/Users/esti/Documents/PROYECTOS/PHX/mitosis_mediated_data_itqb_3/CHO/results/scaled_1.5709_results/stardist_prob03/"
@@ -65,7 +65,6 @@ for c in np.unique(data["Subcategory-01"]):
     synchro_mean_size = np.mean(data_synchro["average"].iloc[time_point])
     peak_data = []
     for exp in np.unique(aux["Subcategory-02"]):
-
         data_exp = aux[aux["Subcategory-02"]==exp]
         data_exp["compared_peak"] = data_exp["average"] - synchro_mean_size
         data_exp = data_exp[data_exp["frame"]>60]
@@ -74,28 +73,4 @@ for c in np.unique(data["Subcategory-01"]):
             t = np.min(data_f[data_f["compared_peak"] < 0]["frame"])
             peak_data.append([t] + [f] + [exp])
     peak_dataframe = pd.DataFrame(peak_data, columns=['mitosis_t', 'Subcategory-00', 'Subcategory-02'])
-    import seaborn as sns
-    import matplotlib.pyplot as plt
-    sns.set(font_scale=0.9)
-    g = sns.catplot(data=peak_dataframe, x="Subcategory-02", y="mitosis_t", kind="box",
-                    order=conditions, height=5,
-                    aspect=2, palette="rainbow"
-                    )
-    g.set_axis_labels("Exposure times", "Time point of mitosisk")
-    g.despine(left=True)
-    plt.ylim([-5, 300])
-    # plt.yscale("log")
-    g.savefig(os.path.join(output_path_plots, "mitosis_time.png"), format='png')
-    # plt.show()
-
-    sns.set(font_scale=0.9)
-    g = sns.catplot(data=peak_dataframe, x="Subcategory-02", y="mitosis_t", hue="Subcategory-00",
-                    order=conditions, hue_order=np.unique(peak_dataframe["Subcategory-00"]), height=5,
-                    aspect=2, palette="rainbow"
-                    )
-    g.set_axis_labels("Exposure times", "Time point of mitosisk")
-    g.despine(left=True)
-    plt.ylim([-5, 300])
-    # plt.yscale("log")
-    g.savefig(os.path.join(output_path_plots, "mitosis_time_folderwise.png"), format='png')
-    # plt.show()
+    plot_size_chnage_wrt_peak(peak_dataframe, conditions, "mitosis_t", np.unique(data_exp["Subcategory-00"]), output_path_plots)
