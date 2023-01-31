@@ -14,7 +14,8 @@ sys.path.append(os.path.dirname(SCRIPT_DIR))
 SCRIPT_DIR = '/Users/esti/Documents/PROYECTOS/PHX/mitosis-mediated-phototoxic'
 sys.path.append(SCRIPT_DIR)
 from utils.mitosis_counting import quantify_peaks
-from utils.display import plot_info_wrt_peak, plot_mitosis
+from utils.display import plot_info_wrt_peak, plot_mitosis, plot_conditions
+from utils.statistics import extract_gaussian_params
 
 output_path = "/Users/esti/Documents/PROYECTOS/PHX/mitosis_mediated_data_itqb_3/CHO/results/scaled_1.5709_results/stardist_prob03/"
 folder = "mitosis_mediated_analysis"
@@ -24,7 +25,7 @@ data = pd.read_csv(
 data = data[data["processing"]=="Raw"].reset_index(drop=True)
 aux = data[data["Subcategory-02"] == 'UV1000ms']
 data.loc[aux.index.to_list(), ["Subcategory-02"]] = ['UV01sec']
-
+#
 for c in np.unique(data["Subcategory-01"]):
     data_c = data[data["Subcategory-01"]==c].reset_index(drop=True)
 
@@ -38,3 +39,16 @@ for c in np.unique(data["Subcategory-01"]):
     data_c = quantify_peaks(data_c, "mitosis")
     hue_order = np.unique(data_c["Subcategory-00"])
     plot_info_wrt_peak(data_c, conditions, hue_order, output_path_plots)
+
+
+## Model cell size distribution
+variable = "cell_size"
+distribution_data = extract_gaussian_params(data, variable)
+distribution_data.to_csv(os.path.join(output_path, folder, "cell_size_statistics.csv"))
+
+
+for g in np.unique(distribution_data["Subcategory-01"]):
+    aux = distribution_data[distribution_data["Subcategory-01"] == g].reset_index(drop=True)
+    aux["ratio"] = aux["GaussianMixtureMean_0"] / aux["GaussianMixtureMean_1"]
+    plot_conditions(aux, "ratio", "Cell size average", "Subcategory-02", os.path.join(output_path, folder),
+                    "size_ratio_{}.png".format(g), style_condition="Subcategory-01")

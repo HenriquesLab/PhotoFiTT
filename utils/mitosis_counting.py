@@ -149,7 +149,7 @@ def count_mitosis_all(path, stacks=False, pd_dataframe=None, column_data=[], fra
     return pd_dataframe
 
 
-def quantify_peaks(input_data, variable, frame_rate=4, alpha_init=25, alpha_end=100, beta_init=250, beta_end=300):
+def quantify_peaks(input_data, variable, frame_rate=4, alpha_init=25, alpha_end=120, beta_init=250, beta_end=350):
     """
     This is to calculate the motility peak and the ratio between
     the first part of the video and the second one.
