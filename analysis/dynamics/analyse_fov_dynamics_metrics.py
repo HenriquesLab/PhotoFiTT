@@ -15,8 +15,7 @@ SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(os.path.dirname(SCRIPT_DIR))
 SCRIPT_DIR = '/Users/esti/Documents/PROYECTOS/PHX/mitosis-mediated-phototoxic'
 sys.path.append(SCRIPT_DIR)
-from utils.fov_motility import dynamics_peaks
-from utils.display import plot_motility_peak_measurements, plot_motility
+from utils.display import plot_info_wrt_peak, plot_mitosis
 from utils.mitosis_counting import quantify_peaks
 
 ## GENERAL INFORMATION
@@ -37,8 +36,9 @@ data.loc[aux.index.to_list(), ["Subcategory-02"]] = ['UV01sec']
 
 # Read information about motility
 folder = "dynamics_clahe"
-condition = ["UV_clean", "475_clean", "630", "568"]
-
+# condition = ["UV_clean", "475_clean", "630", "568"]
+condition = ['WL 475 - high density', 'WL 568 - high density',
+       'WL 630 - high density', 'WL UV - high density']
 for c in condition:
     ## Folder for the outputs
     output_path_plots = os.path.join(output_path, folder, c)
@@ -48,17 +48,25 @@ for c in condition:
         os.path.join(output_path, folder, "data_dynamics_intensity_{}.csv".format(c)))
     aux = dynamics_metrics[dynamics_metrics["Subcategory-02"] == 'UV1000ms']
     dynamics_metrics.loc[aux.index.to_list(), ["Subcategory-02"]] = ['UV01sec']
-    plot_motility(dynamics_metrics, output_path_plots, conditions)
+    plot_mitosis(dynamics_metrics, output_path_plots, conditions, "time_variance")
 
     ## Get motility peaks (may not make sense) and plot it.
-    data_dynamics_peaks = dynamics_peaks(dynamics_metrics)
+    data_dynamics_peaks = quantify_peaks(dynamics_metrics, "time_variance")
     hue_order = np.unique(dynamics_metrics["Subcategory-00"])
-    plot_motility_peak_measurements(data_dynamics_peaks, conditions, hue_order, output_path_plots)
+    plot_info_wrt_peak(data_dynamics_peaks, conditions, hue_order, output_path_plots)
 
 
     ## Calculate the mitoses peaks
     data_c = data[data["Subcategory-01"] == c].reset_index(drop=True)
     data_c = quantify_peaks(data_c, "mitosis")
+
+    for f in np.unique(data_c["Subcategory-00"]):
+        data_cf = data_c[data_c["Subcategory-00"]==f].reset_index(drop=True)
+        dynamics_metrics_f = dynamics_metrics[dynamics_metrics["Subcategory-00"]==f].reset_index(drop=True)
+        for v in np.unique(data_cf["video_name"]):
+            data_cfv = data_cf[data_cf["video_name"] == v].reset_index(drop=True)
+            dynamics_metrics_fv = dynamics_metrics_f[dynamics_metrics_f["video_name"] == v].reset_index(drop=True)
+
 
     data_synchro = data_c[data_c["Subcategory-02"] == "Synchro"]
     peak_timepoint = np.percentile(data_synchro["peak_time"], 75)

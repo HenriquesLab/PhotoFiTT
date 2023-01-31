@@ -166,34 +166,36 @@ def quantify_peaks(input_data, variable, frame_rate=4, alpha_init=25, alpha_end=
     :return:
     """
     aux = None
-    for v in np.unique(input_data["video_name"]):
-        video_data = input_data[input_data["video_name"] == v].reset_index(drop=True)
-        frame_rate = frame_rate
-        init_mit = int(alpha_init / frame_rate)  # 30
-        final_mit = int(alpha_end / frame_rate)  # 80
-        alpha = np.max(video_data.iloc[init_mit:final_mit][variable])
-        peak_time = video_data.loc[video_data.iloc[init_mit:final_mit][variable].idxmax(skipna=True), "frame"]
-        init_mit = int(beta_init / frame_rate)
-        final_mit = int(beta_end / frame_rate)
-        beta = np.mean(video_data.iloc[init_mit:][variable])
-        columns = [c for c in video_data.columns if c.__contains__("Subcategory")]
-        data = [video_data.iloc[0][c] for c in columns]
-        if alpha == 0. and beta == 0.:
-            ratio = 0.
-        elif beta == 0.:
-            print(v)
-            ratio = np.infty
-        else:
-            ratio = alpha / beta
-        # ratio = (alpha - beta) / (alpha + beta)
-        data += [v, alpha, beta, ratio, peak_time]
-        columns += ["video_name", "alpha", "beta", "ratio", "peak_time"]
-        if aux is None:
-            aux = pd.DataFrame(np.expand_dims(np.array(data), axis=0), columns=columns)
-        else:
-            aux = pd.concat([aux,
-                             pd.DataFrame(np.expand_dims(np.array(data), axis=0), columns=columns)]).reset_index(
-                drop=True)
+    for f in np.unique(input_data["Subcategory-00"]):
+        input_data_f = input_data[input_data["Subcategory-00"] == f].reset_index(drop=True)
+        for v in np.unique(input_data["video_name"]):
+            video_data = input_data_f[input_data_f["video_name"] == v].reset_index(drop=True)
+            frame_rate = frame_rate
+            init_mit = int(alpha_init / frame_rate)  # 30
+            final_mit = int(alpha_end / frame_rate)  # 80
+            alpha = np.max(video_data.iloc[init_mit:final_mit][variable])
+            peak_time = video_data.loc[video_data.iloc[init_mit:final_mit][variable].idxmax(skipna=True), "frame"]
+            init_mit = int(beta_init / frame_rate)
+            final_mit = int(beta_end / frame_rate)
+            beta = np.mean(video_data.iloc[init_mit:][variable])
+            columns = ["Subcategory-01", "Subcategory-02"]
+            data = [video_data.iloc[0][c] for c in columns]
+            if alpha == 0. and beta == 0.:
+                ratio = 0.
+            elif beta == 0.:
+                print(v)
+                ratio = np.infty
+            else:
+                ratio = alpha / beta
+            # ratio = (alpha - beta) / (alpha + beta)
+            data += [f, v, alpha, beta, ratio, peak_time]
+            columns += ["Subcategory-00", "video_name", "alpha", "beta", "ratio", "peak_time"]
+            if aux is None:
+                aux = pd.DataFrame(np.expand_dims(np.array(data), axis=0), columns=columns)
+            else:
+                aux = pd.concat([aux,
+                                 pd.DataFrame(np.expand_dims(np.array(data), axis=0), columns=columns)]).reset_index(
+                    drop=True)
     aux = aux.astype({'ratio': 'float32', 'alpha': 'float32', 'beta': 'float32', 'peak_time': 'float32'})
 
     aux_1 = None
