@@ -1,7 +1,5 @@
 import numpy as np
 from scipy.ndimage import gaussian_filter
-from numba import njit
-
 
 def normalizePercentile(x, pmin=1, pmax=99.8, axis=None, clip=False, eps=1e-20, dtype=np.float32):
     """This function is adapted from Martin Weigert"""
@@ -31,8 +29,6 @@ def normalize_mi_ma(x, mi, ma, clip=False, eps=1e-20, dtype=np.float32):  # dtyp
 
     return x
 
-
-@njit()
 def background_subtr_medFilt(stackGray):
     # Calculate the background of an image with a median filter over the z-axis.
     # The function returns the stack after subtracting the background and the background itself.

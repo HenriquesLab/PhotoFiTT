@@ -17,27 +17,67 @@ SCRIPT_DIR = '/Users/esti/Documents/PROYECTOS/PHX/mitosis-mediated-phototoxic'
 sys.path.append(SCRIPT_DIR)
 from utils.fov_motility import dynamics_peaks
 from utils.display import plot_motility_peak_measurements, plot_motility
+from utils.mitosis_counting import quantify_peaks
 
+## GENERAL INFORMATION
+## ------------------------
 output_path = "/Users/esti/Documents/PROYECTOS/PHX/mitosis_mediated_data_itqb_3/CHO/results/scaled_1.5709_results/stardist_prob03/"
+conditions = ['Control-sync', 'Synchro', 'UV25ms', 'UV50ms', 'UV100ms', 'UV200ms', 'UV400ms', 'UV800ms', 'UV01sec',
+                'UV05sec',  'UV10sec', 'UV15sec', 'UV20sec', 'UV25sec']
+
+# Read mitosis information to be used later
+# -----------------------------------------
+folder = "mitosis_mediated_analysis"
+data = pd.read_csv(
+    os.path.join(output_path, folder, "data_clean.csv"))
+data = data[data["processing"]=="Raw"].reset_index(drop=True)
+aux = data[data["Subcategory-02"] == 'UV1000ms']
+data.loc[aux.index.to_list(), ["Subcategory-02"]] = ['UV01sec']
+
+
+# Read information about motility
 folder = "dynamics_clahe"
 condition = ["UV_clean", "475_clean", "630", "568"]
+
 for c in condition:
+    ## Folder for the outputs
+    output_path_plots = os.path.join(output_path, folder, c)
+    os.makedirs(output_path_plots, exist_ok=True)
+    ## Read motility data and plot it
     dynamics_metrics = pd.read_csv(
         os.path.join(output_path, folder, "data_dynamics_intensity_{}.csv".format(c)))
     aux = dynamics_metrics[dynamics_metrics["Subcategory-02"] == 'UV1000ms']
     dynamics_metrics.loc[aux.index.to_list(), ["Subcategory-02"]] = ['UV01sec']
-
-    data = dynamics_peaks(dynamics_metrics)
-
-    output_path_plots = os.path.join(output_path, folder, c)
-    os.makedirs(output_path_plots, exist_ok=True)
-
-    conditions = ['Control-sync', 'Synchro', 'UV25ms', 'UV50ms', 'UV100ms', 'UV200ms', 'UV400ms', 'UV800ms', 'UV01sec',
-                    'UV05sec',  'UV10sec', 'UV15sec', 'UV20sec', 'UV25sec']
     plot_motility(dynamics_metrics, output_path_plots, conditions)
 
+    ## Get motility peaks (may not make sense) and plot it.
+    data_dynamics_peaks = dynamics_peaks(dynamics_metrics)
     hue_order = np.unique(dynamics_metrics["Subcategory-00"])
-    plot_motility_peak_measurements(data, conditions, hue_order, output_path_plots)
+    plot_motility_peak_measurements(data_dynamics_peaks, conditions, hue_order, output_path_plots)
+
+
+    ## Calculate the mitoses peaks
+    data_c = data[data["Subcategory-01"] == c].reset_index(drop=True)
+    data_c = quantify_peaks(data_c, "mitosis")
+
+    data_synchro = data_c[data_c["Subcategory-02"] == "Synchro"]
+    peak_timepoint = np.percentile(data_synchro["peak_time"], 75)
+    data_synchro = aux[aux["Subcategory-02"] == "Synchro"]
+    time_point = np.where(
+        abs(data_synchro["frame"] - peak_timepoint) == np.min(abs(data_synchro["frame"] - peak_timepoint)))
+    synchro_mean_size = np.mean(data_synchro["average"].iloc[time_point])
+    peak_data = []
+    for exp in np.unique(aux["Subcategory-02"]):
+        data_exp = aux[aux["Subcategory-02"] == exp]
+        data_exp["compared_peak"] = data_exp["average"] - synchro_mean_size
+        data_exp = data_exp[data_exp["frame"] > 60]
+        for f in np.unique(data_exp["Subcategory-00"]):
+            data_f = data_exp[data_exp["Subcategory-00"] == f]
+            t = np.min(data_f[data_f["compared_peak"] < 0]["frame"])
+            peak_data.append([t] + [f] + [exp])
+    peak_dataframe = pd.DataFrame(peak_data, columns=['mitosis_t', 'Subcategory-00', 'Subcategory-02'])
+    plot_size_chnage_wrt_peak(peak_dataframe, conditions, "mitosis_t", np.unique(data_exp["Subcategory-00"]),
+                              output_path_plots)
 
 #
 #
