@@ -14,11 +14,11 @@ sys.path.append(os.path.dirname(SCRIPT_DIR))
 SCRIPT_DIR = '/Users/esti/Documents/PROYECTOS/PHX/mitosis-mediated-phototoxic'
 sys.path.append(SCRIPT_DIR)
 from utils.mitosis_counting import quantify_peaks
+from utils.statistics import extract_gaussian_params
 from utils.display import plot_info_wrt_peak, plot_mitosis, plot_conditions, plot_size_chnage_wrt_peak
 
 output_path = "/Users/esti/Documents/PROYECTOS/PHX/mitosis_mediated_data_itqb_3/CHO/results/scaled_1.5709_results/stardist_prob03/"
 folder = "mitosis_mediated_analysis"
-condition = ["UV_clean", "475_clean", "630_clean", "568_clean"]
 data = pd.read_csv(
     os.path.join(output_path, folder, "data_clean.csv"))
 data = data[data["processing"]=="Raw"].reset_index(drop=True)
@@ -38,11 +38,11 @@ for c in np.unique(data["Subcategory-01"]):
     output_path_plots = os.path.join(output_path, folder, c)
     os.makedirs(output_path_plots, exist_ok=True)
 
-    plot_mitosis(data_c, output_path_plots, conditions, "mitosis")
+    # plot_mitosis(data_c, output_path_plots, conditions, "mitosis")
 
     data_c = quantify_peaks(data_c, "mitosis")
     hue_order = np.unique(data_c["Subcategory-00"])
-    plot_info_wrt_peak(data_c, conditions, hue_order, output_path_plots)
+    # plot_info_wrt_peak(data_c, conditions, hue_order, output_path_plots)
 
     aux = distribution_data[distribution_data["Subcategory-01"] == c].reset_index(drop=True)
     # aux["ratio"] = aux["GaussianMixtureCovariance_0"] / aux["GaussianMixtureCovariance_1"]
@@ -52,11 +52,12 @@ for c in np.unique(data["Subcategory-01"]):
     # plot_mitosis(aux, output_path_plots, conditions, "average")
     values = ["average", "derivative-average", "variance", 'GaussianMixtureMean_0', 'GaussianMixtureMean_1',
               'GaussianMixtureCovariance_0', 'GaussianMixtureCovariance_1']
-    for v in values:
-        print(v)
-        plot_conditions(aux, v, "Cell size {}".format(v), "Subcategory-02", output_path_plots,
-                        "size_{0}_{1}.png".format(v, c), style_condition="Subcategory-01", hue_order=conditions)
-
+    # for v in values:
+    #     print(v)
+    #     plot_conditions(aux, v, "Cell size {}".format(v), "Subcategory-02", output_path_plots,
+    #                     "size_{0}_{1}.png".format(v, c), style_condition="Subcategory-01", hue_order=conditions)
+    ## We calculate the mean size of detected cells in the synchro group in the peak (as we assume it's going to be the
+    ## daughter ones)
     data_synchro = data_c[data_c["Subcategory-02"]=="Synchro"]
     peak_timepoint = np.percentile(data_synchro["peak_time"], 75)
     data_synchro = aux[aux["Subcategory-02"] == "Synchro"]
@@ -64,12 +65,12 @@ for c in np.unique(data["Subcategory-01"]):
     synchro_mean_size = np.mean(data_synchro["average"].iloc[time_point])
     peak_data = []
     for exp in np.unique(aux["Subcategory-02"]):
-        data_exp = aux[aux["Subcategory-02"]==exp]
+        data_exp = aux[aux["Subcategory-02"]==exp].reset_index(drop=True)
         data_exp["compared_peak"] = data_exp["average"] - synchro_mean_size
-        data_exp = data_exp[data_exp["frame"]>60]
+        data_exp = data_exp[data_exp["frame"]>60].reset_index(drop=True)
         for f in np.unique(data_exp["Subcategory-00"]):
-            data_f = data_exp[data_exp["Subcategory-00"] == f]
+            data_f = data_exp[data_exp["Subcategory-00"] == f].reset_index(drop=True)
             t = np.min(data_f[data_f["compared_peak"] < 0]["frame"])
-            peak_data.append([t] + [f] + [exp])
+            peak_data.append([t, f, exp])
     peak_dataframe = pd.DataFrame(peak_data, columns=['mitosis_t', 'Subcategory-00', 'Subcategory-02'])
-    plot_size_chnage_wrt_peak(peak_dataframe, conditions, "mitosis_t", np.unique(data_exp["Subcategory-00"]), output_path_plots)
+    plot_size_chnage_wrt_peak(peak_dataframe, conditions, "mitosis_t", np.unique(aux["Subcategory-00"]), output_path_plots)
