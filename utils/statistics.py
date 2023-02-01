@@ -474,12 +474,57 @@ def extract_gaussian_params(data, variable):
                     else:
                         data_r = pd.concat([data_r, aux]).reset_index(drop=True)
                 # Create the data
-                v_dist = GaussianMixtureTime(data_r, variable)
-                v_dist["Subcategory-00"] = f
-                v_dist["Subcategory-01"] = c
-                v_dist["Subcategory-02"] = g
-                if distribution_data is None:
-                    distribution_data = v_dist
-                else:
-                    distribution_data = pd.concat([distribution_data, v_dist]).reset_index(drop=True)
+                if data_r is not None:
+                    v_dist = GaussianMixtureTime(data_r, variable)
+                    v_dist["Subcategory-00"] = f
+                    v_dist["Subcategory-01"] = c
+                    v_dist["Subcategory-02"] = g
+                    if distribution_data is None:
+                        distribution_data = v_dist
+                    else:
+                        distribution_data = pd.concat([distribution_data, v_dist]).reset_index(drop=True)
+    return distribution_data
+
+
+def extract_gaussian_params_video(data, variable):
+    """
+    It will run the gaussian mixture model fit considering the condition of each experiment
+    :param data:
+    :param variable:
+    :return:
+    """
+    # TODO: These loops could be optimised and be more general. Note that a folder + video name defines a unique file
+    distribution_data = None
+    data = data[data[variable] != "[]"].reset_index(drop=True)
+    for f in np.unique(data["Subcategory-00"]):
+        print(f)
+        data_f = data[data["Subcategory-00"] == f].reset_index(drop=True)
+        for c in np.unique(data_f["Subcategory-01"]):
+            print(c)
+            data_c = data_f[data_f["Subcategory-01"] == c].reset_index(drop=True)
+            for g in np.unique(data_c["Subcategory-02"]):
+                print(g)
+                data_g = data_c[data_c["Subcategory-02"] == g].reset_index(drop=True)
+                for v in np.unique(data_g["video_name"]):
+                    data_v = data_g[data_g["video_name"] == v].reset_index(drop=True)
+                    data_r = None
+                    for r in range(len(data_v)):
+                        values = data_v.iloc[r][variable][1:-1].split(",")
+                        aux = pd.DataFrame([[np.float32(k), data_g.iloc[r].frame] for k in values],
+                                           columns=[variable, "frame"])
+                        if data_r is None:
+                            data_r = aux
+                        else:
+                            data_r = pd.concat([data_r, aux]).reset_index(drop=True)
+                    # Create the data
+                    if data_r is not None:
+                        v_dist = GaussianMixtureTime(data_r, variable)
+                        v_dist["Subcategory-00"] = f
+                        v_dist["Subcategory-01"] = c
+                        v_dist["Subcategory-02"] = g
+                        v_dist["video_name"] = v
+                        if distribution_data is None:
+                            distribution_data = v_dist
+                        else:
+                            distribution_data = pd.concat([distribution_data, v_dist]).reset_index(drop=True)
     return distribution_data
