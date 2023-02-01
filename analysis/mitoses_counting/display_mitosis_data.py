@@ -18,7 +18,9 @@ from utils.statistics import extract_gaussian_params
 from utils.display import plot_info_wrt_peak, plot_mitosis, plot_conditions, plot_size_chnage_wrt_peak
 
 output_path = "/Users/esti/Documents/PROYECTOS/PHX/mitosis_mediated_data_itqb_3/CHO/results/scaled_1.5709_results/stardist_prob03/"
+output_path = "/Users/esti/Documents/PROYECTOS/PHX/mitosis_mediated_data_itqb_3/HELA/results/scaled_1.5709_results/stardist_prob03/"
 folder = "mitosis_mediated_analysis"
+folder = "mitosis-mediated-results"
 data = pd.read_csv(
     os.path.join(output_path, folder, "data_clean.csv"))
 data = data[data["processing"]=="Raw"].reset_index(drop=True)
@@ -73,4 +75,5 @@ for c in np.unique(data["Subcategory-01"]):
             t = np.min(data_f[data_f["compared_peak"] < 0]["frame"])
             peak_data.append([t, f, exp])
     peak_dataframe = pd.DataFrame(peak_data, columns=['mitosis_t', 'Subcategory-00', 'Subcategory-02'])
-    plot_size_chnage_wrt_peak(peak_dataframe, conditions, "mitosis_t", np.unique(aux["Subcategory-00"]), output_path_plots)
+    plot_size_chnage_wrt_peak(peak_dataframe, conditions, "mitosis_t", np.unique(aux["Subcategory-00"]),
+                              output_path_plots, y_lim=[0, 500])
