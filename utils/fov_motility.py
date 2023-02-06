@@ -25,6 +25,41 @@ def time_crosscorrelation_variability(im):
     xc_time = np.array(xc_time)
     return xc_mean, xc_time
 
+def piv_time_variability(im, winsize=30, searchsize=35, overlap=10, dt=0.01, threshold=1.05):
+    """
+
+    :param im:
+    :param winsize: pixels, interrogation window size in frame A
+    :param searchsize: pixels, search in image B
+    :param overlap: pixels, 50% overlap
+    :param dt: sec, time interval between pulses
+    :param threshold:
+    :return:
+    """
+    from openpiv import pyprocess, validation, filters
+    piv_t = []
+    for t in range(len(im) - 1):
+        frame_a = im[t]
+        frame_b = im[t + 1]
+        u0, v0, sig2noise = pyprocess.extended_search_area_piv(frame_a.astype(np.int32),
+                                                               frame_b.astype(np.int32),
+                                                               window_size=winsize,
+                                                               overlap=overlap,
+                                                               dt=dt,
+                                                               search_area_size=searchsize,
+                                                               sig2noise_method='peak2peak')
+        flags = validation.sig2noise_val(sig2noise,
+                                         threshold=threshold)
+        u0, v0 = filters.replace_outliers(u0, v0,
+                                          flags,
+                                          method='localmean',
+                                          max_iter=3,
+                                          kernel_size=3)
+        piv_t.append(np.multiply(u0, u0) + np.multiply(v0, v0))
+    piv_t = np.array(piv_t)
+    mean_piv_t = [np.mean(piv_t[t]) for t in range(len(piv_t))]
+    return mean_piv_t, piv_t
+
 def extract_dynamics_metrics(path, dynamics_info=None, column_data=[], frame_rate=4, enhance_contrast=False,
                              method="intensity", save_steps=False, output_path='', condition=None):
     folders = os.listdir(path)
@@ -62,6 +97,8 @@ def extract_dynamics_metrics(path, dynamics_info=None, column_data=[], frame_rat
                         dynamics_val, diff = time_crosscorrelation_variability(new_im)
                     elif method == "intensity":
                         dynamics_val, diff = time_intensity_variability(new_im)
+                    elif method =='piv':
+                        dynamics_val, diff = piv_time_variability(new_im)
                     if save_steps:
                         print()
                         os.makedirs(output_path, exist_ok=True)

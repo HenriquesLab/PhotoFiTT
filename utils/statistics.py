@@ -30,6 +30,27 @@ def gaussian_function(x, sigma, mu, a):
     """
     return a * np.exp(-(x - mu) ** 2 / (2 * sigma ** 2))
 
+def gaussian_mixture_function(x, sigma1, sigma2, mu1, mu2, a1, a2, p):
+    """
+    Non normalised gaussian density (area under the curve >1)
+    :param x: input value
+    :param sigma: standard deviation
+    :param mu: mean value
+    :param a: scaling factor and the maximum value expected for the non-normalised Gaussian density
+    :return: the probability density value of a Gaussian with mean x0, and standard deviation sigma.
+    """
+    return p*(gaussian_function(x, sigma1, mu1, a1)) + (1-p)*(gaussian_function(x, sigma2, mu2, a2))
+
+def gaussian_mixture_least_squares(x, y, sigma1, sigma2, mu1, mu2, a1, a2, p):
+    """
+    least square function for the non-normalised gaussian probability density function
+    :param x and y: input pairs for which Gaussian_pdf(x) is expected to be y. x and y are 0 dimensional numbers
+    :param mu: mean value
+    :param a: scaling factor and the maximum value expected for the non-normalised Gaussian density
+    :param sigma: standard deviation
+    :return: the probability density value of a Gaussian with mean x0, and standard deviation sigma.
+    """
+    return sum((y - gaussian_mixture_function(x, sigma1, sigma2, mu1, mu2, a1, a2, p)) ** 2)
 
 def gaussian_least_squares(x, y, sigma, mu, a):
     """
@@ -486,7 +507,7 @@ def extract_gaussian_params(data, variable):
     return distribution_data
 
 
-def extract_gaussian_params_video(data, variable):
+def extract_gaussian_params_videowise(data, variable):
     """
     It will run the gaussian mixture model fit considering the condition of each experiment
     :param data:

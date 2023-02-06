@@ -23,13 +23,12 @@ output_path = sys.argv[2]
 condition = sys.argv[3] # "630", "WL UV - high..."
 # main_path = "/Users/esti/Documents/PROYECTOS/PHX/mitosis_mediated_data_itqb_3/inputs/scaled_1.5709_results/2022-08-10/"
 # main_path = "/Users/esti/Documents/PROYECTOS/PHX/mitosis_mediated_data_itqb_3/inputs/scaled_1.5709_results/2022-08-10/WL UV - high density/Synchro"
-
 # output_path = "/Users/esti/Documents/PROYECTOS/PHX/mitosis_mediated_data_itqb_3/results/scaled_1.5709_results/stardist_prob03"
-folder = "dynamics_clahe"
+method = sys.argv[4] # "intensity"
+
+folder = "dynamics_clahe-{}".format(method)
 if not os.path.exists(os.path.join(output_path, folder)):
     os.mkdir(os.path.join(output_path, folder))
-
-method = "intensity"
 
 dynamics_metrics = extract_dynamics_metrics(main_path, method=method, save_steps=False, enhance_contrast=True,
                                             output_path=os.path.join(output_path, folder), condition=condition)
