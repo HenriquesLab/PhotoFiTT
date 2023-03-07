@@ -41,8 +41,8 @@ def piv_time_variability(im, winsize=30, searchsize=35, overlap=10, dt=0.01, thr
     for t in range(len(im) - 1):
         frame_a = im[t]
         frame_b = im[t + 1]
-        u0, v0, sig2noise = pyprocess.extended_search_area_piv(frame_a.astype(np.int32),
-                                                               frame_b.astype(np.int32),
+        u0, v0, sig2noise = pyprocess.extended_search_area_piv(frame_a.astype(np.float32),
+                                                               frame_b.astype(np.float32),
                                                                window_size=winsize,
                                                                overlap=overlap,
                                                                dt=dt,
@@ -83,7 +83,7 @@ def extract_dynamics_metrics(path, dynamics_info=None, column_data=[], frame_rat
                 if process_file > 0:
                     print(f)
                     im = imread(os.path.join(path, f))
-                    new_im = normalise_phc_timelapse(im)
+                    new_im = normalise_phc_timelapse(im, keep_mean=False)
 
                     if enhance_contrast:
                         low = np.min(new_im)

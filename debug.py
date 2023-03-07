@@ -119,34 +119,25 @@ def gaussian_mixture_function(x, sigma1, sigma2, mu1, mu2, a1, a2, p):
     """
     return p*(gaussian_function(x, sigma1, mu1, a1)) + (1-p)*(gaussian_function(x, sigma2, mu2, a2))
 class lsq_minimiser():
-    def __init__(self, x, y, mean=None, sigma=None, amplitude=None, prob_dist="gaussian"):
+    def __init__(self, x, y):
         # Store the parameters in the class
         self.x = np.squeeze(x)
         self.y = np.squeeze(y)
-        self.mean = mean
-        self.sigma = sigma
-        self.amplitude = amplitude
-        self.prob_dist = prob_dist
-    def __least_squares__(self, params):
+        self.mean1 = None
+        self.sigma1 = None
+        self.amplitude1 = None
+        self.mean2 = None
+        self.sigma2 = None
+        self.amplitude2 = None
+        self.p = None
+    def __least_squares__(self):
         # Define the function to minimise
-        if self.prob_dist == "gaussian":
-            # split input params
-            if len(params)==3:
-                sigma, mean, a = params
-                return sum((self.y - gaussian_function(self.x, sigma, mean, a)) ** 2)
-            elif len(params)==2:
-                mean, a = params
-                return sum((self.y - gaussian_function(self.x, self.sigma, mean, a)) ** 2)
-            else:
-                a = params
-                return sum((self.y - gaussian_function(self.x, self.sigma, self.mean, a)) ** 2)
-
-        elif self.prob_dist == "poisson":
-            mean = params
-            return sum((self.y - poisson_function(self.x, mean)) ** 2)
-
-        elif self.prob_dist == "poisson_jacobian":
-            mean = params
-            return sum((self.y - tfm_poisson_pdf(self.x, mean)) ** 2)
+        return sum((self.y - gaussian_function(self.x, self.sigma1, self.sigma2, self.mean1, self.mean2, self.amplitude1, self.amplitude2, self.p)) ** 2)
     def run_minimisation(self, options={}, **kwargs):
-        return minimize(self.__least_squares__, self.x0, options=options, **kwargs)
+        return minimize(self.__least_squares__, options=options, **kwargs)
+
+aux = data[data["Subcategory-02"] == 'Synchro'].reset_index(drop=True)
+x = aux["mitosis"]
+y = aux["frame"]
+minimiser = lsq_minimiser(x, y)
+params = minimiser.run_minimisation()

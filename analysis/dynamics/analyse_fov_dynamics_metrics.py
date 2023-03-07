@@ -21,7 +21,7 @@ from utils.mitosis_counting import quantify_peaks
 ## GENERAL INFORMATION
 ## ------------------------
 output_path = "/Users/esti/Documents/PROYECTOS/PHX/mitosis_mediated_data_itqb_3/CHO/results/scaled_1.5709_results/stardist_prob03/"
-output_path = "/Users/esti/Documents/PROYECTOS/PHX/mitosis_mediated_data_itqb_3/HELA/results/scaled_1.5709_results/stardist_prob03/"
+# output_path = "/Users/esti/Documents/PROYECTOS/PHX/mitosis_mediated_data_itqb_3/HELA/results/scaled_1.5709_results/stardist_prob03/"
 
 conditions = ['Control-sync', 'Synchro', 'UV25ms', 'UV50ms', 'UV100ms', 'UV200ms', 'UV400ms', 'UV800ms', 'UV01sec',
                 'UV05sec',  'UV10sec', 'UV15sec', 'UV20sec', 'UV25sec']
@@ -29,7 +29,7 @@ conditions = ['Control-sync', 'Synchro', 'UV25ms', 'UV50ms', 'UV100ms', 'UV200ms
 # Read mitosis information to be used later
 # -----------------------------------------
 folder = "mitosis_mediated_analysis"
-folder = "mitosis-mediated-results"
+# folder = "mitosis-mediated-results"
 data = pd.read_csv(
     os.path.join(output_path, folder, "data_clean.csv"))
 data = data[data["processing"]=="Raw"].reset_index(drop=True)
@@ -38,18 +38,19 @@ data.loc[aux.index.to_list(), ["Subcategory-02"]] = ['UV01sec']
 
 
 # Read information about motility
-folder = "dynamics_clahe"
+folder = "dynamics_clahe-piv"
 # condition = ["UV_clean", "475_clean", "630", "568"]
 condition = ['WL 475 - high density', 'WL 568 - high density',
        'WL 630 - high density', 'WL UV - high density']
 condition = ['WL UV - high density']
+method="piv" # "intensity"
 for c in condition:
     ## Folder for the outputs
     output_path_plots = os.path.join(output_path, folder, c)
     os.makedirs(output_path_plots, exist_ok=True)
     ## Read motility data and plot it
     dynamics_metrics = pd.read_csv(
-        os.path.join(output_path, folder, "data_dynamics_intensity_{}.csv".format(c)))
+        os.path.join(output_path, folder, "data_dynamics_{0}_{1}.csv".format(method, c)))
     aux = dynamics_metrics[dynamics_metrics["Subcategory-02"] == 'UV1000ms']
     dynamics_metrics.loc[aux.index.to_list(), ["Subcategory-02"]] = ['UV01sec']
     plot_mitosis(dynamics_metrics, output_path_plots, conditions, "time_variance")
