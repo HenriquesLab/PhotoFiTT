@@ -19,6 +19,7 @@ dependencies:
   - pyyaml==6.0
   - pillow==8.4.0
   - scikit-learn==1.2.1
+  - jupyter
   - pip:
     - opencv-python==4.5.3.56
     - opencv
