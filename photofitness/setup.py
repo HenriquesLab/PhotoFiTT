@@ -1,13 +1,20 @@
 from setuptools import setup, find_packages
+from os import path
 
-with open("README.md", "r") as fh:
-    long_description = fh.read()
+_dir = path.dirname(__file__)
+
+with open(path.join(_dir,'photofitness','version.py'), encoding="utf-8") as f:
+    exec(f.read())
+
+with open(path.join(_dir,'README.md'), encoding="utf-8") as f:
+    long_description = f.read()
+
 # parse_requirements() returns generator of pip.req.InstallRequirement objects
 
 setup(
     name='photofitness',
     packages=find_packages(include=['photofitness', 'photofitness.*']),
-    version='1.0.0',
+    version=__version__,
     license='BSD 3-Clause License',
     description='Python package to measure cell arrestment and assess the temporal footprint of phototoxicity.',
     long_description=long_description,
