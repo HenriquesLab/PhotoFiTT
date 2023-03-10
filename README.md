@@ -61,16 +61,14 @@ For example:
 
 # Package installation
 
-## Conda environment creation for M1
-
-## Conda environment creation for M1
+## Installation in M1
 The code provides an `environment.yaml` file with most of the dependencies needed. As some dependencies might not be installed for all the operating system, we provide longer but still general enough guidelines.
 
 - Create a new environment using `environment.yaml`. All the packages will be installed from conda-forge.
   Place your terminal in the `mitosis-mediated-phototoxic` folder. Use either conda or mamba:
   ```
-  mamba env create -n mitphoto -f environment.yml  
-  mamba activate mitphoto
+  mamba env create -f environment.yml  
+  mamba activate photofitness
   ```
 - The current code uses `connected-components-3d `, which is not available for osx-arm64 (MacOS M1). 
   Thus, we need to install it manually in the environment that we have just created.
@@ -78,13 +76,45 @@ The code provides an `environment.yaml` file with most of the dependencies neede
 - 
   ```
   git clone https://github.com/seung-lab/connected-components-3d.git
+  cd connected-components-3d
   pip install -r requirements.txt
   python setup.py develop
   ```
-- Similar to `slideio`, which is not existing for MacOS M1. Check out their documentation for your Operating System: https://pypi.org/project/slideio/
 - Once the environment is created and installed, install the package as follows:
 - 
   ```
   git clone https://github.com/HenriquesLab/photofitness.git
+  cd photofitness
   python setup.py
   ```
+  or
+- 
+  ```
+  git clone https://github.com/HenriquesLab/photofitness.git
+  cd photofitness
+  conda build conda-recipe/meta.yaml
+  ```
+
+## Installation using conda instead of pip
+- If you are in Mac M1, you can create an environment as before. Otherwise, you can create a totally new environment with the basic code of Conda.
+- Activate your conda environment.
+- Install `conda-build` as 
+- ```
+  conda install conda-build
+  ```
+- Build the conda package with
+- ```
+  conda build conda-recipe/meta.yaml
+  ```
+## Common error messages
+- Error messages with `lxml`. 
+Most probably you need to update developpers tools in your system. Before anythin, run in Mac M1:
+  - 
+      ```
+      xcode-select --install
+      ```
+- If you were in Linux, you can run 
+  - ```
+    sudo apt-get update
+    sudo apt-get install libxml2-dev libxslt-dev python-dev
+    ```

@@ -1,4 +1,3 @@
-#import slideio
 import tifffile
 import os
 import numpy as np

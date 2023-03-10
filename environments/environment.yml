@@ -24,4 +24,3 @@ dependencies:
     - opencv-python==4.5.3.56
     - opencv
     - nd2==0.1.6
-    - slideio
