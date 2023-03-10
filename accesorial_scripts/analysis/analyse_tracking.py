@@ -13,7 +13,7 @@ import sys
 ## Include the following lines to access the code in Python Console
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(os.path.dirname(SCRIPT_DIR))
-SCRIPT_DIR = '/Users/esti/Documents/PROYECTOS/PHX/mitosis-mediated-phototoxic'
+SCRIPT_DIR = '/mitosis-mediated-phototoxic'
 sys.path.append(SCRIPT_DIR)
 from utils.tracking import tracking_metrics
 from utils.display import plot_smooth_curves,  plot_conditions_with_aggregates

@@ -8,7 +8,7 @@ conditions. This script is only meant for exploratory analysis.
 
 import os
 import sys
-SCRIPT_DIR = '/Users/esti/Documents/PROYECTOS/PHX/mitosis-mediated-phototoxic'
+SCRIPT_DIR = '/mitosis-mediated-phototoxic'
 sys.path.append(SCRIPT_DIR)
 from utils.display import plot_smooth_curves
 from utils.mitosis_counting import count_mitosis, smooth

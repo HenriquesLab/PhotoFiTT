@@ -9,7 +9,7 @@ The script is not meant to run automatically. It has sections to clean the data 
 import pandas as pd
 import os
 
-output_path = "/Users/esti/Documents/PROYECTOS/PHX/mitosis_mediated_data_itqb_3/CHO/results/scaled_1.5709_results/stardist_prob03/"
+output_path = "/mitosis_mediated_data_itqb_3/CHO/results/scaled_1.5709_results/stardist_prob03/"
 folder = "dynamics_clahe"
 condition = "475"
 # dynamics_metrics = pd.read_csv(os.path.join(output_path, folder, "data_dynamics_intensity_{}.csv".format(condition)))

@@ -7,10 +7,8 @@ morphological measures of the segmented cells and display their distribution in 
 """
 import sys
 import os
-## Include the following lines to access the code in Python Console
-sys.path.append("/Users/esti/Documents/PROYECTOS/PHX/mitosis-mediated-phototoxic")
-from utils.display import plot_distributions, plot_smooth_curves
-from utils.mitosis_counting import count_mitosis
+from photofitness.display import plot_distributions, plot_smooth_curves
+from photofitness.mitosis_counting import count_mitosis
 import pandas as pd
 import numpy as np
 import os
@@ -19,8 +17,6 @@ import sys
 main_path = sys.argv[1]
 output_path = sys.argv[2]
 frame_rate = int(sys.argv[3])
-# main_path = "/Users/esti/Documents/PHX/mitosis_mediated_data/results/2021-12-20/scaled_x8/stardist_prob03"
-# path = "/Users/esti/Documents/PHX/mitosis_mediated_data/annotations/2021-12-20/CHO_DIC_fast-acq_/"
 
 r = 0.0 # Roundness
 t_factor = 4  # In minutes

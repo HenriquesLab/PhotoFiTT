@@ -212,3 +212,29 @@ def quantify_peaks(input_data, variable, frame_rate=4, alpha_init=25, alpha_end=
     # aux_1 = aux_1.drop(index)
     # aux_1 = aux_1.reset_index(drop=True)
     return aux_1
+
+def compare_peaks(data_mitosis, data_cellsize ):
+    ## We calculate the mean size of detected cells in the synchro group in the peak (as we assume it's going to be the
+    ## daughter ones)
+    data_synchro = data_mitosis[data_mitosis["Subcategory-02"] == "Synchro"]
+    ## Obtain the averaged timepoints in which the synchronised field of views for this specific replica got the maximum
+    ## number of cells: understood as cell division
+    peak_timepoint = np.percentile(data_synchro["peak_time"], 75)
+    data_synchro = data_cellsize[data_cellsize["Subcategory-02"] == "Synchro"]
+    ## We get the shape of the cells at the estimated cell division time-point. We could also get it at each peak of
+    ## each FOV but they should be very similar.
+    time_point = np.where(
+        abs(data_synchro["frame"] - peak_timepoint) == np.min(abs(data_synchro["frame"] - peak_timepoint)))
+    synchro_mean_size = np.mean(data_synchro["average"].iloc[time_point])
+    peak_data = []
+    for exp in np.unique(data_cellsize["Subcategory-02"]):
+        data_exp = data_cellsize[data_cellsize["Subcategory-02"] == exp].reset_index(drop=True)
+        data_exp["compared_peak"] = data_exp["average"] - synchro_mean_size
+        data_exp = data_exp[data_exp["frame"] > (peak_timepoint / 2)].reset_index(drop=True)
+        for f in np.unique(data_exp["Subcategory-00"]):
+            data_f = data_exp[data_exp["Subcategory-00"] == f].reset_index(drop=True)
+            t = np.min(data_f[data_f["compared_peak"] < 0]["frame"])
+            peak_data.append([t, f, exp])
+    peak_dataframe = pd.DataFrame(peak_data, columns=['mitosis_t', 'Subcategory-00', 'Subcategory-02'])
+
+    return peak_dataframe
