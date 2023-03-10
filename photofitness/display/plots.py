@@ -21,7 +21,8 @@ def plot_smooth_curves(data, y_var, title, output_path, name):
     # plt.ylabel(y_label)
     plt.xlabel("Time (min)")
     ax.legend(bbox_to_anchor=(0.85, 0.5))
-    fig.savefig(os.path.join(output_path, name), format='png', transparent=True)
+    format_extension = name.split(".")[-1]
+    fig.savefig(os.path.join(output_path, name), format=format_extension, transparent=True)
     # plt.show()
 
 def plot_conditions_with_aggregates(data, y_var, title, output_path, name, hue="Subcategory-01", style="Subcategory-02"):
@@ -39,14 +40,15 @@ def plot_conditions_with_aggregates(data, y_var, title, output_path, name, hue="
     plt.xlabel("Time (min)")
     ax.legend(bbox_to_anchor=(0.85, 0.5))
     plt.tight_layout()
-    fig.savefig(os.path.join(output_path, name), format='png', transparent=True)
+    format_extension = name.split(".")[-1]
+    fig.savefig(os.path.join(output_path, name), format=format_extension, transparent=True)
     # plt.show()
     # plt.close(fig)
 
 def plot_conditions(data, y_var, title, condition, output_path, name, style_condition="processing", hue_order=None):
-    fig = plt.figure(figsize=(12, 8))
+    fig = plt.figure(figsize=(7, 4))
     # Plot the results per category
-    sns.set(font_scale=0.9)
+    sns.set(font_scale=0.85)
     if hue_order is None:
         sns.lineplot(x="frame", y=y_var, hue=condition, style=style_condition, data=data,
                      palette=sns.color_palette("husl", 14), linewidth=1.5, alpha=0.75)
@@ -56,8 +58,9 @@ def plot_conditions(data, y_var, title, condition, output_path, name, style_cond
     # plt.ylabel(y_label)
     plt.xlabel("Time (min)")
     plt.title(title)
-    # plt.legend(bbox_to_anchor=(0.85, 0.5))
-    fig.savefig(os.path.join(output_path, name), format='png', transparent=True)
+    plt.legend(loc='upper right')
+    format_extension = name.split(".")[-1]
+    fig.savefig(os.path.join(output_path, name), format=format_extension, transparent=True)
     # plt.show()
 
 def plot_one_condition(data, y_var, output_path, name, hue1="unique_name", hue2 = "Subcategory-02", frame_rate=10):
@@ -82,7 +85,8 @@ def plot_one_condition(data, y_var, output_path, name, hue1="unique_name", hue2 
     plt.xlabel("Time (min)")
     ax.legend(bbox_to_anchor=(0.85, 0.5))
     plt.tight_layout()
-    fig.savefig(os.path.join(output_path, name), format='png')
+    format_extension = name.split(".")[-1]
+    fig.savefig(os.path.join(output_path, name), format=format_extension)
     # plt.show()
 
 # Define and use a simple function to label the plot in axes coordinates
@@ -133,7 +137,7 @@ def plot_distributions(df, xlabel, title, output_path, smoothness=.5):
     fig.savefig("{}_histogram.svg".format(output_path), format='svg')
     # plt.show()
 
-def plot_mitosis(data, output_path, hue_order, y_variable):
+def plot_mitosis(data, output_path, hue_order, y_variable, graph_format='png'):
 
     fig = plt.figure(figsize=(10, 8))
     plt.rcParams.update({'font.size': 0.9})
@@ -142,7 +146,7 @@ def plot_mitosis(data, output_path, hue_order, y_variable):
                  hue_order=hue_order, linewidth=1.5, alpha=1)
     plt.tight_layout()
     plt.title("{0} along time".format(y_variable))
-    fig.savefig(os.path.join(output_path, "data_{}_counting.png".format(y_variable)), format='png',
+    fig.savefig(os.path.join(output_path, "data_{0}_counting.{1}".format(y_variable, graph_format)), format=graph_format,
                 transparent=True)
 
     for d in np.unique(data["Subcategory-00"]):
@@ -154,7 +158,7 @@ def plot_mitosis(data, output_path, hue_order, y_variable):
                      hue_order=hue_order, linewidth=1.5, alpha=1)
         plt.tight_layout()
         plt.title("{0} - {1} along time".format(y_variable, d))
-        fig.savefig(os.path.join(output_path, "data_{0}_counting_{1}.png".format(y_variable, d)), format='png',
+        fig.savefig(os.path.join(output_path, "data_{0}_counting_{1}.{2}".format(y_variable, d, graph_format)), format=graph_format,
                     transparent=False)
 
 def plot_info_wrt_peak(data, x_labels, hue_order, output_path):
@@ -303,7 +307,7 @@ def plot_info_wrt_peak(data, x_labels, hue_order, output_path):
     # plt.yscale("log")
     # plt.show()
 
-def plot_size_change_wrt_peak(data, x_labels, y_variable, hue_order, output_path, y_lim=[0, 300]):
+def plot_size_change_wrt_peak(data, x_labels, y_variable, hue_order, output_path, y_lim=[0, 300], graph_format='.png'):
     sns.set(font_scale=0.9)
     g = sns.catplot(data=data, x="Subcategory-02", y=y_variable, kind="box",
                     order=x_labels, height=5, aspect=2, palette="rainbow"
@@ -312,7 +316,7 @@ def plot_size_change_wrt_peak(data, x_labels, y_variable, hue_order, output_path
     g.despine(left=True)
     plt.ylim(y_lim)
     # plt.yscale("log")
-    g.savefig(os.path.join(output_path, "mitosis_time.png"), format='png')
+    g.savefig(os.path.join(output_path, "mitosis_time.{}".format(graph_format)), format=graph_format)
     # plt.show()
 
     sns.set(font_scale=0.9)
@@ -323,5 +327,5 @@ def plot_size_change_wrt_peak(data, x_labels, y_variable, hue_order, output_path
     g.despine(left=True)
     plt.ylim(y_lim)
     # plt.yscale("log")
-    g.savefig(os.path.join(output_path, "mitosis_time_folderwise.png"), format='png')
+    g.savefig(os.path.join(output_path, "mitosis_time_folderwise.{}".format(graph_format)), format=graph_format)
     # plt.show()
