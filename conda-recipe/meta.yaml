@@ -1,0 +1,35 @@
+{% set setup_py_data = load_setup_py_data() %}
+
+package:
+  name: photofitness
+  version: {{ setup_py_data['version'] }}
+
+source:
+  path: ..
+
+build:
+  noarch: python
+  number: 0
+  script: "{{ PYTHON }} -m pip install --no-deps --ignore-installed ."
+
+requirements:
+  host:
+    - python >=3.9,<3.10
+    - pip
+  run:
+    - python >=3.9,<3.10
+    - tqdm
+    - typer
+    {% for dep in setup_py_data['install_requires'] %}
+    - {{ dep.lower() }}
+    {% endfor %}
+
+about:
+  home: https://github.com/HenriquesLab/photofitness
+  license: BSD
+  license_family: BSD
+  license_file: LICENSE
+  summary: 'Python package to measure cell arrestment and assess the temporal footprint of phototoxicity.'
+
+  doc_url: https://github.com/HenriquesLab/photofitness
+  dev_url: https://github.com/HenriquesLab/photofitness

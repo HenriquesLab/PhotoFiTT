@@ -1,4 +1,4 @@
-name: mit-phototoxicity
+name: photofitness
 channels:
   - conda-forge
   - nodefaults
@@ -19,9 +19,8 @@ dependencies:
   - pyyaml==6.0
   - pillow==8.4.0
   - scikit-learn==1.2.1
+  - jupyter
   - pip:
     - opencv-python==4.5.3.56
     - opencv
-    - nd2==0.1.6
-    - slideio
     - nd2==0.1.6

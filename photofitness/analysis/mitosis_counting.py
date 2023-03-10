@@ -2,9 +2,7 @@ import os
 from tifffile import imread
 import numpy as np
 import pandas as pd
-from utils.morphology import roundnessCalculator
-
-
+from photofitness.utils.morphology import roundnessCalculator
 
 def smooth(y, t_win):
     """
@@ -17,7 +15,6 @@ def smooth(y, t_win):
     t = np.ones(t_win) / t_win
     y_smooth = np.convolve(y, t, mode='same')
     return y_smooth
-
 
 def extract_info(frame, t, frame_rate, min_roundness, column_data):
     labels = np.unique(frame)
@@ -41,7 +38,6 @@ def extract_info(frame, t, frame_rate, min_roundness, column_data):
     aux = pd.DataFrame(data,
                        columns=['frame', 'mitosis', 'cell_size', "roundness_axis", "roundness_projected"] + columns)
     return aux
-
 
 def count_mitosis(path, stacks=False, pd_dataframe=None, column_data=[], frame_rate=10, min_roundness=0.85):
     """
@@ -86,12 +82,13 @@ def count_mitosis(path, stacks=False, pd_dataframe=None, column_data=[], frame_r
     return pd_dataframe
 
 
-def count_mitosis_all(path, stacks=False, pd_dataframe=None, column_data=[], frame_rate=10, min_roundness=0.85, t_win=5):
+def count_mitosis_all(path, stacks=True, pd_dataframe=None, column_data=[], frame_rate=4, min_roundness=0.0, t_win=5):
     """
     This function parses all the folders contained in the path and will output a pandas data frame with each category
     and subcategory labelled, the fram, time and number of mitosis detected in the image.
-    :param min_roundness:
-    :param stacks:
+    :param t_win: The size of the window (kernel) that is used to smooth the curves
+    :param min_roundness: We can filter out by roundness of the segmented cells
+    :param stacks: If the files are given as videos (True) or each time point is an individual file (False)
     :param path: path containing the folders
     :param pd_dataframe: usually empty as it will create it. Include an old one if you want to concatenate-
     :param column_data: If you want to add an extra category, fill it. Otherwise, leave it with the default []
@@ -113,8 +110,8 @@ def count_mitosis_all(path, stacks=False, pd_dataframe=None, column_data=[], fra
                         frame_rate = 10
                 print("Frame rate of this folder is {}".format(frame_rate))
                 pd_dataframe = count_mitosis_all(os.path.join(path, f), stacks=stacks, pd_dataframe=pd_dataframe,
-                                             column_data=column_data + [f], frame_rate=frame_rate,
-                                             min_roundness=min_roundness, t_win=t_win)
+                                                 column_data=column_data + [f], frame_rate=frame_rate,
+                                                 min_roundness=min_roundness, t_win=t_win)
             elif f.__contains__('.tif'):
                 print(f)
                 im = imread(os.path.join(path, f))
@@ -147,7 +144,6 @@ def count_mitosis_all(path, stacks=False, pd_dataframe=None, column_data=[], fra
                     pd_dataframe = pd.concat([pd_dataframe, aux3]).reset_index(drop=True)
 
     return pd_dataframe
-
 
 def quantify_peaks(input_data, variable, frame_rate=4, alpha_init=25, alpha_end=120, beta_init=250, beta_end=350):
     """
@@ -216,3 +212,29 @@ def quantify_peaks(input_data, variable, frame_rate=4, alpha_init=25, alpha_end=
     # aux_1 = aux_1.drop(index)
     # aux_1 = aux_1.reset_index(drop=True)
     return aux_1
+
+def compare_peaks(data_mitosis, data_cellsize ):
+    ## We calculate the mean size of detected cells in the synchro group in the peak (as we assume it's going to be the
+    ## daughter ones)
+    data_synchro = data_mitosis[data_mitosis["Subcategory-02"] == "Synchro"]
+    ## Obtain the averaged timepoints in which the synchronised field of views for this specific replica got the maximum
+    ## number of cells: understood as cell division
+    peak_timepoint = np.percentile(data_synchro["peak_time"], 75)
+    data_synchro = data_cellsize[data_cellsize["Subcategory-02"] == "Synchro"]
+    ## We get the shape of the cells at the estimated cell division time-point. We could also get it at each peak of
+    ## each FOV but they should be very similar.
+    time_point = np.where(
+        abs(data_synchro["frame"] - peak_timepoint) == np.min(abs(data_synchro["frame"] - peak_timepoint)))
+    synchro_mean_size = np.mean(data_synchro["average"].iloc[time_point])
+    peak_data = []
+    for exp in np.unique(data_cellsize["Subcategory-02"]):
+        data_exp = data_cellsize[data_cellsize["Subcategory-02"] == exp].reset_index(drop=True)
+        data_exp["compared_peak"] = data_exp["average"] - synchro_mean_size
+        data_exp = data_exp[data_exp["frame"] > (peak_timepoint / 2)].reset_index(drop=True)
+        for f in np.unique(data_exp["Subcategory-00"]):
+            data_f = data_exp[data_exp["Subcategory-00"] == f].reset_index(drop=True)
+            t = np.min(data_f[data_f["compared_peak"] < 0]["frame"])
+            peak_data.append([t, f, exp])
+    peak_dataframe = pd.DataFrame(peak_data, columns=['mitosis_t', 'Subcategory-00', 'Subcategory-02'])
+
+    return peak_dataframe
