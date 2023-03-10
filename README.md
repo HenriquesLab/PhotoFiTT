@@ -61,6 +61,9 @@ For example:
 
 # Package installation
 
+## Conda environment creation for M1
+
+## Conda environment creation for M1
 The code provides an `environment.yaml` file with most of the dependencies needed. As some dependencies might not be installed for all the operating system, we provide longer but still general enough guidelines.
 
 - Create a new environment using `environment.yaml`. All the packages will be installed from conda-forge.
@@ -77,6 +80,11 @@ The code provides an `environment.yaml` file with most of the dependencies neede
   git clone https://github.com/seung-lab/connected-components-3d.git
   pip install -r requirements.txt
   python setup.py develop
-  
   ```
-- Similar to `slideio`, which is not existing for MacOS M1. Check out their documentation for your OS: https://pypi.org/project/slideio/
+- Similar to `slideio`, which is not existing for MacOS M1. Check out their documentation for your Operating System: https://pypi.org/project/slideio/
+- Once the environment is created and installed, install the package as follows:
+- 
+  ```
+  git clone https://github.com/HenriquesLab/photofitness.git
+  python setup.py
+  ```

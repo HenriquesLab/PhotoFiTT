@@ -4,8 +4,6 @@ import numpy as np
 import pandas as pd
 from photofitness.morphology import roundnessCalculator
 
-
-
 def smooth(y, t_win):
     """
     Smooth a curve by convolving it with a time window of size t_win
@@ -17,7 +15,6 @@ def smooth(y, t_win):
     t = np.ones(t_win) / t_win
     y_smooth = np.convolve(y, t, mode='same')
     return y_smooth
-
 
 def extract_info(frame, t, frame_rate, min_roundness, column_data):
     labels = np.unique(frame)
@@ -41,7 +38,6 @@ def extract_info(frame, t, frame_rate, min_roundness, column_data):
     aux = pd.DataFrame(data,
                        columns=['frame', 'mitosis', 'cell_size', "roundness_axis", "roundness_projected"] + columns)
     return aux
-
 
 def count_mitosis(path, stacks=False, pd_dataframe=None, column_data=[], frame_rate=10, min_roundness=0.85):
     """
@@ -147,7 +143,6 @@ def count_mitosis_all(path, stacks=False, pd_dataframe=None, column_data=[], fra
                     pd_dataframe = pd.concat([pd_dataframe, aux3]).reset_index(drop=True)
 
     return pd_dataframe
-
 
 def quantify_peaks(input_data, variable, frame_rate=4, alpha_init=25, alpha_end=120, beta_init=250, beta_end=350):
     """
