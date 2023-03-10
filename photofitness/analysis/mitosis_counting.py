@@ -2,7 +2,7 @@ import os
 from tifffile import imread
 import numpy as np
 import pandas as pd
-from photofitness.morphology import roundnessCalculator
+from photofitness.utils.morphology import roundnessCalculator
 
 def smooth(y, t_win):
     """
@@ -82,12 +82,13 @@ def count_mitosis(path, stacks=False, pd_dataframe=None, column_data=[], frame_r
     return pd_dataframe
 
 
-def count_mitosis_all(path, stacks=False, pd_dataframe=None, column_data=[], frame_rate=10, min_roundness=0.85, t_win=5):
+def count_mitosis_all(path, stacks=True, pd_dataframe=None, column_data=[], frame_rate=4, min_roundness=0.0, t_win=5):
     """
     This function parses all the folders contained in the path and will output a pandas data frame with each category
     and subcategory labelled, the fram, time and number of mitosis detected in the image.
-    :param min_roundness:
-    :param stacks:
+    :param t_win: The size of the window (kernel) that is used to smooth the curves
+    :param min_roundness: We can filter out by roundness of the segmented cells
+    :param stacks: If the files are given as videos (True) or each time point is an individual file (False)
     :param path: path containing the folders
     :param pd_dataframe: usually empty as it will create it. Include an old one if you want to concatenate-
     :param column_data: If you want to add an extra category, fill it. Otherwise, leave it with the default []
@@ -109,8 +110,8 @@ def count_mitosis_all(path, stacks=False, pd_dataframe=None, column_data=[], fra
                         frame_rate = 10
                 print("Frame rate of this folder is {}".format(frame_rate))
                 pd_dataframe = count_mitosis_all(os.path.join(path, f), stacks=stacks, pd_dataframe=pd_dataframe,
-                                             column_data=column_data + [f], frame_rate=frame_rate,
-                                             min_roundness=min_roundness, t_win=t_win)
+                                                 column_data=column_data + [f], frame_rate=frame_rate,
+                                                 min_roundness=min_roundness, t_win=t_win)
             elif f.__contains__('.tif'):
                 print(f)
                 im = imread(os.path.join(path, f))
