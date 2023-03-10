@@ -2,7 +2,7 @@ import os
 from tifffile import imread
 import numpy as np
 import pandas as pd
-from photofitness.utils.morphology import roundnessCalculator
+from photofitness.morphology import roundnessCalculator
 
 
 
