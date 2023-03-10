@@ -1,4 +1,4 @@
-name: mit-phototoxicity
+name: photofitness
 channels:
   - conda-forge
   - nodefaults
@@ -25,4 +25,3 @@ dependencies:
     - opencv
     - nd2==0.1.6
     - slideio
-    - nd2==0.1.6
