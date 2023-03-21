@@ -27,7 +27,11 @@ def plot_smooth_curves(data, y_var, title, output_path, name):
 
 def plot_conditions_with_aggregates(data, y_var, title, output_path, name, hue="Subcategory-01", style="Subcategory-02"):
     fig = plt.figure(figsize=(5, 10))
-    plt.rcParams.update({'font.size': 8})
+    custom_params = {"axes.spines.right": False, "axes.spines.top": False}
+    sns.plotting_context("paper")
+    sns.set_theme(style="ticks", rc=custom_params)
+    sns.set(font_scale=0.85)
+    # plt.rcParams.update({'font.size': 8})
     plt.subplot(2, 1, 1)
     sns.lineplot(x="frame", y=y_var, hue=hue, style=style, data=data, palette=sns.color_palette("husl", 14),
                  linewidth=1.5, alpha=0.5)
@@ -47,8 +51,11 @@ def plot_conditions_with_aggregates(data, y_var, title, output_path, name, hue="
 
 def plot_conditions(data, y_var, title, condition, output_path, name, style_condition="processing", hue_order=None):
     fig = plt.figure(figsize=(7, 4))
-    # Plot the results per category
+    custom_params = {"axes.spines.right": False, "axes.spines.top": False}
+    sns.plotting_context("paper")
+    sns.set_theme(style="ticks", rc=custom_params)
     sns.set(font_scale=0.85)
+    # Plot the results per category
     if hue_order is None:
         sns.lineplot(x="frame", y=y_var, hue=condition, style=style_condition, data=data,
                      palette=sns.color_palette("husl", 14), linewidth=1.5, alpha=0.75)
