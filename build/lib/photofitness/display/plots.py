@@ -314,7 +314,7 @@ def plot_info_wrt_peak(data, x_labels, hue_order, output_path):
     # plt.yscale("log")
     # plt.show()
 
-def plot_size_change_wrt_peak(data, x_labels, y_variable, hue_order, output_path, y_lim=[0, 300], graph_format='png'):
+def plot_size_change_wrt_peak(data, x_labels, y_variable, hue_order, output_path, y_lim=[0, 300], graph_format='.png'):
     sns.set(font_scale=0.9)
     g = sns.catplot(data=data, x="Subcategory-02", y=y_variable, kind="box",
                     order=x_labels, height=5, aspect=2, palette="rainbow"

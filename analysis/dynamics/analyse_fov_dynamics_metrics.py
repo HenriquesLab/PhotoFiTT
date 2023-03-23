@@ -9,14 +9,9 @@ The script is not meant to run automatically. It has sections to clean the data 
 import pandas as pd
 import numpy as np
 import os
-import sys
-## Include the following lines to access the code in Python Console
-SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-sys.path.append(os.path.dirname(SCRIPT_DIR))
-SCRIPT_DIR = '/Users/esti/Documents/PROYECTOS/PHX/mitosis-mediated-phototoxic'
-sys.path.append(SCRIPT_DIR)
-from utils.display import plot_info_wrt_peak, plot_mitosis, plot_size_chnage_wrt_peak
-from utils.mitosis_counting import quantify_peaks
+import photofitness
+from photofitness.display import plot_info_wrt_peak, plot_mitosis, plot_size_chnage_wrt_peak
+from photofitness.analysis  import quantify_peaks
 
 ## GENERAL INFORMATION
 ## ------------------------
@@ -56,9 +51,9 @@ for c in condition:
     plot_mitosis(dynamics_metrics, output_path_plots, conditions, "time_variance")
 
     ## Get motility peaks (may not make sense) and plot it.
-    data_dynamics_peaks = quantify_peaks(dynamics_metrics, "time_variance")
-    hue_order = np.unique(dynamics_metrics["Subcategory-00"])
-    plot_info_wrt_peak(data_dynamics_peaks, conditions, hue_order, output_path_plots)
+    #data_dynamics_peaks = quantify_peaks(dynamics_metrics, "time_variance")
+    #hue_order = np.unique(dynamics_metrics["Subcategory-00"])
+    #plot_info_wrt_peak(data_dynamics_peaks, conditions, hue_order, output_path_plots)
 
 
     ## Calculate the mitoses peaks
