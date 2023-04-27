@@ -145,6 +145,7 @@ def count_mitosis_all(path, stacks=True, pd_dataframe=None, column_data=[], fram
 
     return pd_dataframe
 
+
 def quantify_peaks(input_data, variable, frame_rate=4, alpha_init=25, alpha_end=120, beta_init=250, beta_end=350):
     """
     This is to calculate the motility peak and the ratio between
@@ -196,21 +197,35 @@ def quantify_peaks(input_data, variable, frame_rate=4, alpha_init=25, alpha_end=
 
     aux_1 = None
     for f in np.unique(aux["Subcategory-00"]):
+        ## The loop runs by replica
         folder_wise = aux[aux["Subcategory-00"] == f].reset_index(drop=True)
         s_mean = np.mean(folder_wise[folder_wise["Subcategory-02"] == "Synchro"]["peak_time"])
         folder_wise["delay_synchro"] = (folder_wise["peak_time"] - s_mean)
         folder_wise["proportional_delay_synchro"] = (folder_wise["peak_time"] - s_mean) * (100 / s_mean)
+        input_data_f = input_data[input_data["Subcategory-00"] == f].reset_index(drop=True)
+
+        # Initialise the value
+        folder_wise['Number of resistant cells'] = 0
+        for v in np.unique(input_data_f["video_name"]):
+            video_data = input_data_f[input_data_f["video_name"] == v].reset_index(drop=True)
+            # Get the numnber of cell detection at the peak of synchronisation (it's the ground truth)
+            peak_index = video_data.loc[video_data["frame"] <= s_mean]["frame"].idxmax(skipna=True)
+            resistant_cells = video_data.loc[peak_index, variable]
+            # Get the index to this specific video, to update the info.
+            index_v = folder_wise[folder_wise["video_name"] == v].index.to_list()
+            folder_wise.loc[index_v, 'Number of resistant cells'] = resistant_cells
+
+        folder_wise_synchro = folder_wise[folder_wise["Subcategory-02"] == "Synchro"]
+        r_mean = np.mean(folder_wise_synchro["Number of resistant cells"])
+        folder_wise["Resistant cell decrease"] = (r_mean - folder_wise["Number of resistant cells"])
+        folder_wise["Proportional resistant decrease"] = (r_mean - folder_wise["Number of resistant cells"]) * (
+                    100 / r_mean)
+
+        #### keep developing
         if aux_1 is None:
             aux_1 = folder_wise
         else:
             aux_1 = pd.concat([aux_1, folder_wise]).reset_index(drop=True)
-    # synchro_data = aux_1[aux_1["Subcategory-02"]=="Synchro"]
-    # index = synchro_data.index.to_list()
-    # aux_1 = aux_1.drop(index)
-    # synchro_data = aux_1[aux_1["Subcategory-02"]=="Control-sync"]
-    # index = synchro_data.index.to_list()
-    # aux_1 = aux_1.drop(index)
-    # aux_1 = aux_1.reset_index(drop=True)
     return aux_1
 
 def compare_peaks(data_mitosis, data_cellsize ):
