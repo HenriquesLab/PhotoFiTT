@@ -36,15 +36,16 @@ setup(
         'numpy==1.21.2',
         'opencv-python>=4.5.3.56',
         'pyyaml==6.0',
-        'pandas>=1.3.5',
+        'pandas==1.5.2',
         'pillow==8.4.0',
         'scipy==1.7.3',
         'scikit-image==0.19.1',
         'scikit-learn==1.2.1',
-        'seaborn==0.12.1',
+        'seaborn==0.12.2',
         'tifffile==2021.10.12',
         'toolz==0.11.2',
-        'connected-components-3d'
+        'connected-components-3d',
+        'statsmodels'
     ],
     classifiers=[
         'Development Status :: 3 - Alpha',
