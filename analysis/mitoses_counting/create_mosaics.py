@@ -5,7 +5,7 @@ Henriques Lab
 This script is meant to run automatically.
 """
 
-from photofitness.display import build_mosaics
+from photofitt.display import build_mosaics
 import os
 import sys
 

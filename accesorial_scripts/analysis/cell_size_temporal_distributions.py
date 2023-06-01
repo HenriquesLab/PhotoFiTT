@@ -7,8 +7,8 @@ morphological measures of the segmented cells and display their distribution in 
 """
 import sys
 import os
-from photofitness.display import plot_distributions, plot_smooth_curves
-from photofitness.mitosis_counting import count_mitosis
+from photofitt.display import plot_distributions, plot_smooth_curves
+from photofitt.mitosis_counting import count_mitosis
 import pandas as pd
 import numpy as np
 import os

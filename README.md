@@ -1,9 +1,9 @@
-# PhotoFitness: Assessment of cell mitosis-mediated phototoxicity temporal footprint
+# PhotoFITT: Phototoxicity Fitness Time Trial
 
-Python package to measure cell arrestment and assess the temporal footprint of phototoxicity.
+Python package to measure and assess the temporal footprint of phototoxicity.
 
 # General description of the workflow
-PhotoFitness was designed to quantitatively analyse the effect that light causes in the deviation of the cell division process. 
+PhotoFITT was designed to quantitatively analyse the effect that light causes in the deviation of the cell division process. 
 We developed its content to analyse the image data obtained from our experiments so we distinguish two big steps: 
 1. **Identification of cells in mitosis.**
    Here we used StarDist to segment the cells in mitosis in our phase contrast videos but one could use a different approach.
@@ -18,7 +18,7 @@ We developed its content to analyse the image data obtained from our experiments
 From now on, we will focus in Step 2.
 
 # Folder structure
-- `photofitness`: folder containing the main functions of the package.
+- `photofitt`: folder containing the main functions of the package.
   - `utils`: image processing scripts for nornalisation, cell shape analysis, tracking or data importing and exporting.
   - `analysis`: functions to analyse the numerical data extracted from processed images.
   - `display`: functions to plot, compute mosaics or display the analysis.
@@ -117,14 +117,14 @@ For example:
 The code provides an `environment.yaml` file with most of the dependencies needed. As some dependencies might not be installed for all the operating system, we provide longer but still general enough guidelines.
 - Download the file `environment_m1.yaml` from the `environments` folder.
 - Create a new conda or mamba environment using `environment_m1.yaml`. All the packages will be installed from conda-forge.
-  Place your terminal in the `mitosis-mediated-phototoxic` folder. Use either conda or mamba:
+  Place your terminal in the `photofitt` folder. Use either conda or mamba:
   ```
   mamba env create -f environment.yml  
-  mamba activate photofitness
+  mamba activate photofitt
   ```
 - The current code uses `connected-components-3d `, which is not available for osx-arm64 (MacOS M1). 
   Thus, we need to install it manually in the environment that we have just created.
-- Place the terminal in the package folder of your environment (*e.g.*, `/Users/esti/mambaforge/envs/mitphoto/lib/python3.9/site-packages`) and run the following
+- Place the terminal in the package folder of your environment (*e.g.*, `/Users/esti/mambaforge/envs/photofitt/lib/python3.9/site-packages`) and run the following
 - 
   ```
   git clone https://github.com/seung-lab/connected-components-3d.git
@@ -135,30 +135,30 @@ The code provides an `environment.yaml` file with most of the dependencies neede
 - **ONCE PUBLISHED** You can now install the package using pip install or conda as follows:
   
   - ```
-    pip install photofitness
+    pip install photofitt
     ```
     or
   - 
     ```
-    conda install photofitness
+    conda install photofitt
     ```
 - **Meanwhile**:
 
   - ```
-    git clone https://github.com/HenriquesLab/photofitness.git
-    cd photofitness
+    git clone https://github.com/HenriquesLab/photofitt.git
+    cd photofitt
     python setup.py
     ```
     or
   - ```
-    git clone https://github.com/HenriquesLab/photofitness.git
-    cd photofitness
+    git clone https://github.com/HenriquesLab/photofitt.git
+    cd photofitt
     conda build conda-recipe/meta.yaml
     ```
 
 ## Common error messages
 - Error messages with `lxml`. 
-Most probably you need to update developpers tools in your system. Before anythin, run in Mac M1:
+Most probably you need to update developers tools in your system. Before anything, run in Mac M1:
   - 
       ```
       xcode-select --install

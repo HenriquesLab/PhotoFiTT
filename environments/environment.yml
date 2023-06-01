@@ -1,4 +1,4 @@
-name: photofitness
+name: photofitt
 channels:
   - conda-forge
   - nodefaults

@@ -1,5 +1,5 @@
 
-from photofitness.display.plots import plot_conditions, plot_one_condition, plot_distributions
+from photofitt.display.plots import plot_conditions, plot_one_condition, plot_distributions
 import numpy as np
 import os
 import pandas as pd

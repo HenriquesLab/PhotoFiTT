@@ -1,7 +1,7 @@
 {% set setup_py_data = load_setup_py_data() %}
 
 package:
-  name: photofitness
+  name: photofitt
   version: {{ setup_py_data['version'] }}
 
 source:
@@ -25,11 +25,11 @@ requirements:
     {% endfor %}
 
 about:
-  home: https://github.com/HenriquesLab/photofitness
+  home: https://github.com/HenriquesLab/photofitt
   license: BSD
   license_family: BSD
   license_file: LICENSE
   summary: 'Python package to measure cell arrestment and assess the temporal footprint of phototoxicity.'
 
-  doc_url: https://github.com/HenriquesLab/photofitness
-  dev_url: https://github.com/HenriquesLab/photofitness
+  doc_url: https://github.com/HenriquesLab/photofitt
+  dev_url: https://github.com/HenriquesLab/photofitt

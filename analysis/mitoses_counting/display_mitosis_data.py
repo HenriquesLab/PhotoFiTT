@@ -7,8 +7,8 @@ This script displays the information extracted from mitosis counting.
 import pandas as pd
 import numpy as np
 import os
-from photofitness.analysis import quantify_peaks, compare_peaks, extract_gaussian_params
-from photofitness.display import display_data_from_masks, plot_conditions, plot_info_wrt_peak, plot_mitosis, \
+from photofitt.analysis import quantify_peaks, compare_peaks, extract_gaussian_params
+from photofitt.display import display_data_from_masks, plot_conditions, plot_info_wrt_peak, plot_mitosis, \
                                 plot_size_chnage_wrt_peak
 import sys
 ## PARAMETERS USED TO COMPUTE PLOTS

@@ -1,5 +1,5 @@
 import os
-from photofitness.statistics import extract_gaussian_params
+from photofitt.statistics import extract_gaussian_params
 import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt

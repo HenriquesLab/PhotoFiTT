@@ -6,10 +6,8 @@ This script is meant to run automatically. Results are stored as csv files with 
 video names so all the results can be fully tracked.
 """
 import os
-import numpy as np
-import pandas as pd
-from photofitness.analysis import count_mitosis_all
-from photofitness.display import display_data_from_masks, plot_conditions
+from photofitt.analysis import count_mitosis_all
+from photofitt.display import display_data_from_masks, plot_conditions
 import sys
 
 ## PARAMETERS USED TO COMPUTE PLOTS

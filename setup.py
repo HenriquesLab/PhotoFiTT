@@ -12,17 +12,17 @@ with open(path.join(_dir,'README.md'), encoding="utf-8") as f:
 # parse_requirements() returns generator of pip.req.InstallRequirement objects
 
 setup(
-    name='photofitness',
-    packages=find_packages(include=['photofitness', 'photofitness.*']),
+    name='photofitt',
+    packages=find_packages(include=['photofitt', 'photofitt.*']),
     version=__version__,
     license='BSD 3-Clause License',
-    description='Python package to measure cell arrestment and assess the temporal footprint of phototoxicity.',
+    description='PhotoFITT: Phototoxicity Fitness Time Trial. Python package to measure cell arrestment and assess the temporal footprint of phototoxicity.',
     long_description=long_description,
     long_description_content_type='text/markdown',
-    author="M. del Rosario, E. Gomez-de-Mariscal, L. Morgado, P.M. Pereira, R. Henriques",
+    author="M. del Rosario, E. Gomez-de-Mariscal, L. Morgado, G. Jacquemet, P.M. Pereira, R. Henriques",
     author_email='mrosario@igc.gulbenkian.pt, egomez@igc.gulbenkian.pt, rjhenriques@igc.gulbenkian.pt',
-    url='https://github.com/HenriquesLab/photofitness',
-    download_url='https://github.com/HenriquesLab/photofitness/archive/refs/tags/v1.0.0.tar.gz',
+    url='https://github.com/HenriquesLab/photofitt',
+    download_url='https://github.com/HenriquesLab/photofitt/archive/refs/tags/v1.0.0.tar.gz',
     keywords=['phototoxicity', 'cell arrestment', 'bioimage analysis', 'cell mitosis'],
     python_requires='>=3.9.7',
     install_requires=[

@@ -9,9 +9,9 @@ The script is not meant to run automatically. It has sections to clean the data 
 import pandas as pd
 import numpy as np
 import os
-import photofitness
-from photofitness.display import plot_info_wrt_peak, plot_mitosis, plot_size_chnage_wrt_peak
-from photofitness.analysis  import quantify_peaks
+import photofitt
+from photofitt.display import plot_info_wrt_peak, plot_mitosis, plot_size_chnage_wrt_peak
+from photofitt.analysis  import quantify_peaks
 
 ## GENERAL INFORMATION
 ## ------------------------
