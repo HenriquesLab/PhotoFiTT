@@ -1,7 +1,7 @@
 import numpy as np
 from tifffile import imread, imsave
 import pandas as pd
-from photofitness.utils.normalisation import normalise_phc_timelapse
+from photofitt.utils.normalisation import normalise_phc_timelapse
 import os
 from skimage.exposure import equalize_adapthist
 from scipy.ndimage import gaussian_filter

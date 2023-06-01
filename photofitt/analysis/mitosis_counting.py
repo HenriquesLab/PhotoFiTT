@@ -2,7 +2,7 @@ import os
 from tifffile import imread
 import numpy as np
 import pandas as pd
-from photofitness.utils.morphology import roundnessCalculator
+from photofitt.utils.morphology import roundnessCalculator
 
 def smooth(y, t_win):
     """

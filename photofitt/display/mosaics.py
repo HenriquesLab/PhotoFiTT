@@ -2,7 +2,7 @@ import os
 import numpy as np
 from skimage.measure import regionprops
 from tifffile import imread, imsave
-from photofitness.utils.morphology import roundnessCalculator
+from photofitt.utils.morphology import roundnessCalculator
 
 def mosaic(stack_im, path2original, min_roundness=0.5):
     """

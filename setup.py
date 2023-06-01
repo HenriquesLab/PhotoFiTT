@@ -3,7 +3,7 @@ from os import path
 
 _dir = path.dirname(__file__)
 
-with open(path.join(_dir,'photofitness','version.py'), encoding="utf-8") as f:
+with open(path.join(_dir, 'photofitt', 'version.py'), encoding="utf-8") as f:
     exec(f.read())
 
 with open(path.join(_dir,'README.md'), encoding="utf-8") as f:
