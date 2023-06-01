@@ -1,6 +1,13 @@
 
 
 def numerical_dose(data, column_name="Subcategory-02", power=None):
+    """
+
+    :param data:
+    :param column_name:
+    :param power: Laser energy (mW/cm2) or (J/cm2)
+    :return:
+    """
     data["Exposure time"] = 0.
     if power is not None:
         data["Light dose"] = 0.

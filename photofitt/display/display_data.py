@@ -1,5 +1,5 @@
 
-from photofitt.display.plots import plot_conditions, plot_one_condition, plot_distributions
+from photofitt.display.plots import conditions, one_condition, distributions
 import numpy as np
 import os
 import pandas as pd
@@ -29,12 +29,12 @@ def display_data_from_masks(data, output_path, frame_rate=4, roundness=0, graph_
 
             y_var = "mitosis_normalised"
             name = d + "_" + c + "_" + y_var + "_roundness-{0}.{1}".format(roundness, graph_format)
-            plot_one_condition(data_c, y_var, output_path, name, hue1="unique_name", hue2="Subcategory-02",
+            one_condition(data_c, y_var, output_path, name, hue1="unique_name", hue2="Subcategory-02",
                                frame_rate=frame_rate, hue_order=hue_order)
 
             y_var = "mitosis"
             name = d + "_" + c + "_" + y_var + "_roundness-{0}.{1}".format(roundness, graph_format)
-            plot_one_condition(data_c, y_var, output_path, name, hue1="unique_name", hue2="Subcategory-02",
+            one_condition(data_c, y_var, output_path, name, hue1="unique_name", hue2="Subcategory-02",
                                frame_rate=frame_rate, hue_order=hue_order)
 
         ## PLOT ALL THE CONDITIONS FOR EACH DENSITY VALUE
@@ -42,11 +42,11 @@ def display_data_from_masks(data, output_path, frame_rate=4, roundness=0, graph_
         condition = "Subcategory-02"
         y_var = "mitosis"
         name = d + "_" + y_var + "_roundness-{0}.{1}".format(roundness, graph_format)
-        plot_conditions(data_d, y_var, title, condition, output_path, name, style_condition="processing", hue_order=hue_order)
+        conditions(data_d, y_var, title, condition, output_path, name, style_condition="processing", hue_order=hue_order)
 
         y_var = "mitosis_normalised"
         name = d + "_" + y_var + "_roundness-{0}.{1}".format(roundness, graph_format)
-        plot_conditions(data_d, y_var, title, condition, output_path, name, style_condition="processing", hue_order=hue_order)
+        conditions(data_d, y_var, title, condition, output_path, name, style_condition="processing", hue_order=hue_order)
 
         # TEMPORAL DISTRIBUTION OF SIZE
         # --------------------------------------------------------------
@@ -71,7 +71,7 @@ def display_data_from_masks(data, output_path, frame_rate=4, roundness=0, graph_
         # variable = "roundness_axis"
         variable = "cell_size"
         data_display["processing"] = "raw"
-        plot_conditions(data_display, variable, "Cell size (pixels)", "Subcategory-01", output_path,
+        conditions(data_display, variable, "Cell size (pixels)", "Subcategory-01", output_path,
                         d + "_" + variable + "_roundness-{0}.{1}".format(roundness, graph_format),
                         style_condition="processing", hue_order=hue_order)
         groups = np.unique(data_display["Subcategory-01"])
@@ -79,4 +79,4 @@ def display_data_from_masks(data, output_path, frame_rate=4, roundness=0, graph_
             data_g = data_display[data_display["Subcategory-01"] == g]
             # Create the data
             df = pd.DataFrame(dict(variable=data_g[variable], frame=data_g["frame"]))
-            plot_distributions(df, "Cell Size (pixels)", g, os.path.join(output_path, d + "_" + g), smoothness=0.3)
+            distributions(df, "Cell Size (pixels)", g, os.path.join(output_path, d + "_" + g), smoothness=0.3)

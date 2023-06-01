@@ -2,9 +2,9 @@ import numpy as np
 import seaborn as sns
 import matplotlib.pyplot as plt
 import os
+import pandas as pd
 
-
-def plot_smooth_curves(data, y_var, title, output_path, name):
+def smooth_curves(data, y_var, title, output_path, name):
     fig = plt.figure(figsize=(7, 6))
     plt.subplot(2, 1, 1)
     sns.lineplot(x="frame", y=y_var, hue='Subcategory-01', style='Subcategory-02', data=data, palette="tab20",
@@ -25,7 +25,7 @@ def plot_smooth_curves(data, y_var, title, output_path, name):
     fig.savefig(os.path.join(output_path, name), format=format_extension, transparent=True)
     # plt.show()
 
-def plot_conditions_with_aggregates(data, y_var, title, output_path, name, hue="Subcategory-01", style="Subcategory-02"):
+def conditions_with_aggregates(data, y_var, title, output_path, name, hue="Subcategory-01", style="Subcategory-02"):
     fig = plt.figure(figsize=(5, 10))
     custom_params = {"axes.spines.right": False, "axes.spines.top": False}
     sns.plotting_context("paper")
@@ -49,28 +49,47 @@ def plot_conditions_with_aggregates(data, y_var, title, output_path, name, hue="
     # plt.show()
     # plt.close(fig)
 
-def plot_conditions(data, y_var, title, condition, output_path, name, style_condition="processing", hue_order=None):
+def conditions(data, y_var, title, condition, output_path, name, style_condition="processing",
+                    hue_order=None, palette=None):
+    sns.set_style()
+
     fig = plt.figure(figsize=(7, 4))
+
+    ## Set style
     custom_params = {"axes.spines.right": False, "axes.spines.top": False}
     sns.plotting_context("paper")
-    sns.set_theme(style="ticks", rc=custom_params)
     sns.set(font_scale=0.85)
+    sns.set_theme(style="whitegrid", rc=custom_params)
+
+    if palette is None:
+        palette = sns.color_palette("husl", 14)
+
     # Plot the results per category
     if hue_order is None:
         sns.lineplot(x="frame", y=y_var, hue=condition, style=style_condition, data=data,
-                     palette=sns.color_palette("husl", 14), linewidth=1.5, alpha=0.75)
+                     palette=palette, linewidth=1.5, alpha=0.75)
+        if style_condition is None:
+            sns.lineplot(x="frame", y=y_var, hue=condition, data=data,
+                         palette=palette, linewidth=1.5, alpha=0.75)
+        else:
+            sns.lineplot(x="frame", y=y_var, hue=condition, style=style_condition, data=data,
+                         palette=palette, linewidth=1.5, alpha=0.75)
     else:
-        sns.lineplot(x="frame", y=y_var, hue=condition, style=style_condition, data=data,
-                     palette=sns.color_palette("husl", 14), linewidth=1.5, alpha=0.75, hue_order=hue_order)
-    # plt.ylabel(y_label)
+        if style_condition is None:
+            sns.lineplot(x="frame", y=y_var, hue=condition, data=data,
+                         palette=palette, linewidth=1.5, alpha=0.75, hue_order=hue_order)
+        else:
+            sns.lineplot(x="frame", y=y_var, hue=condition, style=style_condition, data=data,
+                         palette=palette, linewidth=1.5, alpha=0.75, hue_order=hue_order)
     plt.xlabel("Time (min)")
+    plt.yscale("linear")
     plt.title(title)
-    plt.legend(loc='upper right')
+    plt.legend(loc='right')
     format_extension = name.split(".")[-1]
     fig.savefig(os.path.join(output_path, name), format=format_extension, transparent=True)
     # plt.show()
 
-def plot_one_condition(data, y_var, output_path, name, hue1="unique_name", hue2 = "Subcategory-02", frame_rate=10):
+def one_condition(data, y_var, output_path, name, hue1="unique_name", hue2 = "Subcategory-02", frame_rate=10):
     fig = plt.figure(figsize=(6, 6))
     plt.subplot(3, 1, 1)
     sns.lineplot(x="frame", y=y_var, hue=hue1, data=data[data["processing"] == "Raw"],
@@ -96,13 +115,60 @@ def plot_one_condition(data, y_var, output_path, name, hue1="unique_name", hue2 
     fig.savefig(os.path.join(output_path, name), format=format_extension)
     # plt.show()
 
+
+# Define and use a simple function to label the plot in axes coordinates
+def label(x, color, label):
+    ax = plt.gca()
+    ax.text(1, 0, label, fontweight="bold", color="k", ha="left", va="center", transform=ax.transAxes)
+
+def vertical_distributions(data, y_var, output_path, name,  hue_order, raw="Subcategory-02", hue="Subcategory-02",
+                           palette=None, aspect=9, height=0.6, hspace=-0.02, ylabel="Cells", xlabel="Frame (min)",
+                           xticks=[0, 25, 50, 100, 150, 200, 300], xlim=[0, 360]):
+
+    ordered_dataset = None
+    for h in hue_order:
+        aux = data[data[hue] == h].reset_index(drop=True)
+        if ordered_dataset is None:
+            ordered_dataset = aux
+        else:
+            ordered_dataset = pd.concat([ordered_dataset, aux])
+    # Initialize the FacetGrid object
+    if palette is None:
+        palette = sns.color_palette("husl", len(hue_order))
+    g = sns.FacetGrid(ordered_dataset, row=raw, hue=hue, aspect=aspect, height=height, palette=palette,
+                      hue_order=hue_order, sharex=True)
+
+    # Draw the densities in a few steps
+    g.map(sns.lineplot, "frame", y_var, hue_order=hue_order, alpha=1, linewidth=2, errorbar="sd")
+
+    # passing color=None to refline() uses the hue mapping
+    # g.refline(y=0, linewidth=0.5, linestyle="-", color=None, clip_on=True)
+
+    g.map(label, y_var)
+
+    # Set the subplots to overlap
+    g.figure.subplots_adjust(hspace=hspace)
+    # Remove axes details that don't play well with overlap
+    g.set_titles("")
+    g.set(ylabel=ylabel, xlabel=xlabel, xticks=xticks, xlim=xlim)
+    g.despine(bottom=True, left=True)
+
+    ## Set style
+    custom_params = {"axes.spines.right": False, "axes.spines.top": False}
+    sns.plotting_context("paper")
+    sns.set(font_scale=1)
+    sns.set_theme(style="whitegrid", rc=custom_params)
+
+    format_extension = name.split(".")[-1]
+    g.savefig(os.path.join(output_path, name), format=format_extension, transparent=True, dpi=300)
+
 # Define and use a simple function to label the plot in axes coordinates
 def label(x, color, label):
     ax = plt.gca()
     ax.text(0, .2, label, fontweight="bold", color=color,
             ha="left", va="center", transform=ax.transAxes)
 
-def plot_distributions(df, xlabel, title, output_path, smoothness=.5):
+def distributions(df, xlabel, title, output_path, smoothness=.5):
     sns.set_theme(style="white", rc={"axes.facecolor": (0, 0, 0, 0)})
     # Initialize the FacetGrid object
     # pal = sns.cubehelix_palette(len(np.unique(df["frame"])), rot=-.25, light=.7)
@@ -144,7 +210,7 @@ def plot_distributions(df, xlabel, title, output_path, smoothness=.5):
     fig.savefig("{}_histogram.svg".format(output_path), format='svg')
     # plt.show()
 
-def plot_mitosis(data, output_path, hue_order, y_variable, graph_format='png'):
+def mitosis(data, output_path, hue_order, y_variable, graph_format='png'):
 
     fig = plt.figure(figsize=(10, 8))
     plt.rcParams.update({'font.size': 0.9})
@@ -168,7 +234,7 @@ def plot_mitosis(data, output_path, hue_order, y_variable, graph_format='png'):
         fig.savefig(os.path.join(output_path, "data_{0}_counting_{1}.{2}".format(y_variable, d, graph_format)), format=graph_format,
                     transparent=False)
 
-def plot_info_wrt_peak(data, x_labels, hue_order, output_path):
+def info_wrt_peak(data, x_labels, hue_order, output_path):
 
     # PEAK TIME
     # fig = plt.figure()
@@ -314,7 +380,7 @@ def plot_info_wrt_peak(data, x_labels, hue_order, output_path):
     # plt.yscale("log")
     # plt.show()
 
-def plot_size_change_wrt_peak(data, x_labels, y_variable, hue_order, output_path, y_lim=[0, 300], graph_format='png'):
+def size_change_wrt_peak(data, x_labels, y_variable, hue_order, output_path, y_lim=[0, 300], graph_format='png'):
     sns.set(font_scale=0.9)
     g = sns.catplot(data=data, x="Subcategory-02", y=y_variable, kind="box",
                     order=x_labels, height=5, aspect=2, palette="rainbow"
