@@ -89,9 +89,10 @@ import czifile as zis
 #----------------------------------------------------------------------
 
 # Information about the directory and the pixel_size (height)
-MAIN = "/Volumes/TOSHIBA EXT/HENRIQUES-LAB/PROJECTS/PHOTOTOXICITY/DATA/HeLa/NEW"
-OUT = "/Volumes/TOSHIBA EXT/HENRIQUES-LAB/PROJECTS/PHOTOTOXICITY/DATA/HeLa/NEW"exp = [i for i in os.listdir(MAIN) if i.__contains__("2022") and i[0]!='.']
-folder_name = "Individual"
+MAIN = "/Volumes/TOSHIBA EXT/ITQB PTX DATA/DOWNSAMPLE"
+OUT = "/Volumes/TOSHIBA EXT/ITQB PTX DATA/DOWNSAMPLE"
+exp = [i for i in os.listdir(MAIN) if i.__contains__("2023") and i[0]!='.']
+# folder_name = "Individual"
 pixel_size = 0.5500 # x20 objective
 time_interval = 240 # seconds (4 mins)
 scale = 1.5709
@@ -99,9 +100,11 @@ scale = 1.5709
 for e in exp:
     print(e)
     main_path = os.path.join(MAIN, e)
-    sub_folder = [i for i in os.listdir(main_path) if i.__contains__("2022") and i[0]!='.']
+    print(os.listdir(main_path) )
+    sub_folder = [i for i in os.listdir(main_path) if i.__contains__("ndividual") and i[0]!='.']
     for s in sub_folder:
-        final_path = os.path.join(main_path, s, folder_name)
+        final_path = os.path.join(main_path, s)
+        print(final_path)
         if os.path.exists(final_path):
             output_path = os.path.join(OUT, e, s, "downsampled_{}".format(scale))
             os.makedirs(output_path, exist_ok=True)

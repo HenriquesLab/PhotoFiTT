@@ -2,11 +2,7 @@
 # ===========================================
 import sys
 import os
-SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-sys.path.append(os.path.dirname(SCRIPT_DIR))
-SCRIPT_DIR = '/Users/esti/Documents/PROYECTOS/PHX/mitosis-mediated-phototoxic'
-sys.path.append(SCRIPT_DIR)
-from utils.data import videos2frames
+from photofitt.data import videos2frames
 # scaling factor
 # s = 1
 size = 763 # s =
