@@ -115,12 +115,6 @@ def one_condition(data, y_var, output_path, name, hue1="unique_name", hue2 = "Su
     fig.savefig(os.path.join(output_path, name), format=format_extension)
     # plt.show()
 
-
-# Define and use a simple function to label the plot in axes coordinates
-def label(x, color, label):
-    ax = plt.gca()
-    ax.text(1, 0, label, fontweight="bold", color="k", ha="left", va="center", transform=ax.transAxes)
-
 def vertical_distributions(data, y_var, output_path, name,  hue_order, raw="Subcategory-02", hue="Subcategory-02",
                            palette=None, aspect=9, height=0.6, hspace=-0.02, ylabel="Cells", xlabel="Frame (min)",
                            xticks=[0, 25, 50, 100, 150, 200, 300], xlim=[0, 360]):
@@ -132,9 +126,11 @@ def vertical_distributions(data, y_var, output_path, name,  hue_order, raw="Subc
             ordered_dataset = aux
         else:
             ordered_dataset = pd.concat([ordered_dataset, aux])
-    # Initialize the FacetGrid object
+
     if palette is None:
         palette = sns.color_palette("husl", len(hue_order))
+
+    # Initialize the FacetGrid object
     g = sns.FacetGrid(ordered_dataset, row=raw, hue=hue, aspect=aspect, height=height, palette=palette,
                       hue_order=hue_order, sharex=True)
 
@@ -144,8 +140,11 @@ def vertical_distributions(data, y_var, output_path, name,  hue_order, raw="Subc
     # passing color=None to refline() uses the hue mapping
     # g.refline(y=0, linewidth=0.5, linestyle="-", color=None, clip_on=True)
 
+    # Define and use a simple function to label the plot in axes coordinates
+    def label(x, color, label):
+        ax = plt.gca()
+        ax.text(1, 0, label, fontweight="bold", color="k", ha="left", va="center", transform=ax.transAxes)
     g.map(label, y_var)
-
     # Set the subplots to overlap
     g.figure.subplots_adjust(hspace=hspace)
     # Remove axes details that don't play well with overlap
@@ -162,11 +161,72 @@ def vertical_distributions(data, y_var, output_path, name,  hue_order, raw="Subc
     format_extension = name.split(".")[-1]
     g.savefig(os.path.join(output_path, name), format=format_extension, transparent=True, dpi=300)
 
-# Define and use a simple function to label the plot in axes coordinates
-def label(x, color, label):
-    ax = plt.gca()
-    ax.text(0, .2, label, fontweight="bold", color=color,
-            ha="left", va="center", transform=ax.transAxes)
+def violinplots_horizontal(data, y_var, x_var, output_path, name,  hue_order, palette=None, bw=.5, orient="h",
+                           ylabel="Exposure time to UV radiation", width=0.7, linewidth=0.5, pad_y=-6):
+    if palette is None:
+        palette = sns.color_palette("husl", len(hue_order))
+
+    f, ax = plt.subplots(figsize=(4, 5), constrained_layout=True)
+
+    ax.yaxis.set_tick_params(pad=pad_y)
+    sns.violinplot(data=data, palette=palette, inner="points", order=hue_order, hue_order=hue_order, bw=bw,
+                   orient=orient, y=y_var, x=x_var, width=width, linewidth=linewidth)
+
+    # Tweak the visual presentation
+    ax.xaxis.grid(True, color="gray")
+
+    ax.set(ylabel=ylabel)
+    ax.set(xlabel=x_var)
+    sns.despine(trim=True, left=True)
+
+    ## Set style
+    custom_params = {"axes.spines.right": False, "axes.spines.top": False}
+    sns.plotting_context("paper")
+    sns.set(font_scale=1)
+    sns.set_theme(style="whitegrid", rc=custom_params)
+
+    format_extension = name.split(".")[-1]
+    f.savefig(os.path.join(output_path, name), format=format_extension, transparent=True, dpi=300)
+
+def regressionfit(data, y_var, x_var, output_path, name, palette=None, spline_order=2, hue=None, hue_order=None,
+                  height=4, aspect=1):
+
+    if palette is None:
+        if hue_order is None:
+            palette = sns.color_palette("husl", 14)
+        else:
+            palette = sns.color_palette("husl", len(hue_order))
+    if hue is not None:
+        if hue_order is not None:
+            f = sns.catplot(
+                data=data, x=x_var, y=y_var,
+                hue=hue, hue_order=hue_order, palette=palette,
+                native_scale=True, height=height, aspect=aspect
+            )
+        else:
+            f = sns.catplot(
+                data=data, x=x_var, y=y_var,
+                hue=hue, palette=palette,
+                native_scale=True, height=height, aspect=aspect
+            )
+    else:
+        f = sns.catplot(
+            data=data, x=x_var, y=y_var, palette=palette,
+            native_scale=True, height=height, aspect=aspect
+        )
+
+    sns.regplot(data=data, x=x_var, y=y_var, scatter=False, truncate=True, order=spline_order, color="grey")
+
+    ## Set style
+    custom_params = {"axes.spines.right": False, "axes.spines.top": False}
+    sns.plotting_context("paper")
+    sns.set(font_scale=1)
+    sns.set_theme(style="whitegrid", rc=custom_params)
+
+    format_extension = name.split(".")[-1]
+    f.savefig(os.path.join(output_path, name), format=format_extension, transparent=True, dpi=300)
+
+
 
 def distributions(df, xlabel, title, output_path, smoothness=.5):
     sns.set_theme(style="white", rc={"axes.facecolor": (0, 0, 0, 0)})
@@ -185,6 +245,12 @@ def distributions(df, xlabel, title, output_path, smoothness=.5):
     g.map(sns.kdeplot, "variable", clip_on=False, color="w", lw=2, bw_adjust=smoothness)
     # passing color=None to refline() uses the hue mapping
     g.refline(y=0, linewidth=2, linestyle="-", color=None, clip_on=False)
+
+    # Define and use a simple function to label the plot in axes coordinates
+    def label(x, color, label):
+        ax = plt.gca()
+        ax.text(0, .2, label, fontweight="bold", color=color,
+                ha="left", va="center", transform=ax.transAxes)
     g.map(label, "variable")
     # Set the subplots to overlap
     g.figure.subplots_adjust(hspace=-.25)
