@@ -1,5 +1,4 @@
-
-from photofitt.display.plots import conditions, one_condition, distributions
+from photofitt.display import conditions, one_condition, distributions
 import numpy as np
 import os
 import pandas as pd

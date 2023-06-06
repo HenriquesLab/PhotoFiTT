@@ -9,9 +9,8 @@ The script is not meant to run automatically. It has sections to clean the data 
 import pandas as pd
 import numpy as np
 import os
-import photofitt
-from photofitt.display import plot_info_wrt_peak, plot_mitosis, plot_size_chnage_wrt_peak
-from photofitt.analysis  import quantify_peaks
+from photofitt.display import info_wrt_peak, mitosis, size_change_wrt_peak
+from photofitt.analysis import quantify_peaks
 
 ## GENERAL INFORMATION
 ## ------------------------
@@ -48,7 +47,7 @@ for c in condition:
         os.path.join(output_path, folder, "data_dynamics_{0}_{1}.csv".format(method, c)))
     aux = dynamics_metrics[dynamics_metrics["Subcategory-02"] == 'UV1000ms']
     dynamics_metrics.loc[aux.index.to_list(), ["Subcategory-02"]] = ['UV01sec']
-    plot_mitosis(dynamics_metrics, output_path_plots, conditions, "time_variance")
+    mitosis(dynamics_metrics, output_path_plots, conditions, "time_variance")
 
     ## Get motility peaks (may not make sense) and plot it.
     #data_dynamics_peaks = quantify_peaks(dynamics_metrics, "time_variance")
@@ -72,7 +71,7 @@ for c in condition:
             motility.append([peak, mean_dynamics, f, v, c, dynamics_metrics_fv["Subcategory-02"].iloc[0]])
     motility_dataframe = pd.DataFrame(motility, columns=['peak', 'averaged_time_variance', 'Subcategory-00',
                                                          "video_name", 'Subcategory-01', "Subcategory-02"])
-    plot_size_chnage_wrt_peak(motility_dataframe, conditions, "averaged_time_variance",
+    size_change_wrt_peak(motility_dataframe, conditions, "averaged_time_variance",
                               np.unique(motility_dataframe["Subcategory-00"]),
                               output_path_plots, y_lim=[0, 0.004])
 #
