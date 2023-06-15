@@ -85,7 +85,7 @@ sns.lineplot(x="frame", y="time_variance", hue="Subcategory-02", data=dynamics_m
              hue_order=hue_order, linewidth=1.5, alpha=1)
 plt.tight_layout()
 plt.xlabel("Time (minutes)")
-plt.ylabel("Cell shape dynamics")
+plt.ylabel("Cell shape motion")
 
 plt.title("{0} along time".format("mitosis"))
 plt.show()
