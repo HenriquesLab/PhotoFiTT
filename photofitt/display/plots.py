@@ -3,6 +3,9 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 import os
 import pandas as pd
+# Avoid warnings
+import warnings
+warnings.filterwarnings('ignore')
 
 def smooth_curves(data, y_var, title, output_path, name):
     fig = plt.figure(figsize=(7, 6))
