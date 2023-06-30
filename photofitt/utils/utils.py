@@ -25,3 +25,23 @@ def numerical_dose(data, column_name="Subcategory-02", power=None):
             data.loc[[i], "Light dose"] = n*power
         data.loc[[i], 'Exposure time'] = n
     return data
+
+# '''
+# Rounded metrics approximation with an ABSOLUTE proportional error of 0,081081081:
+#
+# Approximation
+# 2,5
+# 5
+# 10
+# 20
+# 40
+# 80
+# 100
+# 500
+# 1000
+# 1500
+# 2000
+# 2500
+#
+# '''
+
