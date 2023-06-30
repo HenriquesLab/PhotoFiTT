@@ -168,3 +168,23 @@ Most probably you need to update developers tools in your system. Before anythin
     sudo apt-get update
     sudo apt-get install libxml2-dev libxslt-dev python-dev
     ```
+
+### StarDist environment setup for the workstation
+```
+conda create --name stardist-tf2 python=3.8 tensorflow-gpu=2.2.0 jupyter astropy numpy=1.21
+```
+install the followings
+```
+pip install stardist==0.8
+pip install csbdeep==0.7
+conda install imagecodecs
+conda install zarr
+conda install wget
+!pip install wget
+conda install pandas
+pip install -U scikit-learn
+conda install -c conda-forge opencv
+conda install scipy==1.4.1
+```
+
+

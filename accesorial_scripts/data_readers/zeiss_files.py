@@ -89,8 +89,8 @@ import czifile as zis
 #----------------------------------------------------------------------
 
 # Information about the directory and the pixel_size (height)
-MAIN = "/Volumes/TOSHIBA EXT/ITQB PTX DATA/DOWNSAMPLE"
-OUT = "/Volumes/TOSHIBA EXT/ITQB PTX DATA/DOWNSAMPLE"
+MAIN = "/Volumes/TOSHIBA EXT/ITQB PTX DATA/DATA2DOWNSAMPLE/SYNCHRO"
+OUT = "/Volumes/TOSHIBA EXT/ITQB PTX DATA/ANALYSIS/SYNCHRO"
 exp = [i for i in os.listdir(MAIN) if i.__contains__("2023") and i[0]!='.']
 # folder_name = "Individual"
 pixel_size = 0.5500 # x20 objective
