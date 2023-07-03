@@ -34,7 +34,7 @@ folder = "activity_clahe-{}".format(method)
 if not os.path.exists(os.path.join(output_path, folder)):
     os.mkdir(os.path.join(output_path, folder))
 
-action_metrics = extract_activity(main_path, method=method, save_steps=False, enhance_contrast=True,
+action_metrics = extract_activity(main_path, method=method, save_steps=True, enhance_contrast=True,
                                 output_path=os.path.join(output_path, folder), condition=condition)
 print(action_metrics)
 if wl == "None" or wl==None:

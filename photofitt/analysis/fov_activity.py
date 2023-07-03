@@ -1,7 +1,7 @@
 import numpy as np
 from tifffile import imread, imsave
 import pandas as pd
-from photofitt.utils.normalisation import normalise_phc_timelapse
+from photofitt.utils.normalisation import normalise_phc_timelapse, normalizePercentile
 import os
 from skimage.exposure import equalize_adapthist
 from scipy.ndimage import gaussian_filter
@@ -62,9 +62,26 @@ def piv_time_variability(im, winsize=30, searchsize=35, overlap=10, dt=0.01, thr
     mean_piv_t = [np.mean(piv_t[t]) for t in range(len(piv_t))]
     return mean_piv_t, piv_t
 
+def normalise_activity(activity, diff, save_steps=False, save_path=None):
+    # Estimation of the total area covered by the cells in the video.
+    sum_projection = np.sum(diff, axis=0)
+    sum_projection = normalizePercentile(sum_projection, pmin=30, pmax=100, clip=True)
+    total_area = sum_projection.shape[0] * sum_projection.shape[1]
+    if save_steps:
+        print()
+        imsave(save_path, sum_projection)
+    sum_projection = np.sum(sum_projection > 0.001)
+    print(sum_projection)
+    print(total_area)
+    print(sum_projection/total_area)
+
+    # Normalize the metrics acording to the number of cells.
+    norm_activity = [activity[t]/(sum_projection/total_area) for t in range(len(activity))]
+    return norm_activity
+
 
 def extract_activity(path, activity_info=None, column_data=[], frame_rate=4, enhance_contrast=False,
-                   method="intensity", save_steps=False, output_path='', condition=None):
+                   method="intensity", save_steps=False, output_path='', condition=None, normalize=True):
     folders = os.listdir(path)
     folders.sort
     print(folders)
@@ -76,7 +93,7 @@ def extract_activity(path, activity_info=None, column_data=[], frame_rate=4, enh
                                              column_data=column_data + [f], frame_rate=frame_rate,
                                              enhance_contrast=enhance_contrast, method=method,
                                              save_steps=save_steps, output_path=os.path.join(output_path, f),
-                                             condition=condition)
+                                             condition=condition, normalize=normalize)
             elif f.__contains__('.tif'):
                 if condition is not None:
                     process_file = [column_data[i].__contains__(condition) for i in range(len(column_data))]
@@ -97,22 +114,31 @@ def extract_activity(path, activity_info=None, column_data=[], frame_rate=4, enh
                         # rather than enhancing it with CLAHE afterwards
                         new_im = np.array([gaussian_filter(new_im[t], 1) for t in range(new_im.shape[0])])
                     if method == "cross-correlation":
-                        activity_val, diff = time_crosscorrelation_variability(new_im)
+                        activity, diff = time_crosscorrelation_variability(new_im)
                     elif method == "intensity":
-                        activity_val, diff = time_intensity_variability(new_im)
+                        activity, diff = time_intensity_variability(new_im)
                     elif method == 'piv':
-                        activity_val, diff = piv_time_variability(new_im)
+                        activity, diff = piv_time_variability(new_im)
                     if save_steps:
                         print()
                         os.makedirs(output_path, exist_ok=True)
                         imsave(os.path.join(output_path, "normalised_" + f), new_im)
                         imsave(os.path.join(output_path, "diff_" + f), diff)
 
-                    data = np.zeros((len(activity_val), 2))
-                    data[:, 0] = frame_rate * np.arange(len(activity_val))
-                    data[:, 1] = activity_val
+                    if normalize:
+                        norm_activity = normalise_activity(activity, diff, save_steps=save_steps, save_path=os.path.join(output_path, "normalised_projection_" + f))
+                        data = np.zeros((len(activity), 3))
+                        data[:, 2] = norm_activity
+                    else:
+                        data = np.zeros((len(activity), 2))
+                    data[:, 0] = frame_rate * np.arange(len(activity))
+                    data[:, 1] = activity
+
                     # convert counts together with the column information into a dataframe.
-                    aux = pd.DataFrame(data, columns=['frame', 'time_variance'])
+                    if normalize:
+                        aux = pd.DataFrame(data, columns=['frame', 'activity', 'normalised_activity'])
+                    else:
+                        aux = pd.DataFrame(data, columns=['frame', 'activity'])
 
                     for i in range(len(column_data)):
                         aux["Subcategory-{:02d}".format(i)] = column_data[i]
@@ -123,11 +149,10 @@ def extract_activity(path, activity_info=None, column_data=[], frame_rate=4, enh
                         activity_info = aux
                     else:
                         activity_info = pd.concat([activity_info, aux]).reset_index(drop=True)
-                    os.makedirs(output_path.split("stardist")[0], exist_ok=True)
-                    activity_info.to_csv(
-                        os.path.join(output_path.split("stardist")[0],
-                                     "data_activity_{0}_{1}_temp.csv".format(method, condition)))
 
+                    os.makedirs(output_path.split("stardist")[0], exist_ok=True)
+                    activity_info.to_csv(os.path.join(output_path.split("stardist")[0],
+                                                      "data_activity_{0}_{1}_temp.csv".format(method, condition)))
     return activity_info
 
 
