@@ -21,7 +21,7 @@ from photofitt.display import smooth_curves, conditions_with_aggregates
 main_path = sys.argv[1]
 output_path = sys.argv[2]
 condition = sys.argv[3]  # "630", "WL UV - high..."
-wl = sys.argv[4]
+wl = sys.argv[4] # "new_data, None, wl, uv, ...
 method = sys.argv[5]  # "intensity"
 
 if condition != "None":
