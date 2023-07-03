@@ -63,7 +63,7 @@ def piv_time_variability(im, winsize=30, searchsize=35, overlap=10, dt=0.01, thr
     return mean_piv_t, piv_t
 
 
-def extract_motion(path, motion_info=None, column_data=[], frame_rate=4, enhance_contrast=False,
+def extract_activity(path, activity_info=None, column_data=[], frame_rate=4, enhance_contrast=False,
                    method="intensity", save_steps=False, output_path='', condition=None):
     folders = os.listdir(path)
     folders.sort
@@ -72,7 +72,7 @@ def extract_motion(path, motion_info=None, column_data=[], frame_rate=4, enhance
         if f[0] != '.':
             if not f.__contains__('.'):
 
-                motion_info = extract_motion(os.path.join(path, f), motion_info=motion_info,
+                activity_info = extract_activity(os.path.join(path, f), activity_info=activity_info,
                                              column_data=column_data + [f], frame_rate=frame_rate,
                                              enhance_contrast=enhance_contrast, method=method,
                                              save_steps=save_steps, output_path=os.path.join(output_path, f),
@@ -97,20 +97,20 @@ def extract_motion(path, motion_info=None, column_data=[], frame_rate=4, enhance
                         # rather than enhancing it with CLAHE afterwards
                         new_im = np.array([gaussian_filter(new_im[t], 1) for t in range(new_im.shape[0])])
                     if method == "cross-correlation":
-                        motion_val, diff = time_crosscorrelation_variability(new_im)
+                        activity_val, diff = time_crosscorrelation_variability(new_im)
                     elif method == "intensity":
-                        motion_val, diff = time_intensity_variability(new_im)
+                        activity_val, diff = time_intensity_variability(new_im)
                     elif method == 'piv':
-                        motion_val, diff = piv_time_variability(new_im)
+                        activity_val, diff = piv_time_variability(new_im)
                     if save_steps:
                         print()
                         os.makedirs(output_path, exist_ok=True)
                         imsave(os.path.join(output_path, "normalised_" + f), new_im)
                         imsave(os.path.join(output_path, "diff_" + f), diff)
 
-                    data = np.zeros((len(motion_val), 2))
-                    data[:, 0] = frame_rate * np.arange(len(motion_val))
-                    data[:, 1] = motion_val
+                    data = np.zeros((len(activity_val), 2))
+                    data[:, 0] = frame_rate * np.arange(len(activity_val))
+                    data[:, 1] = activity_val
                     # convert counts together with the column information into a dataframe.
                     aux = pd.DataFrame(data, columns=['frame', 'time_variance'])
 
@@ -119,45 +119,45 @@ def extract_motion(path, motion_info=None, column_data=[], frame_rate=4, enhance
 
                     aux['video_name'] = f.split('.tif')[0]
                     # Concatenate pandas data frame to the previous one
-                    if motion_info is None:
-                        motion_info = aux
+                    if activity_info is None:
+                        activity_info = aux
                     else:
-                        motion_info = pd.concat([motion_info, aux]).reset_index(drop=True)
+                        activity_info = pd.concat([activity_info, aux]).reset_index(drop=True)
                     os.makedirs(output_path.split("stardist")[0], exist_ok=True)
-                    motion_info.to_csv(
+                    activity_info.to_csv(
                         os.path.join(output_path.split("stardist")[0],
-                                     "data_motion_{0}_{1}_temp.csv".format(method, condition)))
+                                     "data_activity_{0}_{1}_temp.csv".format(method, condition)))
 
-    return motion_info
+    return activity_info
 
 
-def cummulative_motion(motion_metrics, use_starting_point=None, starting_point=0, data_peaks=None):
+def cummulative_activity(activity_metrics, use_starting_point=None, starting_point=0, data_peaks=None):
     """
 
     :param use_starting_point: One between None, "event peak", or "fixed". None by default
     :param starting_point:  The time-point from which the cummulation will be done.
                             If set to 0 will be the same effect as use_starting_point=None
     :param data_peaks: pandas dataframe in which the peak of mitotic events are stored.
-    :return: motion_dataframe, motion_metrics:
+    :return: activity_dataframe, activity_metrics:
     """
 
     # Initialise the parameters
     assert isinstance(use_starting_point,
-                      str), 'cummulative_motion() parameter use_starting_point={} not of <class "str">'.format(
+                      str), 'cummulative_activity() parameter use_starting_point={} not of <class "str">'.format(
         use_starting_point)
     assert starting_point >= 0, f"starting_point >= 0 expected, got: {starting_point}"
 
-    motion_metrics["Cummulative cell motion"] = 0
-    motion = []
+    activity_metrics["Cummulative cell activity"] = 0
+    activity = []
 
     # Cover each folder and each video to process each independent acquisition
-    for f in np.unique(motion_metrics["Subcategory-00"]):
+    for f in np.unique(activity_metrics["Subcategory-00"]):
         # Create a new data set to filter the experimental replica.
-        motion_metrics_f = motion_metrics[motion_metrics["Subcategory-00"] == f]
+        activity_metrics_f = activity_metrics[activity_metrics["Subcategory-00"] == f]
 
         # Process each video acquired on the day f
-        for v in np.unique(motion_metrics_f["video_name"]):
-            motion_metrics_fv = motion_metrics_f[motion_metrics_f["video_name"] == v]
+        for v in np.unique(activity_metrics_f["video_name"]):
+            activity_metrics_fv = activity_metrics_f[activity_metrics_f["video_name"] == v]
             if use_starting_point is not None:
                 if use_starting_point == "event peak":
                     # Recover the time point at which the peak is achieved
@@ -166,26 +166,26 @@ def cummulative_motion(motion_metrics, use_starting_point=None, starting_point=0
                     starting_point = data_cfv["Peak time point (min)"].iloc[0]
 
                 # Compute the cummulative cell growth only after the mitosis
-                after_aux = motion_metrics_fv[motion_metrics_fv["frame"] > starting_point]
+                after_aux = activity_metrics_fv[activity_metrics_fv["frame"] > starting_point]
                 index = after_aux.index.to_list()
-                cummulative_motion = after_aux["Cell motion"].cumsum()
-                motion_metrics.loc[index, ["Cummulative cell motion"]] = cummulative_motion
+                cummulative_activity = after_aux["Cell activity"].cumsum()
+                activity_metrics.loc[index, ["Cummulative cell activity"]] = cummulative_activity
                 # Average the cell growth
-                mean_motion = np.mean(after_aux["Cell motion"])
+                mean_activity = np.mean(after_aux["Cell activity"])
             else:
-                index = motion_metrics_fv.index.to_list()
-                cummulative_motion = motion_metrics["Cell motion"].cumsum()
-                motion_metrics.loc[index, ["Cummulative cell motion"]] = cummulative_motion
+                index = activity_metrics_fv.index.to_list()
+                cummulative_activity = activity_metrics["Cell activity"].cumsum()
+                activity_metrics.loc[index, ["Cummulative cell activity"]] = cummulative_activity
                 # Average the cell growth
-                mean_motion = np.mean(motion_metrics["Cell motion"])
+                mean_activity = np.mean(activity_metrics["Cell activity"])
             # Estimate the slope
-            cummulative_motion = np.array(cummulative_motion)
-            frame = np.array(motion_metrics.loc[index, ["frame"]])
-            slope = (cummulative_motion[1:] - cummulative_motion[:-1]) / (frame[1:] - frame[:-1])
+            cummulative_activity = np.array(cummulative_activity)
+            frame = np.array(activity_metrics.loc[index, ["frame"]])
+            slope = (cummulative_activity[1:] - cummulative_activity[:-1]) / (frame[1:] - frame[:-1])
             slope = np.mean(slope)
-            motion.append([mean_motion, slope, v, f, motion_metrics_fv["Subcategory-01"].iloc[0],
-                           motion_metrics_fv["Subcategory-02"].iloc[0]])
+            activity.append([mean_activity, slope, v, f, activity_metrics_fv["Subcategory-01"].iloc[0],
+                           activity_metrics_fv["Subcategory-02"].iloc[0]])
 
-    motion_dataframe = pd.DataFrame(motion, columns=['Mean motion', 'Motion slope', "video_name",
+    activity_dataframe = pd.DataFrame(activity, columns=['Mean activity', 'activity slope', "video_name",
                                                      'Subcategory-00', 'Subcategory-01', "Subcategory-02"])
-    return motion_dataframe, motion_metrics
+    return activity_dataframe, activity_metrics
