@@ -63,17 +63,15 @@ def piv_time_variability(im, winsize=30, searchsize=35, overlap=10, dt=0.01, thr
     return mean_piv_t, piv_t
 
 def normalise_activity(activity, diff, save_steps=False, save_path=None):
+
     # Estimation of the total area covered by the cells in the video.
     sum_projection = np.sum(diff, axis=0)
     sum_projection = normalizePercentile(sum_projection, pmin=30, pmax=100, clip=True)
     total_area = sum_projection.shape[0] * sum_projection.shape[1]
+
     if save_steps:
-        print()
         imsave(save_path, sum_projection)
     sum_projection = np.sum(sum_projection > 0.001)
-    print(sum_projection)
-    print(total_area)
-    print(sum_projection/total_area)
 
     # Normalize the metrics acording to the number of cells.
     norm_activity = [activity[t]/(sum_projection/total_area) for t in range(len(activity))]
@@ -183,7 +181,7 @@ def cummulative_activity(activity_metrics, use_starting_point=None, starting_poi
         # Process each video acquired on the day f
         for v in np.unique(activity_metrics_f["video_name"]):
             activity_metrics_fv = activity_metrics_f[activity_metrics_f["video_name"] == v]
-            if use_starting_point is not None:
+            if use_starting_point != None:
                 if use_starting_point == "event peak":
                     # Recover the time point at which the peak is achieved
                     data_cf = data_peaks[data_peaks["Subcategory-00"] == f].reset_index(drop=True)
