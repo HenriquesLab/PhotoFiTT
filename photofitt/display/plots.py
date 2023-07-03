@@ -52,11 +52,11 @@ def conditions_with_aggregates(data, y_var, title, output_path, name, hue="Subca
     # plt.show()
     # plt.close(fig)
 
-def conditions(data, y_var, title, condition, output_path, name, style_condition="processing",
-                    hue_order=None, palette=None):
+def conditions(data, y_var, title, condition, output_path, name, style="processing",
+                    hue_order=None, palette=None, figsize=(7, 4), legend_loc='right'):
     sns.set_style()
 
-    fig = plt.figure(figsize=(7, 4))
+    fig = plt.figure(figsize=figsize, constrained_layout=True)
 
     ## Set style
     custom_params = {"axes.spines.right": False, "axes.spines.top": False}
@@ -69,25 +69,23 @@ def conditions(data, y_var, title, condition, output_path, name, style_condition
 
     # Plot the results per category
     if hue_order is None:
-        sns.lineplot(x="frame", y=y_var, hue=condition, style=style_condition, data=data,
-                     palette=palette, linewidth=1.5, alpha=0.75)
-        if style_condition is None:
+        if style is None:
             sns.lineplot(x="frame", y=y_var, hue=condition, data=data,
                          palette=palette, linewidth=1.5, alpha=0.75)
         else:
-            sns.lineplot(x="frame", y=y_var, hue=condition, style=style_condition, data=data,
+            sns.lineplot(x="frame", y=y_var, hue=condition, style=style, data=data,
                          palette=palette, linewidth=1.5, alpha=0.75)
     else:
-        if style_condition is None:
+        if style is None:
             sns.lineplot(x="frame", y=y_var, hue=condition, data=data,
                          palette=palette, linewidth=1.5, alpha=0.75, hue_order=hue_order)
         else:
-            sns.lineplot(x="frame", y=y_var, hue=condition, style=style_condition, data=data,
+            sns.lineplot(x="frame", y=y_var, hue=condition, style=style, data=data,
                          palette=palette, linewidth=1.5, alpha=0.75, hue_order=hue_order)
     plt.xlabel("Time (min)")
     plt.yscale("linear")
     plt.title(title)
-    plt.legend(loc='right')
+    plt.legend(loc=legend_loc)
     format_extension = name.split(".")[-1]
     fig.savefig(os.path.join(output_path, name), format=format_extension, transparent=True)
     # plt.show()
