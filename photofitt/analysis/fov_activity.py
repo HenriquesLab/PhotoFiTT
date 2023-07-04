@@ -154,7 +154,7 @@ def extract_activity(path, activity_info=None, column_data=[], frame_rate=4, enh
     return activity_info
 
 
-def cummulative_activity(activity_metrics, use_starting_point=None, starting_point=0, data_peaks=None):
+def cummulative_activity(activity_metrics, y_var, use_starting_point=None, starting_point=0, data_peaks=None):
     """
 
     :param use_starting_point: One between None, "event peak", or "fixed". None by default
@@ -170,7 +170,7 @@ def cummulative_activity(activity_metrics, use_starting_point=None, starting_poi
         use_starting_point)
     assert starting_point >= 0, f"starting_point >= 0 expected, got: {starting_point}"
 
-    activity_metrics["Cummulative cell activity"] = 0
+    activity_metrics[f"Cummulative {y_var}"] = 0
     activity = []
 
     # Cover each folder and each video to process each independent acquisition
@@ -191,16 +191,16 @@ def cummulative_activity(activity_metrics, use_starting_point=None, starting_poi
                 # Compute the cummulative cell growth only after the mitosis
                 after_aux = activity_metrics_fv[activity_metrics_fv["frame"] > starting_point]
                 index = after_aux.index.to_list()
-                cummulative_activity = after_aux["Cell activity"].cumsum()
-                activity_metrics.loc[index, ["Cummulative cell activity"]] = cummulative_activity
+                cummulative_activity = after_aux[y_var].cumsum()
+                activity_metrics.loc[index, [f"Cummulative {y_var}"]] = cummulative_activity
                 # Average the cell growth
-                mean_activity = np.mean(after_aux["Cell activity"])
+                mean_activity = np.mean(after_aux[y_var])
             else:
                 index = activity_metrics_fv.index.to_list()
-                cummulative_activity = activity_metrics["Cell activity"].cumsum()
-                activity_metrics.loc[index, ["Cummulative cell activity"]] = cummulative_activity
+                cummulative_activity = activity_metrics[y_var].cumsum()
+                activity_metrics.loc[index, [f"Cummulative {y_var}"]] = cummulative_activity
                 # Average the cell growth
-                mean_activity = np.mean(activity_metrics["Cell activity"])
+                mean_activity = np.mean(activity_metrics[y_var])
             # Estimate the slope
             cummulative_activity = np.array(cummulative_activity)
             frame = np.array(activity_metrics.loc[index, ["frame"]])
