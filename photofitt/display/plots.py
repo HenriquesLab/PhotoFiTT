@@ -52,7 +52,7 @@ def conditions_with_aggregates(data, y_var, title, output_path, name, hue="Subca
     # plt.show()
     # plt.close(fig)
 
-def conditions(data, y_var, title, condition, output_path, name, style="None",
+def conditions(data, y_var, title, condition, output_path, name, style=None,
                     hue_order=None, palette=None, figsize=(7, 4)):
     sns.set_style()
 
