@@ -159,6 +159,8 @@ def extract_activity(path, activity_info=None, column_data=[], frame_rate=4, enh
 def cumulative_activity(activity_metrics, y_var, use_starting_point=None, starting_point=0, data_peaks=None):
     """
 
+    :param activity_metrics:
+    :param y_var:
     :param use_starting_point: One between None, "event peak", or "fixed". None by default
     :param starting_point:  The time-point from which the cummulation will be done.
                             If set to 0 will be the same effect as use_starting_point=None
@@ -186,7 +188,10 @@ def cumulative_activity(activity_metrics, y_var, use_starting_point=None, starti
             if use_starting_point is not None:
                 if use_starting_point == "event peak":
                     # Recover the time point at which the peak is achieved
-                    starting_point = activity_metrics_fv["Peak time point (min)"].iloc[0]
+                    data_cf = data_peaks[data_peaks["Subcategory-00"] == f].reset_index(drop=True)
+                    data_cfv = data_cf[data_cf["video_name"] == v].reset_index(drop=True)
+                    # Recover the time point at which the peak is achieved
+                    starting_point = data_cfv["Peak time point (min)"].iloc[0]
 
                 # Compute the cumulative cell growth only after the mitosis
                 after_aux = activity_metrics_fv[activity_metrics_fv["frame"] > starting_point]
