@@ -5,7 +5,7 @@ import pandas as pd
 
 
 
-def display_data_from_masks(data, output_path, frame_rate=4, roundness=0, graph_format='png', hue_order=None):
+def display_data_from_masks(data, output_path, frame_rate=4, roundness=0, graph_format='png', hue_order=None, palette=None):
     """
     PLOT THE RESULTS FOR EACH CONDITION SEPARATELY:
     Subcategory-02 filters out the different experimental condition such as control, synch, uv10sec or uv 30sec
@@ -19,6 +19,9 @@ def display_data_from_masks(data, output_path, frame_rate=4, roundness=0, graph_
 
     density = np.unique(data['Subcategory-01'])
     classes = np.unique(data['Subcategory-02'])
+    if palette is None:
+        palette = sns.color_palette("husl", 14)
+        
     for d in density:
         data_d = data[data["Subcategory-01"] == d].reset_index(drop=True)
         for c in classes:
@@ -29,23 +32,23 @@ def display_data_from_masks(data, output_path, frame_rate=4, roundness=0, graph_
             y_var = "mitosis_normalised"
             name = d + "_" + c + "_" + y_var + "_roundness-{0}.{1}".format(roundness, graph_format)
             one_condition(data_c, y_var, output_path, name, hue1="unique_name", hue2="Subcategory-02",
-                               frame_rate=frame_rate, hue_order=hue_order)
+                              palette=palette, frame_rate=frame_rate)
 
             y_var = "mitosis"
             name = d + "_" + c + "_" + y_var + "_roundness-{0}.{1}".format(roundness, graph_format)
             one_condition(data_c, y_var, output_path, name, hue1="unique_name", hue2="Subcategory-02",
-                               frame_rate=frame_rate, hue_order=hue_order)
+                              palette=palette, frame_rate=frame_rate)
 
         ## PLOT ALL THE CONDITIONS FOR EACH DENSITY VALUE
         title = "Minimum roundness {}".format(roundness)
         condition = "Subcategory-02"
         y_var = "mitosis"
         name = d + "_" + y_var + "_roundness-{0}.{1}".format(roundness, graph_format)
-        conditions(data_d, y_var, title, condition, output_path, name, style_condition="processing", hue_order=hue_order)
+        conditions(data_d, y_var, title, condition, output_path, name, style_condition="processing", palette=palette, hue_order=hue_order)
 
         y_var = "mitosis_normalised"
         name = d + "_" + y_var + "_roundness-{0}.{1}".format(roundness, graph_format)
-        conditions(data_d, y_var, title, condition, output_path, name, style_condition="processing", hue_order=hue_order)
+        conditions(data_d, y_var, title, condition, output_path, name, style_condition="processing", palette=palette, hue_order=hue_order)
 
         # TEMPORAL DISTRIBUTION OF SIZE
         # --------------------------------------------------------------
@@ -72,7 +75,7 @@ def display_data_from_masks(data, output_path, frame_rate=4, roundness=0, graph_
         data_display["processing"] = "raw"
         conditions(data_display, variable, "Cell size (pixels)", "Subcategory-01", output_path,
                         d + "_" + variable + "_roundness-{0}.{1}".format(roundness, graph_format),
-                        style_condition="processing", hue_order=hue_order)
+                        style_condition="processing", palette=palette, hue_order=hue_order)
         groups = np.unique(data_display["Subcategory-01"])
         for g in groups:
             data_g = data_display[data_display["Subcategory-01"] == g]

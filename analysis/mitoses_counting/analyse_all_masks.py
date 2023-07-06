@@ -7,7 +7,7 @@ video names so all the results can be fully tracked.
 """
 import os
 from photofitt.analysis import count_mitosis_all
-from photofitt.display import display_data_from_masks, plot_conditions
+from photofitt.display import display_data_from_masks, conditions
 import sys
 
 ## PARAMETERS USED TO COMPUTE PLOTS
@@ -27,8 +27,7 @@ data.to_csv(os.path.join(output_path, "mitosis_counting.csv"))
 
 ## Read the original data
 # data = pd.read_csv(os.path.join(output_path, "data.csv"))
-hue_order = ['Control-sync', 'Synchro', 'UV25ms', 'UV50ms', 'UV100ms', 'UV200ms', 'UV400ms', 'UV800ms',
-             'UV01sec', 'UV05sec', 'UV10sec', 'UV15sec', 'UV20sec', 'UV25sec']
+hue_order = ['Control-sync', 'Synchro', '25ms', '50ms', '100ms', '200ms', '400ms', '800ms', '01sec', '05sec', '10sec', '15sec', '20sec', '25sec', '30sec']
 graph_format = 'png'
 
 # PLOT THE RESULTS FOR EACH CONDITION SEPARATELY

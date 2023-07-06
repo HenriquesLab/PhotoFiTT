@@ -28,7 +28,7 @@ def smooth_curves(data, y_var, title, output_path, name):
     fig.savefig(os.path.join(output_path, name), format=format_extension, transparent=True)
     # plt.show()
 
-def conditions_with_aggregates(data, y_var, title, output_path, name, hue="Subcategory-01", style="Subcategory-02", ylim=None):
+def conditions_with_aggregates(data, y_var, title, output_path, name, hue="Subcategory-01", style="Subcategory-02"):
     fig = plt.figure(figsize=(5, 10))
     custom_params = {"axes.spines.right": False, "axes.spines.top": False}
     sns.plotting_context("paper")
@@ -44,9 +44,6 @@ def conditions_with_aggregates(data, y_var, title, output_path, name, hue="Subca
     ax = plt.subplot(2, 1, 2)
     sns.lineplot(x="frame", y=y_var, style=style, data=data, palette=sns.color_palette("husl", 14),
                  linewidth=1.5, alpha=0.75)
-    if ylim != None:
-        plt.ylim(ylim)
-
     plt.xlabel("Time (min)")
     ax.legend(bbox_to_anchor=(0.85, 0.5))
     plt.tight_layout()
@@ -55,11 +52,11 @@ def conditions_with_aggregates(data, y_var, title, output_path, name, hue="Subca
     # plt.show()
     # plt.close(fig)
 
-def conditions(data, y_var, title, condition, output_path, name, style="processing",
-                    hue_order=None, palette=None, figsize=(7, 4), legend_loc='right'):
+def conditions(data, y_var, title, condition, output_path, name, style_condition="processing",
+                    hue_order=None, palette=None):
     sns.set_style()
 
-    fig = plt.figure(figsize=figsize, constrained_layout=True)
+    fig = plt.figure(figsize=(7, 4))
 
     ## Set style
     custom_params = {"axes.spines.right": False, "axes.spines.top": False}
@@ -72,23 +69,25 @@ def conditions(data, y_var, title, condition, output_path, name, style="processi
 
     # Plot the results per category
     if hue_order is None:
-        if style is None:
+        sns.lineplot(x="frame", y=y_var, hue=condition, style=style_condition, data=data,
+                     palette=palette, linewidth=1.5, alpha=0.75)
+        if style_condition is None:
             sns.lineplot(x="frame", y=y_var, hue=condition, data=data,
                          palette=palette, linewidth=1.5, alpha=0.75)
         else:
-            sns.lineplot(x="frame", y=y_var, hue=condition, style=style, data=data,
+            sns.lineplot(x="frame", y=y_var, hue=condition, style=style_condition, data=data,
                          palette=palette, linewidth=1.5, alpha=0.75)
     else:
-        if style is None:
+        if style_condition is None:
             sns.lineplot(x="frame", y=y_var, hue=condition, data=data,
                          palette=palette, linewidth=1.5, alpha=0.75, hue_order=hue_order)
         else:
-            sns.lineplot(x="frame", y=y_var, hue=condition, style=style, data=data,
+            sns.lineplot(x="frame", y=y_var, hue=condition, style=style_condition, data=data,
                          palette=palette, linewidth=1.5, alpha=0.75, hue_order=hue_order)
     plt.xlabel("Time (min)")
     plt.yscale("linear")
     plt.title(title)
-    plt.legend(loc=legend_loc)
+    plt.legend(loc='right')
     format_extension = name.split(".")[-1]
     fig.savefig(os.path.join(output_path, name), format=format_extension, transparent=True)
     # plt.show()
@@ -109,7 +108,7 @@ def one_condition(data, y_var, output_path, name, hue1="unique_name", hue2 = "Su
 
     # Plot the results per category
     ax = plt.subplot(3, 1, 3)
-    sns.lineplot(x="frame", y=y_var, hue=hue2, style="processing",
+    sns.lineplot(x="frame", y=y_var, hue=hue2, style="processing", 
                  data=data[np.mod(data.frame, frame_rate) == 0].reset_index(drop=True),
                  linewidth=1, alpha=0.75)
     plt.xlabel("Time (min)")
