@@ -62,8 +62,8 @@ def piv_time_variability(im, winsize=30, searchsize=35, overlap=10, dt=0.01, thr
     mean_piv_t = [np.mean(piv_t[t]) for t in range(len(piv_t))]
     return mean_piv_t, piv_t
 
-def normalise_activity(activity, diff, save_steps=False, save_path=None):
 
+def normalise_activity(activity, diff, save_steps=False, save_path=None):
     # Estimation of the total area covered by the cells in the video.
     sum_projection = np.sum(diff, axis=0)
     sum_projection = normalizePercentile(sum_projection, pmin=30, pmax=100, clip=True)
@@ -74,12 +74,12 @@ def normalise_activity(activity, diff, save_steps=False, save_path=None):
     sum_projection = np.sum(sum_projection > 0.001)
 
     # Normalize the metrics acording to the number of cells.
-    norm_activity = [activity[t]/(sum_projection/total_area) for t in range(len(activity))]
+    norm_activity = [activity[t] / (sum_projection / total_area) for t in range(len(activity))]
     return norm_activity
 
 
 def extract_activity(path, activity_info=None, column_data=[], frame_rate=4, enhance_contrast=False,
-                   method="intensity", save_steps=False, output_path='', condition=None, normalize=True):
+                     method="intensity", save_steps=False, output_path='', condition=None, normalize=True):
     folders = os.listdir(path)
     folders.sort
     print(folders)
@@ -88,10 +88,10 @@ def extract_activity(path, activity_info=None, column_data=[], frame_rate=4, enh
             if not f.__contains__('.'):
 
                 activity_info = extract_activity(os.path.join(path, f), activity_info=activity_info,
-                                             column_data=column_data + [f], frame_rate=frame_rate,
-                                             enhance_contrast=enhance_contrast, method=method,
-                                             save_steps=save_steps, output_path=os.path.join(output_path, f),
-                                             condition=condition, normalize=normalize)
+                                                 column_data=column_data + [f], frame_rate=frame_rate,
+                                                 enhance_contrast=enhance_contrast, method=method,
+                                                 save_steps=save_steps, output_path=os.path.join(output_path, f),
+                                                 condition=condition, normalize=normalize)
             elif f.__contains__('.tif'):
                 if condition is not None:
                     process_file = [column_data[i].__contains__(condition) for i in range(len(column_data))]
@@ -124,7 +124,9 @@ def extract_activity(path, activity_info=None, column_data=[], frame_rate=4, enh
                         imsave(os.path.join(output_path, "diff_" + f), diff)
 
                     if normalize:
-                        norm_activity = normalise_activity(activity, diff, save_steps=save_steps, save_path=os.path.join(output_path, "normalised_projection_" + f))
+                        norm_activity = normalise_activity(activity, diff, save_steps=save_steps,
+                                                           save_path=os.path.join(output_path,
+                                                                                  "normalised_projection_" + f))
                         data = np.zeros((len(activity), 3))
                         data[:, 2] = norm_activity
                     else:
@@ -154,7 +156,7 @@ def extract_activity(path, activity_info=None, column_data=[], frame_rate=4, enh
     return activity_info
 
 
-def cummulative_activity(activity_metrics, y_var, use_starting_point=None, starting_point=0, data_peaks=None):
+def cumulative_activity(activity_metrics, y_var, use_starting_point=None, starting_point=0, data_peaks=None):
     """
 
     :param use_starting_point: One between None, "event peak", or "fixed". None by default
@@ -166,11 +168,11 @@ def cummulative_activity(activity_metrics, y_var, use_starting_point=None, start
 
     # Initialise the parameters
     assert isinstance(use_starting_point,
-                      str), 'cummulative_activity() parameter use_starting_point={} not of <class "str">'.format(
+                      str), 'cumulative_activity() parameter use_starting_point={} not of <class "str">'.format(
         use_starting_point)
     assert starting_point >= 0, f"starting_point >= 0 expected, got: {starting_point}"
 
-    activity_metrics[f"Cummulative {y_var}"] = 0
+    activity_metrics[f"Cumulative {y_var}"] = 0
     activity = []
 
     # Cover each folder and each video to process each independent acquisition
@@ -181,34 +183,32 @@ def cummulative_activity(activity_metrics, y_var, use_starting_point=None, start
         # Process each video acquired on the day f
         for v in np.unique(activity_metrics_f["video_name"]):
             activity_metrics_fv = activity_metrics_f[activity_metrics_f["video_name"] == v]
-            if use_starting_point != None:
+            if use_starting_point is not None:
                 if use_starting_point == "event peak":
                     # Recover the time point at which the peak is achieved
-                    data_cf = data_peaks[data_peaks["Subcategory-00"] == f].reset_index(drop=True)
-                    data_cfv = data_cf[data_cf["video_name"] == v].reset_index(drop=True)
-                    starting_point = data_cfv["Peak time point (min)"].iloc[0]
+                    starting_point = activity_metrics_fv["Peak time point (min)"].iloc[0]
 
-                # Compute the cummulative cell growth only after the mitosis
+                # Compute the cumulative cell growth only after the mitosis
                 after_aux = activity_metrics_fv[activity_metrics_fv["frame"] > starting_point]
                 index = after_aux.index.to_list()
-                cummulative_activity = after_aux[y_var].cumsum()
-                activity_metrics.loc[index, [f"Cummulative {y_var}"]] = cummulative_activity
+                cumulative_data = after_aux[y_var].cumsum()
+                activity_metrics.loc[index, [f"Cumulative {y_var}"]] = cumulative_data
                 # Average the cell growth
                 mean_activity = np.mean(after_aux[y_var])
             else:
                 index = activity_metrics_fv.index.to_list()
-                cummulative_activity = activity_metrics[y_var].cumsum()
-                activity_metrics.loc[index, [f"Cummulative {y_var}"]] = cummulative_activity
+                cumulative_data = activity_metrics[y_var].cumsum()
+                activity_metrics.loc[index, [f"Cumulative {y_var}"]] = cumulative_data
                 # Average the cell growth
                 mean_activity = np.mean(activity_metrics[y_var])
             # Estimate the slope
-            cummulative_activity = np.array(cummulative_activity)
+            cumulative_data = np.array(cumulative_data)
             frame = np.array(activity_metrics.loc[index, ["frame"]])
-            slope = (cummulative_activity[1:] - cummulative_activity[:-1]) / (frame[1:] - frame[:-1])
+            slope = (cumulative_data[1:] - cumulative_data[:-1]) / (frame[1:] - frame[:-1])
             slope = np.mean(slope)
             activity.append([mean_activity, slope, v, f, activity_metrics_fv["Subcategory-01"].iloc[0],
-                           activity_metrics_fv["Subcategory-02"].iloc[0]])
+                             activity_metrics_fv["Subcategory-02"].iloc[0]])
 
     activity_dataframe = pd.DataFrame(activity, columns=['Mean activity', 'activity slope', "video_name",
-                                                     'Subcategory-00', 'Subcategory-01', "Subcategory-02"])
+                                                         'Subcategory-00', 'Subcategory-01', "Subcategory-02"])
     return activity_dataframe, activity_metrics
