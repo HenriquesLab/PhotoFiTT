@@ -153,6 +153,7 @@ def quantify_peaks(input_data, variable, frame_rate=4, alpha_init=25, alpha_end=
     This code estimates the peak of motility in the control group
     so we can compute the delay between treated conditions
 
+    :param input_data:
     :param data:
     :param variable:
     :param frame_rate:
