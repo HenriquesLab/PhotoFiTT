@@ -36,7 +36,7 @@ def extract_info(frame, t, frame_rate, min_roundness, column_data):
     data = [[t, mitosis, area, r_axis, r_pro] + column_data]
     columns = ["Subcategory-{:02d}".format(i) for i in range(len(column_data))]
     aux = pd.DataFrame(data,
-                       columns=['frame', 'mitosis', 'cell_size', "roundness_axis", "roundness_projected"] + columns)
+                       columns=['frame', 'Number of cells', 'cell_size', "roundness_axis", "roundness_projected"] + columns)
     return aux
 
 def count_mitosis(path, stacks=False, pd_dataframe=None, column_data=[], frame_rate=10, min_roundness=0.85):
@@ -125,15 +125,15 @@ def count_mitosis_all(path, stacks=True, pd_dataframe=None, column_data=[], fram
                     else:
                         aux = pd.concat([aux, aux_t]).reset_index(drop=True)
                 # Normalise and smooth the values for each video
-                M = np.max(aux['mitosis'])
-                aux['mitosis_normalised'] = aux['mitosis'] / M
+                M = np.max(aux['Number of cells'])
+                aux['Norm. Number of cells'] = aux['Number of cells'] / M
                 aux["processing"] = "Raw"
-                y = smooth(aux['mitosis'], t_win)
-                y_norm = smooth(aux['mitosis_normalised'], t_win)
+                y = smooth(aux['Number of cells'], t_win)
+                y_norm = smooth(aux['Norm. Number of cells'], t_win)
                 aux2 = aux.copy()
                 aux2['processing'] = 'Averaged-kernel{}'.format(t_win)
-                aux2['mitosis'] = y
-                aux2['mitosis_normalised'] = y_norm
+                aux2['Number of cells'] = y
+                aux2['Norm. Number of cells'] = y_norm
                 aux3 = pd.concat([aux, aux2]).reset_index(drop=True)
                 aux3['video_name'] = f.split('.tif')[0]
 
