@@ -1,9 +1,9 @@
-# PhotoFITT: Phototoxicity Fitness Time Trial
+# PhotoFiTT: Phototoxicity Fitness Time Trial
 
 Python package to measure and assess the temporal footprint of phototoxicity.
 
 # General description of the workflow
-PhotoFITT was designed to quantitatively analyse the effect that light causes in the deviation of the cell division process. 
+PhotoFiTT was designed to quantitatively analyse the effect that light causes in the deviation of the cell division process. 
 We developed its content to analyse the image data obtained from our experiments so we distinguish two big steps: 
 1. **Identification of cells in mitosis.**
    Here we used StarDist to segment the cells in mitosis in our phase contrast videos but one could use a different approach.

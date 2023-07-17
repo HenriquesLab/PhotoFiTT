@@ -16,7 +16,7 @@ setup(
     packages=find_packages(include=['photofitt', 'photofitt.*']),
     version=__version__,
     license='BSD 3-Clause License',
-    description='PhotoFITT: Phototoxicity Fitness Time Trial. Python package to measure cell arrestment and assess the temporal footprint of phototoxicity.',
+    description='PhotoFiTT: Phototoxicity Fitness Time Trial. Python package to measure cell arrestment and assess the temporal footprint of phototoxicity.',
     long_description=long_description,
     long_description_content_type='text/markdown',
     author="M. del Rosario, E. Gomez-de-Mariscal, L. Morgado, G. Jacquemet, P.M. Pereira, R. Henriques",
