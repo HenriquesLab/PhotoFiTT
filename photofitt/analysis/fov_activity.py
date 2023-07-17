@@ -63,19 +63,32 @@ def piv_time_variability(im, winsize=30, searchsize=35, overlap=10, dt=0.01, thr
     return mean_piv_t, piv_t
 
 
-def normalise_activity(activity, diff, save_steps=False, save_path=None):
-    # Estimation of the total area covered by the cells in the video.
-    sum_projection = np.sum(diff, axis=0)
-    sum_projection = normalizePercentile(sum_projection, pmin=30, pmax=100, clip=True)
-    total_area = sum_projection.shape[0] * sum_projection.shape[1]
+def normalise_activity(diff, save_steps=False, save_path=None):
 
+    # Raw activity:
+    activity_t = [np.sum(diff[t]) for t in range(diff.shape[0])]
+    # Number of pixels with activity at each time point in the FOV:
+    p_t = [np.sum(normalizePercentile(diff[t], pmin=30, pmax=100, clip=True) > 0.001) for t in range(diff.shape[0])]
+    # Normalize the metrics according to the pixels in which activity has been recorded.
+    norm_activity_t = [activity_t[t] / p_t[t] for t in range(len(activity_t))]
+    # Sum projection until time point T (raw cumulative activity)
+    ca = [np.sum(diff[:t + 1], axis=0) for t in range(diff.shape[0])]
+    # Binarisation of sum projection until T (total area covered by active cells until T)
+    # This measure if the cells are spreading should be increasing
+    cp = [np.sum(normalizePercentile(ca[t], pmin=30, pmax=100, clip=True) > 0.001) for t in range(len(ca))]
+    # Cumulative activity per total cell area until T
+    norm_cumulative = [np.sum(ca[t]) / cp[t] for t in range(len(ca))]
+
+    # Estimation of the total area covered by the cells by the end of the video.
+    sum_projection = normalizePercentile(ca[-1], pmin=30, pmax=100, clip=True)
     if save_steps:
         imsave(save_path, sum_projection)
+    ## Number of pixels belonging to cell area at some point in the video.
     sum_projection = np.sum(sum_projection > 0.001)
 
-    # Normalize the metrics acording to the number of cells.
-    norm_activity = [activity[t] / (sum_projection / total_area) for t in range(len(activity))]
-    return norm_activity
+    # Normalize the cumulative activity with the final total area covered by cells.
+    norm_cumulative_final = [np.sum(ca[t]) / sum_projection for t in range(len(ca))]
+    return activity_t, p_t, norm_activity_t, cp, norm_cumulative, norm_cumulative_final
 
 
 def extract_activity(path, activity_info=None, column_data=[], frame_rate=4, enhance_contrast=False,
@@ -124,11 +137,18 @@ def extract_activity(path, activity_info=None, column_data=[], frame_rate=4, enh
                         imsave(os.path.join(output_path, "diff_" + f), diff)
 
                     if normalize:
-                        norm_activity = normalise_activity(activity, diff, save_steps=save_steps,
-                                                           save_path=os.path.join(output_path,
-                                                                                  "normalised_projection_" + f))
-                        data = np.zeros((len(activity), 3))
-                        data[:, 2] = norm_activity
+                        activity_t, p_t, norm_activity_t, cp, norm_cumulative, norm_cumulative_final = \
+                            normalise_activity(diff, save_steps=save_steps,
+                                               save_path=os.path.join(output_path,
+                                               "normalised_projection_" + f))
+
+                        data = np.zeros((len(activity), 8))
+                        data[:, 2] = activity_t
+                        data[:, 3] = p_t
+                        data[:, 4] = norm_activity_t
+                        data[:, 5] = cp
+                        data[:, 6] = norm_cumulative
+                        data[:, 7] = norm_cumulative_final
                     else:
                         data = np.zeros((len(activity), 2))
                     data[:, 0] = frame_rate * np.arange(len(activity))
@@ -136,9 +156,12 @@ def extract_activity(path, activity_info=None, column_data=[], frame_rate=4, enh
 
                     # convert counts together with the column information into a dataframe.
                     if normalize:
-                        aux = pd.DataFrame(data, columns=['frame', 'activity', 'normalised_activity'])
+                        aux = pd.DataFrame(data, columns=['frame', 'mean activity', 'SUM activity',
+                                                          'area active cells', 'masked mean activity',
+                                                          'total area active cells', 'masked cumulative activity',
+                                                          'TOTAL masked cumulative activity'])
                     else:
-                        aux = pd.DataFrame(data, columns=['frame', 'activity'])
+                        aux = pd.DataFrame(data, columns=['frame', 'mean activity'])
 
                     for i in range(len(column_data)):
                         aux["Subcategory-{:02d}".format(i)] = column_data[i]
