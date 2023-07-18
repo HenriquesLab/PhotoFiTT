@@ -15,30 +15,23 @@ import numpy as np
 
 ## PARAMETERS USED TO COMPUTE PLOTS
 #--------------------------------------------------------------
-#masks_path = sys.argv[1]
-output_path = "/Users/esti/Documents/PROYECTOS/PHX/DOCS/MANUSCRIPT/CODE/exploratory_plots" # sys.argv[2]
-frame_rate = 4 #sys.argv[3] # The time gap we will use to compute all the metrics
+masks_path = sys.argv[1]
+output_path = sys.argv[2]
+frame_rate = 4 # sys.argv[3] # The time gap we will use to compute all the metrics
 r = 0.0 # We can filter out by roundness of the segmented cells
 t_win = 5 # The size of the window (kernel) that is used to smooth the curves
 max_t = 300 # The maximum length in minutes of the videos that we will analyse
 
 # GET THE DATA AND FILTER IT WITH THE PARAMETERS
 #--------------------------------------------------------------
-#data = count_mitosis_all(masks_path, frame_rate = frame_rate)
-# save the information
-#data.to_csv(os.path.join(output_path, "mitosis_counting.csv"))
+data = count_mitosis_all(masks_path, frame_rate = frame_rate)
+# Save the information
+data.to_csv(os.path.join(output_path, "mitosis_counting.csv"))
 
 ## Read the original data
 # data = pd.read_csv(os.path.join(output_path, "data.csv"))
-import pandas as pd
-# data = pd.read_csv("/Users/esti/Documents/PROYECTOS/PHX/DOCS/MANUSCRIPT/CODE/data/mitosis_CHO_UV_clean.csv")
-#data = pd.read_csv("/Users/esti/Documents/PROYECTOS/PHX/DOCS/MANUSCRIPT/CODE/data/mitosis_CHO_475_clean_new.csv")
-data = pd.read_csv("/Users/esti/Documents/PROYECTOS/PHX/DOCS/MANUSCRIPT/CODE/data/mitosis_CHO_568_clean.csv")
-# data = pd.read_csv("/Users/esti/Documents/PROYECTOS/PHX/DOCS/MANUSCRIPT/CODE/data/mitosis_CHO_630_clean_new.csv")
-
-
-# hue_order = ['Control-sync', 'Synchro', '25ms', '50ms', '100ms', '200ms', '400ms', '800ms', '01sec', '05sec', '10sec',
-#              '15sec', '20sec', '25sec', '30sec']
+# import pandas as pd
+# data = pd.read_csv("/Users/esti/Documents/PROYECTOS/PHX/DOCS/MANUSCRIPT/CODE/data/mitosis_CHO_568_clean.csv")
 
 ## Estimate the ligth dose
 light_power = 6.255662

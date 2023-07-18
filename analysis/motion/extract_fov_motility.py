@@ -21,7 +21,7 @@ from photofitt.display import smooth_curves, conditions_with_aggregates
 main_path = sys.argv[1]
 output_path = sys.argv[2]
 condition = sys.argv[3]  # "630", "WL UV - high..."
-wl = sys.argv[4] # "new_data, None, wl, uv, ...
+wl = sys.argv[4]  # "new_data, None, wl, uv, ...
 method = sys.argv[5]  # "intensity"
 
 if condition != "None":
@@ -34,18 +34,23 @@ folder = "activity_clahe-{}".format(method)
 os.makedirs(os.path.join(output_path, folder), exist_ok=True)
 
 action_metrics = extract_activity(main_path, method=method, save_steps=False, enhance_contrast=True,
-                                output_path=os.path.join(output_path, folder), condition=condition)
-print(action_metrics)
-if wl == "None" or wl==None:
-    action_metrics.to_csv(os.path.join(output_path, folder, "data_activity_{0}.csv".format(method)))
-    conditions_with_aggregates(action_metrics, "time_variance", "Activity_{0}_variance".format(method),
-                               os.path.join(output_path, folder),
-                               "Activity_{0}_variance_0.png".format(method), hue="Subcategory-02",
-                               style="Subcategory-01")
-else:
+                                  output_path=os.path.join(output_path, folder), condition=condition)
 
+if wl == "None" or wl == None:
+    action_metrics.to_csv(os.path.join(output_path, folder, "data_activity_{0}.csv".format(method)))
+else:
     action_metrics.to_csv(os.path.join(output_path, folder, "data_activity_{0}_{1}.csv".format(method, wl)))
-    conditions_with_aggregates(action_metrics, "time_variance", "Activity_{0}_variance_{1}".format(method, wl),
-                               os.path.join(output_path, folder),
-                               "Activity_{0}_variance_0_{1}.png".format(method, wl), hue="Subcategory-02",
-                               style="Subcategory-01")
+
+y_var = [c for c in action_metrics.columns if c.__contains__("activity") or c.__contains__("active cells")]
+for y in y_var:
+    print(y)
+    if wl == "None" or wl == None:
+        conditions_with_aggregates(action_metrics, y, f"{y}_{method}_variance",
+                                   os.path.join(output_path, folder),
+                                   f"{y}_{method}_variance.png", hue="Subcategory-02",
+                                   style="Subcategory-01")
+    else:
+        conditions_with_aggregates(action_metrics, y, f"{y}_{method}_variance_{wl}",
+                                   os.path.join(output_path, folder),
+                                   f"{y}_{method}_variance_{wl}.png", hue="Subcategory-02",
+                                   style="Subcategory-01")
