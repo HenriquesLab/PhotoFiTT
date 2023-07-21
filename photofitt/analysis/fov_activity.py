@@ -1,4 +1,4 @@
-import numpy as n p
+import numpy as np
 from tifffile import imread, imsave
 import pandas as pd
 from photofitt.utils.normalisation import normalise_phc_timelapse, normalizePercentile
