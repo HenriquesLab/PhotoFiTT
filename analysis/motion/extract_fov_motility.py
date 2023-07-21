@@ -36,9 +36,11 @@ os.makedirs(os.path.join(output_path, folder), exist_ok=True)
 #action_metrics = extract_activity(main_path, method=method, save_steps=False, enhance_contrast=True,
 #                                  output_path=os.path.join(output_path, folder), condition=condition)
 import pandas as pd
+print("Reading data")
 action_metrics = pd.read_csv(os.path.join(output_path, folder, "data_activity_{0}.csv".format(method)))
 
 # Estimate the ligth dose
+print("Estimating the light dose and power conditions")
 light_power = 6.255662
 action_metrics = numerical_dose(action_metrics, column_name="Subcategory-02", power=light_power)
 action_metrics = power_conversion(action_metrics)

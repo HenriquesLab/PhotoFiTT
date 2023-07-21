@@ -11,19 +11,22 @@ def numerical_dose(data, column_name="Subcategory-02", power=None):
     data["Exposure time"] = 0.
     if power is not None:
         data["Light dose"] = 0.
-    for i in range(len(data)):
-        s = data[column_name].iloc[i]
-        if s.__contains__("Control"):
+
+    CON = np.unique(data[f'{column_name}'])
+    for c in CON:
+
+        if c.__contains__("Control"):
             n = -0.001
-        elif s.__contains__("Synchro"):
+        elif c.__contains__("Synchro"):
             n = 0.
         else:
-            n = float(''.join(filter(str.isdigit, s)))
-            if s.__contains__("ms"):
+            n = float(''.join(filter(str.isdigit, c)))
+            if c.__contains__("ms"):
                 n = 0.001*n
+        index_c = data[data[f'{column_name}'] == c].index.to_list()
         if power is not None:
-            data.loc[[i], "Light dose"] = n*power
-        data.loc[[i], 'Exposure time'] = n
+            data.loc[index_c, "Light dose"] = n*power
+        data.loc[index_c, 'Exposure time'] = n
     return data
 
 # '''
@@ -47,7 +50,7 @@ def numerical_dose(data, column_name="Subcategory-02", power=None):
 
 def power_conversion(data, dose_column="Light dose", condition_col="Subcategory-02", condition_name="Synchro"):
     ## Generate categorical variables for the light dose
-    light_dose = np.unique(data[f'{column_name}'])
+    light_dose = np.unique(data[f'{dose_column}'])
     action_metrics[f'{dose_column} cat'] = ''
     for l in light_dose:
         if l > 0:
