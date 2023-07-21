@@ -1,4 +1,4 @@
-
+import numpy  as np
 
 def numerical_dose(data, column_name="Subcategory-02", power=None):
     """
@@ -44,4 +44,18 @@ def numerical_dose(data, column_name="Subcategory-02", power=None):
 # 2500
 #
 # '''
+
+def power_conversion(data, dose_column="Light dose", condition_col="Subcategory-02", condition_name="Synchro"):
+    ## Generate categorical variables for the light dose
+    light_dose = np.unique(data[f'{column_name}'])
+    action_metrics[f'{dose_column} cat'] = ''
+    for l in light_dose:
+        if l > 0:
+            cat = np.str(np.round(l, decimals=1)) + " J/cm2"
+        else:
+            cat = 'non-synchro-0 J/cm2'
+
+        data[f'{dose_column} cat'][data[f'{dose_column}'] == l] = cat
+    data[f'{dose_column} cat'][data[f'{condition_col}'] == condition_name] = '0 J/cm2'
+    return data
 

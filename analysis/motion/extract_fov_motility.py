@@ -13,7 +13,7 @@ import os
 import sys
 from photofitt.analysis import extract_activity
 from photofitt.display import smooth_curves, conditions_with_aggregates, conditions
-from photofitt.utils import numerical_dose
+from photofitt.utils import numerical_dose, power_conversion
 # main_path = "/Users/esti/Documents/PROYECTOS/PHX/mitosis_mediated_data_itqb_3/inputs/scaled_1.5709_results/2022-08-10/"
 # main_path = "/Users/esti/Documents/PROYECTOS/PHX/mitosis_mediated_data_itqb_3/inputs/scaled_1.5709_results/2022-08-10/WL UV - high density/Synchro"
 # output_path = "/Users/esti/Documents/PROYECTOS/PHX/mitosis_mediated_data_itqb_3/results/scaled_1.5709_results/stardist_prob03"
@@ -33,29 +33,20 @@ else:
 folder = "activity_clahe-{}".format(method)
 os.makedirs(os.path.join(output_path, folder), exist_ok=True)
 
-action_metrics = extract_activity(main_path, method=method, save_steps=False, enhance_contrast=True,
-                                  output_path=os.path.join(output_path, folder), condition=condition)
+#action_metrics = extract_activity(main_path, method=method, save_steps=False, enhance_contrast=True,
+#                                  output_path=os.path.join(output_path, folder), condition=condition)
+import pandas as pd
+action_metrics = pd.read_csv(os.path.join(output_path, folder, "data_activity_{0}.csv".format(method)))
+
 # Estimate the ligth dose
 light_power = 6.255662
-activity_metrics = numerical_dose(activity_metrics, column_name="Subcategory-02", power=light_power)
+action_metrics = numerical_dose(action_metrics, column_name="Subcategory-02", power=light_power)
+action_metrics = power_conversion(action_metrics)
 
-## Generate categorical variables for the light dose
-light_dose = np.unique(activity_metrics["Light dose"])
-activity_metrics["Light dose cat"] = ''
-for l in light_dose:
-    if l > 0:
-        cat = np.str(np.round(l, decimals=1)) + " J/cm2"
-    else:
-        cat = 'non-synchro-0 J/cm2'
-
-    activity_metrics["Light dose cat"][activity_metrics["Light dose"]==l] = cat
-activity_metrics["Light dose cat"][activity_metrics["Subcategory-02"]=="Synchro"] = '0 J/cm2'
-
-
-if wl == "None" or wl == None:
-    action_metrics.to_csv(os.path.join(output_path, folder, "data_activity_{0}.csv".format(method)))
-else:
-    action_metrics.to_csv(os.path.join(output_path, folder, "data_activity_{0}_{1}.csv".format(method, wl)))
+#if wl == "None" or wl == None:
+#    action_metrics.to_csv(os.path.join(output_path, folder, "data_activity_{0}.csv".format(method)))
+#else:
+#    action_metrics.to_csv(os.path.join(output_path, folder, "data_activity_{0}_{1}.csv".format(method, wl)))
 
 y_var = [c for c in action_metrics.columns if c.__contains__("activity") or c.__contains__("active cells")]
 hue = "Light dose cat"
@@ -72,6 +63,7 @@ for y in y_var:
                                    f"{y}_{method}_variance.png", hue=hue,
                                    style="Subcategory-01")
         for w in np.unique(action_metrics["Subcategory-01"]):
+            print(w)
             action_metrics_w = action_metrics[action_metrics["Subcategory-01"]==w].reset_index(dro)
 
             conditions(action_metrics_w, y,
@@ -87,3 +79,4 @@ for y in y_var:
                                    os.path.join(output_path, folder),
                                    f"{y}_{method}_variance_{wl}.png", hue="Subcategory-02",
                                    style="Subcategory-01")
+
