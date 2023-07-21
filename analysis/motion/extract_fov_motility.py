@@ -14,6 +14,8 @@ import sys
 from photofitt.analysis import extract_activity
 from photofitt.display import smooth_curves, conditions_with_aggregates, conditions
 from photofitt.utils import numerical_dose, power_conversion
+import numpy as np
+
 # main_path = "/Users/esti/Documents/PROYECTOS/PHX/mitosis_mediated_data_itqb_3/inputs/scaled_1.5709_results/2022-08-10/"
 # main_path = "/Users/esti/Documents/PROYECTOS/PHX/mitosis_mediated_data_itqb_3/inputs/scaled_1.5709_results/2022-08-10/WL UV - high density/Synchro"
 # output_path = "/Users/esti/Documents/PROYECTOS/PHX/mitosis_mediated_data_itqb_3/results/scaled_1.5709_results/stardist_prob03"
@@ -33,9 +35,10 @@ else:
 folder = "activity_clahe-{}".format(method)
 os.makedirs(os.path.join(output_path, folder), exist_ok=True)
 
-#action_metrics = extract_activity(main_path, method=method, save_steps=False, enhance_contrast=True,
+# action_metrics = extract_activity(main_path, method=method, save_steps=False, enhance_contrast=True,
 #                                  output_path=os.path.join(output_path, folder), condition=condition)
 import pandas as pd
+
 print("Reading data")
 action_metrics = pd.read_csv(os.path.join(output_path, folder, "data_activity_{0}.csv".format(method)))
 
@@ -45,9 +48,9 @@ light_power = 6.255662
 action_metrics = numerical_dose(action_metrics, column_name="Subcategory-02", power=light_power)
 action_metrics = power_conversion(action_metrics)
 
-#if wl == "None" or wl == None:
+# if wl == "None" or wl == None:
 #    action_metrics.to_csv(os.path.join(output_path, folder, "data_activity_{0}.csv".format(method)))
-#else:
+# else:
 #    action_metrics.to_csv(os.path.join(output_path, folder, "data_activity_{0}_{1}.csv".format(method, wl)))
 
 y_var = [c for c in action_metrics.columns if c.__contains__("activity") or c.__contains__("active cells")]
@@ -66,7 +69,8 @@ for y in y_var:
                                    style="Subcategory-01")
         for w in np.unique(action_metrics["Subcategory-01"]):
             print(w)
-            action_metrics_w = action_metrics[action_metrics["Subcategory-01"]==w].reset_index(dro)
+            import seaborn as sns
+            action_metrics_w = action_metrics[action_metrics["Subcategory-01"] == w].reset_index(drop=True)
 
             conditions(action_metrics_w, y,
                        f"{y}_{method}_variance_{w}",
@@ -75,10 +79,9 @@ for y in y_var:
                        f"{y}_{method}_variance_{w}.png",
                        hue_order=hue_order,
                        palette=sns.color_palette("CMRmap_r", 17),
-                       figsize=(4, 5), style=None)
+                       figsize=(7, 5), style=None)
     else:
         conditions_with_aggregates(action_metrics, y, f"{y}_{method}_variance_{wl}",
                                    os.path.join(output_path, folder),
                                    f"{y}_{method}_variance_{wl}.png", hue="Subcategory-02",
                                    style="Subcategory-01")
-

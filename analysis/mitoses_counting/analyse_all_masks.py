@@ -6,9 +6,9 @@ This script is meant to run automatically. Results are stored as csv files with 
 video names so all the results can be fully tracked.
 """
 import os
-import photofitt
 from photofitt.analysis import count_mitosis_all
-from photofitt.display import display_data_from_masks, conditions
+from photofitt.display import display_data_from_masks
+from photofitt.utils import numerical_dose, power_conversion
 import sys
 import seaborn as sns
 import numpy as np
@@ -22,32 +22,22 @@ r = 0.0 # We can filter out by roundness of the segmented cells
 t_win = 5 # The size of the window (kernel) that is used to smooth the curves
 max_t = 300 # The maximum length in minutes of the videos that we will analyse
 
+os.makedirs(output_path, exist_ok=True)
+
 # GET THE DATA AND FILTER IT WITH THE PARAMETERS
 #--------------------------------------------------------------
-data = count_mitosis_all(masks_path, frame_rate = frame_rate)
+# data = count_mitosis_all(masks_path, frame_rate = frame_rate)
 # Save the information
-data.to_csv(os.path.join(output_path, "mitosis_counting.csv"))
+# data.to_csv(os.path.join(output_path, "mitosis_counting.csv"))
 
 ## Read the original data
-# data = pd.read_csv(os.path.join(output_path, "data.csv"))
-# import pandas as pd
-# data = pd.read_csv("/Users/esti/Documents/PROYECTOS/PHX/DOCS/MANUSCRIPT/CODE/data/mitosis_CHO_568_clean.csv")
+import pandas as pd
+data = pd.read_csv(os.path.join(output_path, "mitosis_counting.csv"))
 
 ## Estimate the ligth dose
 light_power = 6.255662
-data = photofitt.utils.numerical_dose(data, column_name="Subcategory-02", power=light_power)
-
-## Generate categorical variables for the light dose
-light_dose = np.unique(data["Light dose"])
-data["Light dose cat"] = ''
-for l in light_dose:
-    if l > 0:
-        cat = np.str(np.round(l, decimals=1)) + " J/cm2"
-    else:
-        cat = 'non-synchro-0 J/cm2'
-    data["Light dose cat"][data["Light dose"] == l] = cat
-
-data["Light dose cat"][data["Subcategory-02"] == "Synchro"] = '0 J/cm2'
+data = numerical_dose(data, column_name="Subcategory-02", power=light_power)
+data = power_conversion(data)
 hue_order = ['non-synchro-0 J/cm2', '0 J/cm2', '0.2 J/cm2',
              '0.3 J/cm2', '0.6 J/cm2', '1.3 J/cm2', '2.5 J/cm2',
              '5.0 J/cm2', '6.3 J/cm2', '31.3 J/cm2',

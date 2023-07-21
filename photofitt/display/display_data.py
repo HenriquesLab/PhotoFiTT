@@ -25,21 +25,23 @@ def display_data_from_masks(data, plotting_var, output_path, frame_rate=4, round
         palette = sns.color_palette("husl", 14)
 
     for d in density:
+        print(d)
         data_d = data[data["Subcategory-01"] == d].reset_index(drop=True)
         for c in classes:
             data_c = data_d[data_d["Subcategory-02"] == c].reset_index(drop=True)
-            data_c["unique_name"] = data_c["Subcategory-00"] + data_c["Subcategory-01"] + data_c["Subcategory-02"] + \
-                                    data_c["video_name"]
+            if len(data_c) > 0:
+                data_c["unique_name"] = data_c["Subcategory-00"] + data_c["Subcategory-01"] + data_c["Subcategory-02"] + \
+                                        data_c["video_name"]
 
-            y_var = f"Norm. {plotting_var}"
-            name = d + "_" + c + "_" + y_var + "_roundness-{0}.{1}".format(roundness, graph_format)
-            one_condition(data_c, y_var, output_path, name, hue1="unique_name", hue2="Subcategory-02",
-                          palette=palette, frame_rate=frame_rate)
+                y_var = f"Norm. {plotting_var}"
+                name = d + "_" + c + "_" + y_var + "_roundness-{0}.{1}".format(roundness, graph_format)
+                one_condition(data_c, y_var, output_path, name, hue1="unique_name", hue2="Subcategory-02",
+                              palette=palette, frame_rate=frame_rate)
 
-            yy_var = f"{plotting_var}"
-            name = d + "_" + c + "_" + y_var + "_roundness-{0}.{1}".format(roundness, graph_format)
-            one_condition(data_c, y_var, output_path, name, hue1="unique_name", hue2="Subcategory-02",
-                          palette=palette, frame_rate=frame_rate)
+                yy_var = f"{plotting_var}"
+                name = d + "_" + c + "_" + y_var + "_roundness-{0}.{1}".format(roundness, graph_format)
+                one_condition(data_c, y_var, output_path, name, hue1="unique_name", hue2="Subcategory-02",
+                              palette=palette, frame_rate=frame_rate)
 
         ## PLOT ALL THE CONDITIONS FOR EACH DENSITY VALUE
         title = "Minimum roundness {}".format(roundness)

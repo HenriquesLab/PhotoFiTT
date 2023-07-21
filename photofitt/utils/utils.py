@@ -49,6 +49,14 @@ def numerical_dose(data, column_name="Subcategory-02", power=None):
 # '''
 
 def power_conversion(data, dose_column="Light dose", condition_col="Subcategory-02", condition_name="Synchro"):
+    """
+
+    :param data:
+    :param dose_column:
+    :param condition_col:
+    :param condition_name:
+    :return:
+    """
     ## Generate categorical variables for the light dose
     light_dose = np.unique(data[f'{dose_column}'])
     data[f'{dose_column} cat'] = ''
@@ -57,8 +65,9 @@ def power_conversion(data, dose_column="Light dose", condition_col="Subcategory-
             cat = np.str(np.round(l, decimals=1)) + " J/cm2"
         else:
             cat = 'non-synchro-0 J/cm2'
-
-        data[f'{dose_column} cat'][data[f'{dose_column}'] == l] = cat
-    data[f'{dose_column} cat'][data[f'{condition_col}'] == condition_name] = '0 J/cm2'
+        l_index = data[data[f'{dose_column}'] == l].index.to_list()
+        data.loc[l_index, f'{dose_column} cat'] = cat
+    c_index = data[data[f'{condition_col}'] == condition_name].index.to_list()
+    data.loc[c_index, f'{dose_column} cat'] = '0 J/cm2'
     return data
 
