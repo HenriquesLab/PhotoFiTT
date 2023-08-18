@@ -7,6 +7,8 @@ __pycache__/
 .Python
 build/
 example-data/
+pytorch-CycleGAN-and-pix2pix/
+notebooks/deep-learning/pix2pix/pytorch-CycleGAN-and-pix2pix/
 develop-eggs/
 dist/
 downloads/

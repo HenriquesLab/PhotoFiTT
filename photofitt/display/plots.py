@@ -55,7 +55,7 @@ def conditions_with_aggregates(data, y_var, title, output_path, name, hue="Subca
     # plt.close(fig)
 
 def conditions(data, y_var, title, condition, output_path, name, style=None,
-                    hue_order=None, palette=None, figsize=(7, 4)):
+                    hue_order=None, palette=None, figsize=(7, 4), ylim=None):
     sns.set_style()
 
     fig = plt.figure(figsize=figsize)
@@ -88,6 +88,8 @@ def conditions(data, y_var, title, condition, output_path, name, style=None,
     plt.yscale("linear")
     plt.title(title)
     plt.legend(loc='right')
+    if ylim is not None:
+        plt.ylim(ylim)
     format_extension = name.split(".")[-1]
     fig.savefig(os.path.join(output_path, name), format=format_extension, transparent=True)
     # plt.show()

@@ -64,6 +64,7 @@ def piv_time_variability(im, winsize=30, searchsize=35, overlap=10, dt=0.01, thr
 
 
 def normalise_activity(diff, save_steps=False, save_path=None):
+    #TODO: correct normalisation for the entire video. Otherwise the treatment for the activity will be t dependent.
 
     # Raw activity:
     activity_t = [np.sum(diff[t]) for t in range(diff.shape[0])]
