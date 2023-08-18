@@ -71,3 +71,25 @@ def power_conversion(data, dose_column="Light dose", condition_col="Subcategory-
     data.loc[c_index, f'{dose_column} cat'] = '0 J/cm2'
     return data
 
+def power_wavelength_conversion(data, dose_column="Light dose Wavelength", condition_col="Subcategory-02", condition_name="Synchro"):
+    """
+
+    :param data:
+    :param dose_column:
+    :param condition_col:
+    :param condition_name:
+    :return:
+    """
+    ## Generate categorical variables for the light dose
+    light_dose = np.unique(data[f'{dose_column}'])
+    data[f'{dose_column} cat'] = ''
+    for l in light_dose:
+        if l > 0:
+            cat = np.str(np.round(l, decimals=2)) + " J/cm2 (1/nm)"
+        else:
+            cat = 'non-synchro-0 J/cm2 (1/nm)'
+        l_index = data[data[f'{dose_column}'] == l].index.to_list()
+        data.loc[l_index, f'{dose_column} cat'] = cat
+    c_index = data[data[f'{condition_col}'] == condition_name].index.to_list()
+    data.loc[c_index, f'{dose_column} cat'] = '0 J/cm2 (1/nm)'
+    return data
