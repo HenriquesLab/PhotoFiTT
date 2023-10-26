@@ -204,7 +204,8 @@ conda install -c conda-forge opencv
 conda install scipy==1.4.1
 conda install opencv
 pip install -q fpdf
-pip install -q PTable # Nice tables 
+pip install -q PTable # Nice tables
+conda install -c conda-forge bioimageio.core
 ```
 
 
