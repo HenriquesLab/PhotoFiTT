@@ -188,7 +188,7 @@ conda install scipy==1.4.1
 ```
 ### StarDist environment setup for Windows
 ```
-conda create --name stardist-tf2 tensorflow-gpu=2.1.0 jupyter
+conda create --name stardist-tf2 tensorflow-gpu=2.3.0 jupyter
 ```
 install the followings
 ```
@@ -198,10 +198,13 @@ conda install imagecodecs
 conda install zarr
 conda install wget
 !pip install wget
-conda install pandas
+conda install pandas==1.5.3
 pip install -U scikit-learn
 conda install -c conda-forge opencv
 conda install scipy==1.4.1
+conda install opencv
+pip install -q fpdf
+pip install -q PTable # Nice tables 
 ```
 
 
