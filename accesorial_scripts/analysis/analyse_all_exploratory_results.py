@@ -289,16 +289,16 @@ for wl in np.unique(synchro_data["Subcategory-01"]):  # wavelengths
         L_all = pd.concat([L_all, L])
 
 
-    plt.figure(figsize=(8, 7))
-    sns.lineplot(data = L_all, x = "frame", y="cell_size", hue=hue,
-                 hue_order=hue_order,
-                 palette=[(0.2, 0.2, 0.2), (0.5, 0.5, 0.5)] + sns.color_palette("CMRmap_r", 15))
-    plt.legend(hue_order)
-    plt.ylim([200, 500])
-    plt.title(f"LOWESS all powers by wavelengths")
-    plt.ylabel("Cell size in microns")
-    plt.yscale('log')
-    plt.show()
+    # plt.figure(figsize=(8, 7))
+    # sns.lineplot(data = L_all, x = "frame", y="cell_size", hue=hue,
+    #              hue_order=hue_order,
+    #              palette=[(0.2, 0.2, 0.2), (0.5, 0.5, 0.5)] + sns.color_palette("CMRmap_r", 15))
+    # plt.legend(hue_order)
+    # plt.ylim([200, 500])
+    # plt.title(f"LOWESS all powers by wavelengths")
+    # plt.ylabel("Cell size in microns")
+    # plt.yscale('log')
+    # plt.show()
 
 
 

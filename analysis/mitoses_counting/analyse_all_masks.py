@@ -15,8 +15,8 @@ import numpy as np
 
 ## PARAMETERS USED TO COMPUTE PLOTS
 #--------------------------------------------------------------
-masks_path = sys.argv[1]
-output_path = sys.argv[2]
+masks_path = "/Users/esti/Documents/PROYECTOS/PHX/mitosis_mediated_data_itqb_3/HELA/masks/scaled_1.5709_results/stardist_prob03" #sys.argv[1]
+output_path = "/Users/esti/Documents/PROYECTOS/PHX/mitosis_mediated_data_itqb_3/HELA/results/scaled_1.5709_results/stardist_prob03/new_analysis" # sys.argv[2]
 frame_rate = 4 # sys.argv[3] # The time gap we will use to compute all the metrics
 r = 0.0 # We can filter out by roundness of the segmented cells
 t_win = 5 # The size of the window (kernel) that is used to smooth the curves
@@ -26,9 +26,9 @@ os.makedirs(output_path, exist_ok=True)
 
 # GET THE DATA AND FILTER IT WITH THE PARAMETERS
 #--------------------------------------------------------------
-# data = count_mitosis_all(masks_path, frame_rate = frame_rate)
+data = count_mitosis_all(masks_path, frame_rate = frame_rate)
 # Save the information
-# data.to_csv(os.path.join(output_path, "mitosis_counting.csv"))
+data.to_csv(os.path.join(output_path, "mitosis_counting.csv"))
 
 ## Read the original data
 import pandas as pd
