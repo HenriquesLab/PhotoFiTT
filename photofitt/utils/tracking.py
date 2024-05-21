@@ -1,13 +1,10 @@
 import os
 import numpy as np
 import cc3d
-from numba import njit
 from scipy.ndimage import gaussian_filter
 import pandas as pd
 from tifffile import imread
 
-
-@njit()
 def stack_pixelwise_average(A):
     # time is in the first dimension
     A = A.astype(np.float32)
@@ -17,8 +14,6 @@ def stack_pixelwise_average(A):
     B[-1] = A[-1]
     return B
 
-
-@njit()
 def bounding_box(inst_mask, margin=5):
     BBOX = np.zeros_like(inst_mask)
     if np.sum(inst_mask) > 0:
@@ -34,15 +29,11 @@ def bounding_box(inst_mask, margin=5):
                     BBOX[t, bbox_r1:bbox_r2, bbox_c1:bbox_c2] = 1
     return BBOX
 
-
-# @njit()
 def find_concomp2d(mask, connectivity=4):
     new_mask = [cc3d.connected_components(mask[t], connectivity=connectivity) for t in range(mask.shape[0])]
     new_mask = np.array(new_mask)
     return new_mask
 
-
-@njit()
 def remove_exisitng_labels(bin_mask, instance_mask):
     # any ce3ll (i.e. connected component) in new_mask that has some overlap with bin_mask is removed
     # return: new_mask is an image that has zero intersection with bin_mask.
@@ -58,7 +49,6 @@ def remove_exisitng_labels(bin_mask, instance_mask):
         aux = np.reshape(aux, intersection[t].shape)
         new_mask[t] += aux
     return new_mask
-
 
 def smooth_video(input_video, sigma=2):
     # Time is assumed to be in the first axis (axis=0)
@@ -122,7 +112,6 @@ def fill_gaps(inst_mask, sigma=2, track_threshold=0.25):
     tracks_3D = cc3d.connected_components((average_mask2 > 0).astype(np.int32), connectivity=26)
     return average_mask, tracks_3D
 
-@njit()
 def count_tracked_divisions(tracks_3D, average_mask, frame_rate=4):
     # We use average_mask because it has some correction of false negatives
     length = tracks_3D.shape[0]

@@ -3,7 +3,7 @@ channels:
   - conda-forge
   - nodefaults
 dependencies:
-  - numpy==1.21.2
+  - numpy==1.26.4
   - python=3.9.7
   - jupyter
   - conda-build

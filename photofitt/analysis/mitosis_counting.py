@@ -16,6 +16,66 @@ def smooth(y, t_win):
     y_smooth = np.convolve(y, t, mode='same')
     return y_smooth
 
+def total_cell_number(folder, type="csv"):
+    """
+
+    :param folder:
+    :param type: "csv" or "image". It will read the total cell number from a csv file or compute it from the masks
+    :return:
+    """
+    cell_number = None
+
+    for f in os.listdir(folder):
+        if not f.startswith("."):
+            print(f'Processing folder {f}')
+            if type=="csv":
+                masks = [files for files in os.listdir(os.path.join(folder, f)) if files.endswith("_Nuclei_centre.csv")]
+                for m in masks:
+                    info = pd.read_csv(os.path.join(folder, f, m), header=0)
+                    n = len(info)
+                    video_name = m.split("_Nuclei_centre")[0]
+                    aux = pd.DataFrame({
+                        'Subcategory-00': f,
+                        'video_name': video_name,
+                        'cell_counts_stardist': n}, index=[0])
+                    if cell_number is None:
+                        cell_number = aux
+                    else:
+                        cell_number = pd.concat([cell_number, aux]).reset_index(drop=True)
+            else:
+                masks = [files for files in os.listdir(os.path.join(folder, f)) if files.endswith(".tif")]
+                for m in masks:
+                    im = imread(os.path.join(folder, f, m))
+                    n = len(np.unique(im))-1
+                    video_name = m.split(".tif")[0]
+                    aux = pd.DataFrame({
+                        'Subcategory-00': f,
+                        'video_name': video_name,
+                        'cell_counts_stardist': n}, index=[0])
+                    if cell_number is None:
+                        cell_number = aux
+                    else:
+                        cell_number = pd.concat([cell_number, aux]).reset_index(drop=True)
+
+    return cell_number
+
+def add_inferred_nuclei(data, cellnumber_data):
+    replicas = np.unique(cellnumber_data["Subcategory-00"])
+    data["cell_counts_stardist"] = np.nan
+    for r in replicas:
+        print(r)
+        cell_videos = cellnumber_data.loc[lambda cellnumber_data: cellnumber_data["Subcategory-00"] == r]
+        data_replica = data.loc[lambda data: data["Subcategory-00"] == r]
+
+        videos = np.unique(cell_videos["video_name"])
+        for v in videos:
+            n = cell_videos.loc[lambda cell_videos: cell_videos["video_name"] == v]
+            n = n.iloc[0]["cell_counts_stardist"]
+            data_video = data_replica.loc[lambda data_replica: data_replica["video_name"] == v]
+            index = data_video.index.to_list()
+            data.loc[index, ['cell_counts_stardist']] = n
+    return data
+
 def extract_info(frame, t, frame_rate, min_roundness, column_data):
     labels = np.unique(frame)
     area = []
@@ -81,7 +141,6 @@ def count_mitosis(path, stacks=False, pd_dataframe=None, column_data=[], frame_r
 
     return pd_dataframe
 
-
 def count_mitosis_all(path, stacks=True, pd_dataframe=None, column_data=[], frame_rate=4, min_roundness=0.0, t_win=5):
     """
     This function parses all the folders contained in the path and will output a pandas data frame with each category
@@ -144,7 +203,6 @@ def count_mitosis_all(path, stacks=True, pd_dataframe=None, column_data=[], fram
                     pd_dataframe = pd.concat([pd_dataframe, aux3]).reset_index(drop=True)
 
     return pd_dataframe
-
 
 def quantify_peaks(input_data, variable, frame_rate=4, alpha_init=25, alpha_end=120, beta_init=250, beta_end=350):
     """
