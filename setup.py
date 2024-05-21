@@ -32,7 +32,7 @@ setup(
         'imageio==2.13.3',
         'matplotlib==3.5.1',
         'nd2==0.1.6',
-        'numpy==1.26.4',
+        'numpy==1.22.4',
         'opencv-python==4.7.0.72',
         'pyyaml==6.0',
         'pandas==1.5.2',
