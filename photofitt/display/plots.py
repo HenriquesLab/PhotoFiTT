@@ -286,11 +286,11 @@ def distributions(df, xlabel, title, output_path, smoothness=.5):
     fig.savefig("{}_histogram.svg".format(output_path), format='svg')
     # plt.show()
 
-def mitosis(data, output_path, hue_order, y_variable, graph_format='png'):
+def mitosis(data, output_path, hue_order, y_variable, hue="Subcategory-02", graph_format='png',figsize=(7, 4)):
 
-    fig = plt.figure(figsize=(10, 8))
+    fig = plt.figure(figsize=figsize)
     plt.rcParams.update({'font.size': 0.9})
-    sns.lineplot(x="frame", y=y_variable, hue="Subcategory-02", data=data,
+    sns.lineplot(x="frame", y=y_variable, hue=hue, data=data,
                  palette=sns.color_palette("husl", 14),
                  hue_order=hue_order, linewidth=1.5, alpha=1)
     plt.tight_layout()
@@ -302,7 +302,7 @@ def mitosis(data, output_path, hue_order, y_variable, graph_format='png'):
         data_folderwise = data[data["Subcategory-00"] == d].reset_index(drop=True)
         fig = plt.figure(figsize=(10, 8))
         plt.rcParams.update({'font.size': 0.9})
-        sns.lineplot(x="frame", y=y_variable, hue="Subcategory-02", data=data_folderwise,
+        sns.lineplot(x="frame", y=y_variable, hue=hue, data=data_folderwise,
                      palette=sns.color_palette("husl", 14),
                      hue_order=hue_order, linewidth=1.5, alpha=1)
         plt.tight_layout()
@@ -310,12 +310,12 @@ def mitosis(data, output_path, hue_order, y_variable, graph_format='png'):
         fig.savefig(os.path.join(output_path, "data_{0}_counting_{1}.{2}".format(y_variable, d, graph_format)), format=graph_format,
                     transparent=False)
 
-def info_wrt_peak(data, x_labels, hue_order, output_path):
+def info_wrt_peak(data, x, x_labels, hue_order, output_path):
 
     # PEAK TIME
     # fig = plt.figure()
     sns.set(font_scale=0.9)
-    g = sns.catplot(data=data, x="Subcategory-02", y="peak_time", hue="Subcategory-00",
+    g = sns.catplot(data=data, x=x, y="peak_time", hue="Subcategory-00",
                     order=x_labels, hue_order=hue_order, kind="box", height=5,
                     aspect=2, palette="rainbow"
                     )
@@ -329,7 +329,7 @@ def info_wrt_peak(data, x_labels, hue_order, output_path):
     #
     # fig = plt.figure()
     sns.set(font_scale=0.9)
-    g = sns.catplot(data=data, x="Subcategory-02", y="peak_time",
+    g = sns.catplot(data=data, x=x, y="peak_time",
                     order=x_labels, kind="box", height=5, aspect=2, palette="rainbow_r"
                     )
     g.set_axis_labels("Exposure times", "Time point of maximum peak (minutes)")
@@ -342,7 +342,7 @@ def info_wrt_peak(data, x_labels, hue_order, output_path):
     # DELAY W.R.T. SYNCHRO
     # fig = plt.figure()
     sns.set(font_scale=0.9)
-    g = sns.catplot(data=data, x="Subcategory-02", y="delay_synchro", hue="Subcategory-00",
+    g = sns.catplot(data=data, x=x, y="delay_synchro", hue="Subcategory-00",
                     order=x_labels, hue_order=hue_order, kind="box", height=5, aspect=2, palette="rainbow"
                     )
     g.set_axis_labels("Exposure times", "Delay for the maximum peak (minutes)")
@@ -354,7 +354,7 @@ def info_wrt_peak(data, x_labels, hue_order, output_path):
     #
     # fig = plt.figure()
     sns.set(font_scale=0.9)
-    g = sns.catplot(data=data, x="Subcategory-02", y="delay_synchro",
+    g = sns.catplot(data=data, x=x, y="delay_synchro",
                     order=x_labels, kind="box", height=5, aspect=2, palette="rainbow_r"
                     )
     g.set_axis_labels("Exposure times", "Delay for the maximum peak (minutes)")
@@ -367,7 +367,7 @@ def info_wrt_peak(data, x_labels, hue_order, output_path):
     # PROPORTIONAL DELAY W.R.T. SYNCHRO
     # fig = plt.figure()
     sns.set(font_scale=0.9)
-    g = sns.catplot(data=data, x="Subcategory-02", y="proportional_delay_synchro", hue="Subcategory-00",
+    g = sns.catplot(data=data, x=x, y="proportional_delay_synchro", hue="Subcategory-00",
                     order=x_labels, hue_order=hue_order, kind="box", height=5, aspect=2, palette="rainbow"
                     )
     g.set_axis_labels("Exposure times", "Delay proportion for the maximum peak (minutes)")
@@ -378,7 +378,7 @@ def info_wrt_peak(data, x_labels, hue_order, output_path):
     #
     # fig = plt.figure()
     sns.set(font_scale=0.9)
-    g = sns.catplot(data=data, x="Subcategory-02", y="proportional_delay_synchro",
+    g = sns.catplot(data=data, x=x, y="proportional_delay_synchro",
                     order=x_labels, kind="box", height=5, aspect=2, palette="rainbow_r"
                     )
     g.set_axis_labels("Exposure times", "Delay proportion for the maximum peak (minutes)")

@@ -22,7 +22,7 @@ def display_data_from_masks(data, plotting_var, output_path, frame_rate=4, round
     density = np.unique(data['Subcategory-01'])
     classes = np.unique(data['Subcategory-02'])
     if palette is None:
-        palette = sns.color_palette("husl", 14)
+        palette = sns.color_palette("husl", 17)
 
     for d in density:
         print(d)
@@ -32,13 +32,7 @@ def display_data_from_masks(data, plotting_var, output_path, frame_rate=4, round
             if len(data_c) > 0:
                 data_c["unique_name"] = data_c["Subcategory-00"] + data_c["Subcategory-01"] + data_c["Subcategory-02"] + \
                                         data_c["video_name"]
-
-                y_var = f"Norm. {plotting_var}"
-                name = d + "_" + c + "_" + y_var + "_roundness-{0}.{1}".format(roundness, graph_format)
-                one_condition(data_c, y_var, output_path, name, hue1="unique_name", hue2="Subcategory-02",
-                              palette=palette, frame_rate=frame_rate)
-
-                yy_var = f"{plotting_var}"
+                y_var = f"{plotting_var}"
                 name = d + "_" + c + "_" + y_var + "_roundness-{0}.{1}".format(roundness, graph_format)
                 one_condition(data_c, y_var, output_path, name, hue1="unique_name", hue2="Subcategory-02",
                               palette=palette, frame_rate=frame_rate)
@@ -46,11 +40,6 @@ def display_data_from_masks(data, plotting_var, output_path, frame_rate=4, round
         ## PLOT ALL THE CONDITIONS FOR EACH DENSITY VALUE
         title = "Minimum roundness {}".format(roundness)
         y_var = f"{plotting_var}"
-        name = d + "_" + y_var + "_roundness-{0}.{1}".format(roundness, graph_format)
-        conditions(data_d, y_var, title, hue, output_path, name, style="processing", palette=palette,
-                   hue_order=hue_order)
-
-        y_var = f"Norm. {plotting_var}"
         name = d + "_" + y_var + "_roundness-{0}.{1}".format(roundness, graph_format)
         conditions(data_d, y_var, title, hue, output_path, name, style="processing", palette=palette,
                    hue_order=hue_order)
