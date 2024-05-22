@@ -245,7 +245,6 @@ def quantify_peaks(input_data, variable, frame_rate=4, alpha_init=25, alpha_end=
             if alpha == 0. and beta == 0.:
                 ratio = 0.
             elif beta == 0.:
-                print(v)
                 ratio = np.infty
             else:
                 ratio = alpha / beta
