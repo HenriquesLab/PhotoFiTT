@@ -1,4 +1,5 @@
-import numpy  as np
+import numpy as np
+
 
 def numerical_dose(data, column_name="Subcategory-02", power=None):
     """
@@ -22,12 +23,13 @@ def numerical_dose(data, column_name="Subcategory-02", power=None):
         else:
             n = float(''.join(filter(str.isdigit, c)))
             if c.__contains__("ms"):
-                n = 0.001*n
+                n = 0.001 * n
         index_c = data[data[f'{column_name}'] == c].index.to_list()
         if power is not None:
-            data.loc[index_c, "Light dose"] = n*power
+            data.loc[index_c, "Light dose"] = n * power
         data.loc[index_c, 'Exposure time'] = n
     return data
+
 
 # '''
 # Rounded metrics approximation with an ABSOLUTE proportional error of 0,081081081:
@@ -71,7 +73,9 @@ def power_conversion(data, dose_column="Light dose", condition_col="Subcategory-
     data.loc[c_index, f'{dose_column} cat'] = '0 J/cm2'
     return data
 
-def power_wavelength_conversion(data, dose_column="Light dose Wavelength", condition_col="Subcategory-02", condition_name="Synchro"):
+
+def power_wavelength_conversion(data, dose_column="Light dose Wavelength", condition_col="Subcategory-02",
+                                condition_name="Synchro"):
     """
 
     :param data:
@@ -93,3 +97,17 @@ def power_wavelength_conversion(data, dose_column="Light dose Wavelength", condi
     c_index = data[data[f'{condition_col}'] == condition_name].index.to_list()
     data.loc[c_index, f'{dose_column} cat'] = '0 J/cm2 (1/nm)'
     return data
+
+
+def cell_density_FOV(cell_density=25000., fov_area=660., well_area=80.91):
+    """
+
+    :param cell_density: number of cells per ml after washing (~25000)
+    :param fov_area: Lateral of the field of view in microns (~660). This will depend on the microscope
+    :param well_area: Total area in mm of the well. (~80.91)
+    :return:
+    """
+    fov_mm = (fov_area * 0.001) ** 2  ## Area of the FOV in mm^2
+    cell_mm = cell_density / well_area  ## Cell number per mm^2
+    cell_fov = cell_mm * fov_mm
+    return cell_fov
