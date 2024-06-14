@@ -3,7 +3,6 @@ from tifffile import imread
 import numpy as np
 import pandas as pd
 from photofitt.utils.morphology import roundnessCalculator
-from photofitt.utils.utils import cell_density_FOV
 
 def smooth(y, t_win):
     """
@@ -158,7 +157,6 @@ def count_mitosis_all(path, stacks=True, pd_dataframe=None, column_data=[], fram
     folders = os.listdir(path)
     folders.sort
     print(folders)
-    cells_FOV = cell_density_FOV()
     for f in folders:
         if f[0] != '.':
             if not f.__contains__('.'):
@@ -188,17 +186,13 @@ def count_mitosis_all(path, stacks=True, pd_dataframe=None, column_data=[], fram
                 # Normalise and smooth the values for each video
                 M = np.max(aux['Number of cells'])
                 aux['Norm. Number of cells'] = aux['Number of cells'] / M
-                aux['NormFOV. Number of cells'] = aux['Number of cells'] / cells_FOV
-
                 aux["processing"] = "Raw"
                 y = smooth(aux['Number of cells'], t_win)
-                y_norm = y / M
-                y_norm_FOV = y / cells_FOV
+                y_norm = smooth(aux['Norm. Number of cells'], t_win)
                 aux2 = aux.copy()
                 aux2['processing'] = 'Averaged-kernel{}'.format(t_win)
                 aux2['Number of cells'] = y
                 aux2['Norm. Number of cells'] = y_norm
-                aux2['NormFOV. Number of cells'] = y_norm_FOV
                 aux3 = pd.concat([aux, aux2]).reset_index(drop=True)
                 aux3['video_name'] = f.split('.tif')[0]
 

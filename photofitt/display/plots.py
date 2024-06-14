@@ -309,7 +309,7 @@ def mitosis(data, output_path, hue_order, y_variable, hue="Subcategory-02", grap
         plt.title("{0} - {1} along time".format(y_variable, d))
         fig.savefig(os.path.join(output_path, "data_{0}_counting_{1}.{2}".format(y_variable, d, graph_format)), format=graph_format,
                     transparent=False)
-
+        
 def info_wrt_peak(data, x, x_labels, hue_order, output_path):
 
     # PEAK TIME
