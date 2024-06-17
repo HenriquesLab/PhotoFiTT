@@ -259,9 +259,9 @@ def regressionfit(data, y_var, x_var, output_path, name, palette=None, spline_or
 def cellsize_distributions(data, output_path, file_name, hue_order,
                            variable = "cell_size", xlim=1200,
                            hue_var="frame", common_norm=True,
-                           time_points=None, time_limit = 200,
+                           time_points=[32, 60, 92, 120], time_limit = 120,
                            x_label="Cell size [px2]", palette="coolwarm",
-                           density_ylim=0.001, time_colours=None,
+                           density_ylim=0.001, time_colours= ["#BC77F8", "#99E3D7", "#FC9F30", "#FF4126"],
                            figsize=(25,5), graph_format="png"):
 
     if time_colours is not None:
