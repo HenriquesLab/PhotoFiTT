@@ -7,8 +7,15 @@ from ast import literal_eval
 
 
 def display_data_from_masks(data, output_path, roundness=0, graph_format='png',
-                            hue_order=None, reduced_hue=None, palette=None, time_limit=120,
-                            time_points=None, time_colours=None, xlim=1200, density_ylim=0.00030, common_norm=True):
+                            hue_order=None,
+                            reduced_hue=None,
+                            palette="coolwarm",
+                            time_limit=120,
+                            time_points=None,
+                            time_colours= ["#BC77F8", "#99E3D7", "#FC9F30", "#FF4126"],
+                            xlim=1200,
+                            density_ylim=0.00030,
+                            common_norm=True):
     """
     PLOT THE RESULTS FOR EACH CONDITION SEPARATELY:
     Subcategory-02 filters out the different experimental condition such as control, synch, uv10sec or uv 30sec
@@ -21,8 +28,6 @@ def display_data_from_masks(data, output_path, roundness=0, graph_format='png',
     """
 
     density = np.unique(data['Subcategory-01'])
-    if palette is None:
-        palette = "coolwarm"
 
     for d in density:
         print(d)
