@@ -21,17 +21,17 @@ from ast import literal_eval
 
 pixel_size = (0.5500000*1.5709)
 
-synchro_data = "/Users/esti/Documents/PROYECTOS/PHX/DOCS/MANUSCRIPT/CODE/data/synchro/mitosis_CHO_UV_clean.csv"
+synchro_data = "/Users/esti/Documents/PROYECTOS/PHX/DOCS/MANUSCRIPT/CODE/data/synchro/data_display_cellsize_WL UV - high density.csv"
 synchro_data = pd.read_csv(synchro_data)
 u = [c for c in synchro_data.columns if c.__contains__("Unnamed")]
 synchro_data = synchro_data.drop(columns=u)
 
-synchro_data_475 = "/Users/esti/Documents/PROYECTOS/PHX/DOCS/MANUSCRIPT/CODE/data/synchro/mitosis_CHO_475_clean.csv"
+synchro_data_475 = "/Users/esti/Documents/PROYECTOS/PHX/DOCS/MANUSCRIPT/CODE/data/synchro/data_display_cellsize_WL 475 - high density.csv"
 synchro_data_475 = pd.read_csv(synchro_data_475)
 u = [c for c in synchro_data_475.columns if c.__contains__("Unnamed")]
 synchro_data_475 = synchro_data_475.drop(columns=u)
 
-synchro_data_630 = "/Users/esti/Documents/PROYECTOS/PHX/DOCS/MANUSCRIPT/CODE/data/synchro/mitosis_CHO_630_clean.csv"
+synchro_data_630 = "/Users/esti/Documents/PROYECTOS/PHX/DOCS/MANUSCRIPT/CODE/data/synchro/data_display_cellsize_WL 630 - high density.csv"
 synchro_data_630 = pd.read_csv(synchro_data_630)
 u = [c for c in synchro_data_630.columns if c.__contains__("Unnamed")]
 synchro_data_630 = synchro_data_630.drop(columns=u)
@@ -95,14 +95,14 @@ synchro_data["cell_size"] = (pixel_size * pixel_size) * synchro_data["cell_size"
 # -----------------------------------------------------------------
 # -----------------------------------------------------------------
 synchro_data_both = pd.concat(
-    [synchro_data[synchro_data["Subcategory-02"] == 'Synchro'],
-     synchro_data[synchro_data["Subcategory-02"] == 'Control-sync']])
+    [synchro_data[synchro_data["Subcategory-01"] == 'Synchro'],
+     synchro_data[synchro_data["Subcategory-01"] == 'Control-sync']])
 index = synchro_data_both.index.to_list()
 # remove control
 synchro_data = synchro_data.drop(index)
 # Add a new variable
-synchro_data["Illumination"] = synchro_data["Subcategory-01"]
-synchro_data_both["Illumination"] = synchro_data_both["Subcategory-02"]
+synchro_data["Illumination"] = synchro_data["Subcategory-00"]
+synchro_data_both["Illumination"] = synchro_data_both["Subcategory-01"]
 # Concatenate
 synchro_data = pd.concat([synchro_data, synchro_data_both])
 
@@ -120,17 +120,17 @@ plt.yscale('log')
 plt.show()
 
 synchro_data["Light dose Wavelength"] = 0
-for wl in np.unique(synchro_data["Subcategory-01"]):
+for wl in np.unique(synchro_data["Subcategory-00"]):
     if wl.__contains__("UV"):
         w_lambda = 385
     elif wl.__contains__("475"):
         w_lambda = 475
     elif wl.__contains__("630"):
         w_lambda = 630
-    index = synchro_data[synchro_data["Subcategory-01"]==wl].index.to_list()
+    index = synchro_data[synchro_data["Subcategory-00"]==wl].index.to_list()
     synchro_data.loc[index, "Light dose Wavelength"] = (1/w_lambda) * synchro_data.loc[index, "Light dose"]
 
-synchro_data = power_wavelength_conversion(synchro_data, dose_column="Light dose Wavelength")
+synchro_data = power_wavelength_conversion(synchro_data, dose_column="Light dose Wavelength", condition_col="Subcategory-01")
 hue_order = ['non-synchro-0 J/cm2 (1/nm)', '0 J/cm2 (1/nm)', '0.0 J/cm2 (1/nm)', '0.01 J/cm2 (1/nm)',
        '0.02 J/cm2 (1/nm)', '0.05 J/cm2 (1/nm)', '0.07 J/cm2 (1/nm)',
        '0.08 J/cm2 (1/nm)', '0.1 J/cm2 (1/nm)', '0.13 J/cm2 (1/nm)',
@@ -257,9 +257,9 @@ hue_order = ['non-synchro-0 J/cm2 (1/nm)', '0 J/cm2 (1/nm)', '0.0 J/cm2 (1/nm)',
        '0.3 J/cm2 (1/nm)', '0.32 J/cm2 (1/nm)', '0.33 J/cm2 (1/nm)',
        '0.4 J/cm2 (1/nm)', '0.41 J/cm2 (1/nm)']
 #hue = 'Light dose cat'
-for wl in np.unique(synchro_data["Subcategory-01"]):  # wavelengths
+for wl in np.unique(synchro_data["Subcategory-00"]):  # wavelengths
 
-    aux_wl = synchro_data[synchro_data["Subcategory-01"] == wl].reset_index(drop=True)
+    aux_wl = synchro_data[synchro_data["Subcategory-00"] == wl].reset_index(drop=True)
     L = None
     for s in np.unique(aux_wl[hue]):
         aux = aux_wl[aux_wl[hue] == s].reset_index(drop=True)
@@ -274,7 +274,7 @@ for wl in np.unique(synchro_data["Subcategory-01"]):  # wavelengths
         )
         aux1 = aux1.droplevel(axis=1, level=0).reset_index()
         aux1 = aux1.rename(columns={"mean": "cell_size"})
-        aux1["Subcategory-01"] = wl
+        aux1["Subcategory-00"] = wl
         aux1[hue] = s
         aux1["Illumination"] = aux["Illumination"].iloc[0]
 
@@ -330,7 +330,7 @@ sns.set(font_scale=0.4)
 sns.set_theme(style="whitegrid", rc=custom_params)
 for i in range(len(wl)):
     plt.subplot(3,1,i+1)
-    aux = L_all[L_all["Subcategory-01"]==wl[i]].reset_index(drop=True)
+    aux = L_all[L_all["Subcategory-00"]==wl[i]].reset_index(drop=True)
     sns.lineplot(data=aux.dropna(), x="frame", y="cell_size",
                  hue=hue, hue_order=hue_order,
                  palette=color_palette,
@@ -343,8 +343,8 @@ for i in range(len(wl)):
     plt.title(f"{wl[i]}")
 #plt.legend(hue_order)
 plt.tight_layout()
-fig.savefig("/Users/esti/Documents/PROYECTOS/PHX/mitosis_mediated_data_itqb_3/CHO/results/scaled_1.5709_results/new_data/activity_clahe-intensity/manual/cellsize-lowess-subplots-weightedpower-wl.pdf",
-            format="pdf", transparent=True)
+#fig.savefig("/Users/esti/Documents/PROYECTOS/PHX/mitosis_mediated_data_itqb_3/CHO/results/scaled_1.5709_results/new_data/activity_clahe-intensity/manual/cellsize-lowess-subplots-weightedpower-wl.pdf",
+#            format="pdf", transparent=True)
 plt.show()
 
 
