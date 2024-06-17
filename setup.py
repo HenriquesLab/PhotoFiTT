@@ -24,7 +24,7 @@ setup(
     url='https://github.com/HenriquesLab/photofitt',
     download_url='https://github.com/HenriquesLab/photofitt/archive/refs/tags/v1.0.0.tar.gz',
     keywords=['phototoxicity', 'cell arrestment', 'bioimage analysis', 'cell mitosis'],
-    python_requires='>=3.11.9',
+    python_requires='>=3.10',
     install_requires=[
         'dask',
         'czifile==2019.7.2',

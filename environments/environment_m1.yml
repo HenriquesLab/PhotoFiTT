@@ -3,10 +3,10 @@ channels:
   - conda-forge
   - nodefaults
 dependencies:
-  - numpy==1.22.4
-  - python=3.11.9
-  - jupyter
-  - conda-build
+  - numpy==1.24
+  - python==3.10
+  - jupyter==1.0.0
+  - conda-build==24.5.1
+  - pip==24.0
   - pip:
-    - opencv-python>=4.5.3.56
-    - nd2==0.1.6
+    - opencv-python==4.7.0.72
