@@ -4,10 +4,9 @@ channels:
   - nodefaults
 dependencies:
   - numpy==1.22.4
-  - python=3.9.7
+  - python=3.10
   - jupyter
   - conda-build
   - pip:
     - opencv-python>=4.5.3.56
     - nd2==0.1.6
-    - connected-components-3d

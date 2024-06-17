@@ -1,8 +1,10 @@
 import numpy as np
 import seaborn as sns
+import matplotlib
 import matplotlib.pyplot as plt
 import os
 import pandas as pd
+
 # Avoid warnings
 import warnings
 warnings.filterwarnings('ignore')
@@ -125,6 +127,24 @@ def one_condition(data, y_var, output_path, name, hue1="unique_name", hue2 = "Su
     fig.savefig(os.path.join(output_path, name), format=format_extension)
     # plt.show()
 
+def dual_boxplots(data,output_path, file_name, x_var='Light dose cat',
+                  y_var="frame", hue_var=None, x_order=None,
+                  hue_order=None,
+                  ylabel="Time in min",
+                  palette=None, figsize=(15,5),
+                  graph_format="png"):
+
+    fig = plt.figure(figsize=figsize)
+    g = sns.boxplot(data=data, x=x_var, y=y_var, hue=hue_var,
+                    order=x_order, palette=palette,
+                    width=.5, linewidth=0.5, hue_order=hue_order)
+    plt.tight_layout()
+    loc, labels = plt.xticks()
+    g.set_xticklabels(labels, rotation=45)
+    g.set(ylabel=ylabel)
+    fig.savefig(os.path.join(output_path, file_name), format=graph_format)
+
+
 def vertical_distributions(data, y_var, output_path, name,  hue_order, raw="Subcategory-02", hue="Subcategory-02",
                            palette=None, aspect=9, height=0.6, hspace=-0.02, ylabel="Cells", xlabel="Frame (min)",
                            xticks=[0, 25, 50, 100, 150, 200, 300], xlim=[0, 360]):
@@ -236,6 +256,51 @@ def regressionfit(data, y_var, x_var, output_path, name, palette=None, spline_or
     format_extension = name.split(".")[-1]
     f.savefig(os.path.join(output_path, name), format=format_extension, transparent=True, dpi=300)
 
+def cellsize_distributions(data, output_path, file_name, hue_order,
+                           variable = "cell_size", xlim=1200,
+                           hue_var="frame", common_norm=True,
+                           time_points=None, time_limit = 200,
+                           x_label="Cell size [px2]", palette="coolwarm",
+                           density_ylim=0.001, time_colours=None,
+                           figsize=(25,5), graph_format="png"):
+
+    if time_colours is not None:
+        reduced_palette = time_colours
+        series = [(i * (1 / (len(time_colours) - 1)), time_colours[i]) for i in range(len(time_colours))]
+        cmap = matplotlib.colors.LinearSegmentedColormap.from_list('mycolormap', series, N=256)
+        matplotlib.cm.register_cmap("mycolormap", cmap)
+        norm = plt.Normalize(data['frame'].min(), data['frame'].max())
+        sm = plt.cm.ScalarMappable(cmap="mycolormap", norm=norm)
+        sm.set_array([])
+    else:
+        reduced_palette = palette
+        norm = plt.Normalize(data['frame'].min(), data['frame'].max())
+        sm = plt.cm.ScalarMappable(cmap=palette, norm=norm)
+        sm.set_array([])
+
+    k = 1
+    fig = plt.figure(figsize=figsize)
+    for g in hue_order:
+        data_g = data[data["Light dose cat"] == g]
+        # Create the data
+        df = pd.DataFrame(dict(variable=data_g[variable], frame=data_g["frame"]))
+        if time_points is None:
+            df = df.loc[lambda df: df["frame"] < time_limit]
+        plt.subplot(1, len(hue_order), k)
+        ax = sns.kdeplot(
+            data=df, x="variable", hue=hue_var,
+            fill=True, common_norm=common_norm, palette=reduced_palette, legend=False,
+            alpha=.5, linewidth=0
+        )
+        plt.xlabel(x_label)
+        plt.tight_layout()
+        plt.title(g)
+        plt.ylim([0, density_ylim])
+        plt.xlim([0, xlim])
+        k += 1
+    plt.colorbar(sm, ax=plt.gca())
+    fig.savefig(os.path.join(output_path, file_name), format=graph_format)
+
 
 
 def distributions(df, xlabel, title, output_path, smoothness=.5):
@@ -248,10 +313,6 @@ def distributions(df, xlabel, title, output_path, smoothness=.5):
     g.map(sns.kdeplot, "variable",
           bw_adjust=smoothness, clip_on=False,
           fill=True, alpha=1, linewidth=1.5)
-    # g.map(sns.histplot, "variable",
-    #       kde=True, clip_on=False, stat="density",
-    #       fill=True, alpha=1, linewidth=1.5,
-    #       binwidth=50, binrange=(0, 1000))
     g.map(sns.kdeplot, "variable", clip_on=False, color="w", lw=2, bw_adjust=smoothness)
     # passing color=None to refline() uses the hue mapping
     g.refline(y=0, linewidth=2, linestyle="-", color=None, clip_on=False)
@@ -385,76 +446,7 @@ def info_wrt_peak(data, x, x_labels, hue_order, output_path):
     g.despine(left=True)
     # plt.yscale("log")
     g.savefig(os.path.join(output_path, "proportional_delay.png"), format='png')
-    # plt.show()
 
-    # # PLOTS WITH INDIVIDUAL POINTS
-    # ### points
-    # plt.figure(figsize=(10, 5))
-    # sns.set(font_scale=1)
-    # g = sns.swarmplot(data=data, x="Subcategory-02", y="ratio", hue="Subcategory-02",
-    #                   order=x_labels, palette="dark",
-    #                   legend=None)
-    # plt.ylim([0.1, 50])
-    # plt.yscale("log")
-    # plt.tight_layout()
-    # plt.show()
-    #
-    # plt.figure(figsize=(10, 5))
-    # sns.set(font_scale=0.9)
-    # g = sns.catplot(data=data, x="Subcategory-02", y="alpha", hue="Subcategory-00",
-    #                 order=x_labels, height=5, aspect=2)
-    # g.set_axis_labels("Exposure times", "Alpha")
-    # g.despine(left=True)
-    # plt.ylim([0.00001, 0.1])
-    # plt.yscale("log")
-    # plt.show()
-    #
-    # plt.figure(figsize=(10, 5))
-    # sns.set(font_scale=0.9)
-    # g = sns.catplot(data=data, x="Subcategory-02", y="beta", hue="Subcategory-00",
-    #                 order=x_labels, height=5, aspect=2)
-    # g.set_axis_labels("Exposure times", "Beta")
-    # g.despine(left=True)
-    # plt.ylim([0.00001, 0.1])
-    # plt.yscale("log")
-    # plt.show()
-    #
-    # plt.figure(figsize=(10, 5))
-    # sns.set(font_scale=0.9)
-    # g = sns.catplot(data=data, x="Subcategory-02", y="ratio", hue="Subcategory-00",
-    #                 order=x_labels, height=5, aspect=2)
-    # g.set_axis_labels("Exposure times", "Ratio = alpha / beta")
-    # g.despine(left=True)
-    # plt.ylim([0.1, 50])
-    # plt.yscale("log")
-    # plt.show()
-    ### BARS
-    # plt.figure()
-    # g = sns.catplot(
-    #     data=data, x="Subcategory-02", y="ratio", hue="Subcategory-00", order=x_labels, kind="bar",
-    #     height=4, aspect=3)
-    # g.set_axis_labels("", "Ratio = alpha / beta")
-    # # g.set_xticklabels()
-    # g.despine(left=True)
-    # # plt.ylim([0,10])
-    # plt.yscale("log")
-    # sns.set(font_scale=1)
-    # plt.show()
-    #
-    # ### BARS COLUMNS
-    # # conditions = ['Control-sync', 'Synchro', 'UV50ms', 'UV100ms', 'UV200ms', 'UV400ms', 'UV800ms', 'UV1000ms']
-    # plt.figure()
-    # sns.set(font_scale=0.8)
-    # g = sns.catplot(
-    #     data=data, x="Subcategory-02", y="ratio", col="Subcategory-00", order=x_labels,
-    #     kind="bar", height=5, aspect=2,
-    # )
-    # g.set_axis_labels("", "Ratio = alpha / beta")
-    # # g.set_xticklabels()
-    # g.despine(left=True)
-    # # plt.ylim([0,10])
-    # plt.yscale("log")
-    # plt.show()
 
 def size_change_wrt_peak(data, x_labels, y_variable, hue_order, output_path, y_lim=[0, 300], graph_format='png'):
     sns.set(font_scale=0.9)

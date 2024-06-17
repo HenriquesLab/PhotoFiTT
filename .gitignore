@@ -135,3 +135,5 @@ cython_debug/
 
 # MAC DS_Store
 *.DS_Store
+build/
+*.dist-info
