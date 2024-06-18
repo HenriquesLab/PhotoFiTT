@@ -94,7 +94,7 @@ pd_sytox = extract_numbers(sytox_path, folders, data_type="sytox")
 pd_stardist = extract_numbers(stardist_path, folders, data_type="stardist")
 #pd_sytox = extract_numbers_additive(path, folders)
 #pd_sytox.to_csv("/Users/esti/Documents/PROYECTOS/PHX/SYTOX_ADDITIVE/counts.csv")
-#pd_sytox = pd.read_csv("/Users/esti/Documents/PROYECTOS/PHX/SYTOX_ADDITIVE/counts.csv")
+pd_sytox_additive = pd.read_csv("/Users/esti/Documents/PROYECTOS/PHX/SYTOX_ADDITIVE/counts.csv")
 
 ALL = pd_sytox.merge(pd_stardist, how="inner")
 ALL["sytox_ratio"] = ALL["sytox_n"] / ALL["total_n"]
@@ -111,6 +111,9 @@ params = {"ytick.color" : "k",
           "axes.labelcolor" : "k",
           "axes.edgecolor" : "k"}
 plt.rcParams.update(params)
+
+
+
 fig = plt.figure()
 plt.subplot(1,2,1)
 g = sns.lineplot(data=ALL[ALL["TYPE"]=="sync"],
@@ -137,5 +140,33 @@ plt.legend([])
 #                  Line2D([], [], marker='o', color='orange',
 #                label='Detections rate for nontouch devices')], loc=(1.1,0.8))
 plt.tight_layout()
-fig.savefig(os.path.join(main_path, "plot.pdf"), format='pdf', transparent=True)
+#fig.savefig(os.path.join(main_path, "plot.pdf"), format='pdf', transparent=True)
 plt.show()
+
+
+####
+
+new_additive = pd_sytox_additive.merge(pd_stardist, how="inner")
+new_additive["sytox_ratio"] = pd_sytox_additive["sytox_n"] / new_additive["total_n"]
+new_additive = new_additive[new_additive["TYPE"]=="unsync"]
+new_additive["TYPE"]="unsync-additive"
+ALL = pd.concat([ALL, new_additive])
+ALL = ALL[["t_min", "TYPE", "GROUP", "sytox_ratio"]].reset_index(drop=True)
+
+
+g = sns.catplot(
+    ALL, kind="bar",
+    x="t_min", y="sytox_ratio", hue="GROUP",
+    col="TYPE",
+    height=4, aspect=1.1,
+    order=[60, 120, 180, 240, 300, 360, 420],
+    hue_order=["C", "1s", "10s"],
+    palette=['#C9C9C9', '#99E3D7', '#BC77F8'],
+    errorbar=("ci", 95),  capsize=.08, linewidth=0.5,
+    col_order=["sync", "unsync", "unsync-additive"], legend=False
+)
+plt.tight_layout()
+g.fig.get_axes()[-1].legend(loc='upper right')
+g.set_xticklabels(rotation=30)
+g.set_titles("{col_name}")
+g.savefig(os.path.join(main_path, "barplots.pdf"), format="pdf", transparent=True)

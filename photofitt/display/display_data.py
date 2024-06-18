@@ -15,11 +15,13 @@ def display_data_from_masks(data, output_path, roundness=0, graph_format='png',
                             time_colours= ["#BC77F8", "#99E3D7", "#FC9F30", "#FF4126"],
                             xlim=1200,
                             density_ylim=0.00030,
-                            common_norm=True):
+                            common_norm=True,
+                            orient="h"):
     """
     PLOT THE RESULTS FOR EACH CONDITION SEPARATELY:
     Subcategory-02 filters out the different experimental condition such as control, synch, uv10sec or uv 30sec
     (last level of the folder organisation)
+    :param graph_format:
     :param data:
     :param output_path:
     :param frame_rate:
@@ -72,17 +74,30 @@ def display_data_from_masks(data, output_path, roundness=0, graph_format='png',
         
         aux = data_display.loc[data_display["frame"]<180]
         aux = aux.reset_index(drop=True)
+        if orient=="v":
+            x_var = 'Light dose cat'
+            y_var = "frame"
+            ylabel = "Time [min]"
+            xlabel = "Light dose [J/cm2]"
+            figsize = (7, 5)
+        else:
+            y_var = 'Light dose cat'
+            x_var = "frame"
+            ylabel = "Light dose [J/cm2]"
+            xlabel = "Time [min]"
+            figsize = (5, 7)
+
 
         dual_boxplots(aux, output_path, f"{d}_cellclass_time.{graph_format}",
-                      x_var='Light dose cat', y_var="frame", hue_var="cell-class", x_order=hue_order,
+                      x_var=x_var, y_var=y_var, hue_var="cell-class", x_order=hue_order,
                       hue_order=["mother", "daughter"],
-                      ylabel="Time in min", palette=['#C9C9C9', '#FFA500'], fig_size=(15, 5), graph_format="png")
+                      ylabel=ylabel, xlabel=xlabel, palette=['#C9C9C9', '#FFA500'], figsize=figsize, graph_format="png")
 
         if reduced_hue is not None:
             dual_boxplots(aux, output_path, f"{d}_cellclass_time_reduced.{graph_format}",
-                          x_var='Light dose cat', y_var="frame", hue_var="cell-class", x_order=reduced_hue,
+                          x_var=x_var, y_var=y_var, hue_var="cell-class", x_order=reduced_hue,
                           hue_order=["mother", "daughter"],
-                          ylabel="Time in min", palette=['#C9C9C9', '#FFA500'], fig_size=(6, 5), graph_format="png")
+                          ylabel=ylabel, xlabel=xlabel, palette=['#C9C9C9', '#FFA500'], figsize=figsize, graph_format="png")
 
         if time_points is not None:
             aux = None

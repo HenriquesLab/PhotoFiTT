@@ -131,6 +131,7 @@ def dual_boxplots(data,output_path, file_name, x_var='Light dose cat',
                   y_var="frame", hue_var=None, x_order=None,
                   hue_order=None,
                   ylabel="Time in min",
+                  xlabel="Light dise",
                   palette=None, figsize=(15,5),
                   graph_format="png"):
 
@@ -141,7 +142,7 @@ def dual_boxplots(data,output_path, file_name, x_var='Light dose cat',
     plt.tight_layout()
     loc, labels = plt.xticks()
     g.set_xticklabels(labels, rotation=45)
-    g.set(ylabel=ylabel)
+    g.set(ylabel=ylabel, xlabel=xlabel)
     fig.savefig(os.path.join(output_path, file_name), format=graph_format)
 
 
@@ -262,7 +263,7 @@ def cellsize_distributions(data, output_path, file_name, hue_order,
                            time_points=[32, 60, 92, 120], time_limit = 120,
                            x_label="Cell size [px2]", palette="coolwarm",
                            density_ylim=0.001, time_colours= ["#BC77F8", "#99E3D7", "#FC9F30", "#FF4126"],
-                           figsize=(25,5), graph_format="png"):
+                           figsize=(25, 5), graph_format="png"):
 
     if time_colours is not None:
         reduced_palette = time_colours
