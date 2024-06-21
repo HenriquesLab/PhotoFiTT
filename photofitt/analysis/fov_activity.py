@@ -241,3 +241,55 @@ def cumulative_activity(activity_metrics, y_var, use_starting_point=None, starti
     activity_dataframe = pd.DataFrame(activity, columns=['Mean activity', 'activity slope', "video_name",
                                                          'Subcategory-00', 'Subcategory-01', "Subcategory-02"])
     return activity_dataframe, activity_metrics
+
+
+def estimate_proportional_deviations(data,
+                          variable,
+                          reference_category='0 J/cm2',
+                          reference_variable="Light dose cat",
+                          unique_id_var = "video_name",
+                          grouping_variable=None, add_columns = None):
+
+    if grouping_variable is None:
+        # Create a fake variable
+        data["aux_var"] = "aux_var"
+        grouping_variable_aux = "aux_var"
+    else:
+        grouping_variable_aux = grouping_variable
+
+
+    GROUPS = np.unique(data[grouping_variable_aux])
+    new_data = None
+    for g in GROUPS:
+        data_g = data.loc[lambda data: data[grouping_variable] == g]
+        ## Mean values per condition regardless of the FOV or unique measurements
+        m = data_g.groupby(reference_variable)[variable].mean()
+        s_mean = m[reference_category] # recover the average of the control group
+        m = m.reset_index()
+        m = m.rename(columns={variable: f"{grouping_variable_aux} mean {variable}"})
+        ## Mean values for each FOV and each condition
+        m_unique = data_g.groupby([reference_variable, unique_id_var])[variable].mean()
+        m_unique = m_unique.reset_index()
+        m_unique = m_unique.rename(columns={variable: f"mean {variable}"})
+        # Obtain the final image
+        means_data = m_unique.merge(m)
+        means_data[grouping_variable_aux] = g
+
+        means_data[f"difference_per_{unique_id_var}"] = s_mean-means_data[f"mean {variable}"]
+        means_data[f"difference_per_{grouping_variable_aux}"] = s_mean - means_data[f"{grouping_variable_aux} mean {variable}"]
+        means_data[f"proportional_difference_per_{unique_id_var}"] = 100 * means_data[f"difference_per_{unique_id_var}"] / s_mean
+        means_data[f"proportional_difference_per_{grouping_variable_aux}"] = 100 * means_data[f"difference_per_{grouping_variable_aux}"] / s_mean
+
+        if add_columns is not None:
+            for i in add_columns:
+                means_data[i] = data_g[i].iloc[0]
+        if new_data is None:
+            new_data = means_data
+        else:
+            new_data = pd.concat([new_data, means_data]).reset_index(drop=True)
+
+    # Remove the fake column
+    if grouping_variable is None:
+        new_data.drop([grouping_variable_aux, f"proportional_difference_per_{grouping_variable_aux}",
+                      f"difference_per_{grouping_variable_aux}", f"{grouping_variable_aux} mean {variable}"], axis=1)
+    return new_data

@@ -16,7 +16,8 @@ def display_data_from_masks(data, output_path, roundness=0, graph_format='png',
                             xlim=1200,
                             density_ylim=0.00030,
                             common_norm=True,
-                            orient="h"):
+                            orient="h",
+                            pixel_size=0.8633995):
     """
     PLOT THE RESULTS FOR EACH CONDITION SEPARATELY:
     Subcategory-02 filters out the different experimental condition such as control, synch, uv10sec or uv 30sec
@@ -68,12 +69,17 @@ def display_data_from_masks(data, output_path, roundness=0, graph_format='png',
         data_display.to_csv(os.path.join(output_path, f"data_display_cellsize_{d}.csv"))
         variable = "cell_size"
 
+
         # Classify cells according to their size
         data_display["cell-class"]="mother"
         data_display.loc[data_display["cell_size"]<350, "cell-class"]="daughter"
         
         aux = data_display.loc[data_display["frame"]<180]
         aux = aux.reset_index(drop=True)
+        aux["diameter [um]"] = 2*(np.sqrt(aux[variable]/np.pi))*pixel_size
+
+        variable = "diameter [um]"
+
         if orient=="v":
             x_var = 'Light dose cat'
             y_var = "frame"
@@ -91,13 +97,13 @@ def display_data_from_masks(data, output_path, roundness=0, graph_format='png',
         dual_boxplots(aux, output_path, f"{d}_cellclass_time.{graph_format}",
                       x_var=x_var, y_var=y_var, hue_var="cell-class", x_order=hue_order,
                       hue_order=["mother", "daughter"],
-                      ylabel=ylabel, xlabel=xlabel, palette=['#C9C9C9', '#FFA500'], figsize=figsize, graph_format="png")
+                      ylabel=ylabel, xlabel=xlabel, palette=['#C9C9C9', '#FFA500'], figsize=figsize, graph_format=graph_format)
 
         if reduced_hue is not None:
             dual_boxplots(aux, output_path, f"{d}_cellclass_time_reduced.{graph_format}",
                           x_var=x_var, y_var=y_var, hue_var="cell-class", x_order=reduced_hue,
                           hue_order=["mother", "daughter"],
-                          ylabel=ylabel, xlabel=xlabel, palette=['#C9C9C9', '#FFA500'], figsize=figsize, graph_format="png")
+                          ylabel=ylabel, xlabel=xlabel, palette=['#C9C9C9', '#FFA500'], figsize=figsize, graph_format=graph_format)
 
         if time_points is not None:
             aux = None
