@@ -7,17 +7,17 @@ from ast import literal_eval
 
 
 def display_data_from_masks(data, output_path, roundness=0, graph_format='png',
-                            hue_order=None,
-                            reduced_hue=None,
-                            palette="coolwarm",
-                            time_limit=120,
-                            time_points=None,
-                            time_colours= ["#BC77F8", "#99E3D7", "#FC9F30", "#FF4126"],
-                            xlim=1200,
-                            density_ylim=0.00030,
-                            common_norm=True,
-                            orient="h",
-                            pixel_size=0.8633995):
+                              hue_order=None,
+                              reduced_hue=None,
+                              palette="coolwarm",
+                              time_limit=120,
+                              time_points=None,
+                              time_colours=["#BC77F8", "#99E3D7", "#FC9F30", "#FF4126"],
+                              xlim=1200,
+                              density_ylim=0.00030,
+                              common_norm=False,
+                              orient="h",
+                              pixel_size=0.8633995):
     """
     PLOT THE RESULTS FOR EACH CONDITION SEPARATELY:
     Subcategory-02 filters out the different experimental condition such as control, synch, uv10sec or uv 30sec
@@ -63,22 +63,19 @@ def display_data_from_masks(data, output_path, roundness=0, graph_format='png',
                     data_display = pd.concat([data_display, aux]).reset_index(drop=True)
 
         # Estimate the ligth dose
-        light_power = 6.255662 # fixed power value according to our microscope
+        light_power = 6.255662  # fixed power value according to our microscope
         data_display = numerical_dose(data_display, column_name="Subcategory-01", power=light_power)
-        data_display = power_conversion(data_display, dose_column="Light dose", condition_col="Subcategory-01", condition_name="Synchro")
+        data_display = power_conversion(data_display, dose_column="Light dose", condition_col="Subcategory-01",
+                                        condition_name="Synchro")
+        data_display["diameter [um]"] = 2 * (np.sqrt(data_display["cell_size"] / np.pi)) * pixel_size
+        variable = "diameter [um]"
         data_display.to_csv(os.path.join(output_path, f"data_display_cellsize_{d}.csv"))
-        variable = "cell_size"
-
 
         # Classify cells according to their size
-        data_display["cell-class"]="mother"
-        data_display.loc[data_display["cell_size"]<350, "cell-class"]="daughter"
-        
-        aux = data_display.loc[data_display["frame"]<180]
+        data_display["cell-class"] = "mother"
+        data_display.loc[data_display["cell_size"] < 350, "cell-class"] = "daughter"
+        aux = data_display.loc[data_display["frame"] < 180]
         aux = aux.reset_index(drop=True)
-        aux["diameter [um]"] = 2*(np.sqrt(aux[variable]/np.pi))*pixel_size
-
-        variable = "diameter [um]"
 
         if orient=="v":
             x_var = 'Light dose cat'
@@ -92,7 +89,6 @@ def display_data_from_masks(data, output_path, roundness=0, graph_format='png',
             ylabel = "Light dose [J/cm2]"
             xlabel = "Time [min]"
             figsize = (5, 7)
-
 
         dual_boxplots(aux, output_path, f"{d}_cellclass_time.{graph_format}",
                       x_var=x_var, y_var=y_var, hue_var="cell-class", x_order=hue_order,
@@ -108,7 +104,7 @@ def display_data_from_masks(data, output_path, roundness=0, graph_format='png',
         if time_points is not None:
             aux = None
             for t in time_points:
-                new_data = data_display.loc[lambda data_display: data_display["frame"]==t]
+                new_data = data_display.loc[lambda data_display: data_display["frame"] == t]
                 if aux is None:
                     aux = new_data
                 else:
@@ -121,9 +117,9 @@ def display_data_from_masks(data, output_path, roundness=0, graph_format='png',
                                xlim=xlim,
                                hue_var="frame",
                                common_norm=common_norm,
-                               time_points=None,
+                               time_points=time_points,
                                time_limit=time_limit,
-                               x_label="Cell size [px2]",
+                               x_label="Cell diameter [um]",
                                palette=palette,
                                density_ylim=density_ylim,
                                time_colours=time_colours,

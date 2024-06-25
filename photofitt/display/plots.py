@@ -30,7 +30,9 @@ def smooth_curves(data, y_var, title, output_path, name):
     fig.savefig(os.path.join(output_path, name), format=format_extension, transparent=True)
     # plt.show()
 
-def conditions_with_aggregates(data, y_var, title, output_path, name, hue="Subcategory-01", style="Subcategory-02", ylim = None):
+def conditions_with_aggregates(data, y_var, title, output_path, name, hue="Subcategory-01", hue_order=None, style="Subcategory-02", ylim = None):
+    if hue_order is None:
+        hue_order = np.unique(data[hue])
     fig = plt.figure(figsize=(5, 10))
     custom_params = {"axes.spines.right": False, "axes.spines.top": False}
     sns.plotting_context("paper")
@@ -39,7 +41,7 @@ def conditions_with_aggregates(data, y_var, title, output_path, name, hue="Subca
     # plt.rcParams.update({'font.size': 8})
     plt.subplot(2, 1, 1)
     sns.lineplot(x="frame", y=y_var, hue=hue, style=style, data=data, palette=sns.color_palette("husl", 14),
-                 linewidth=1.5, alpha=0.5)
+                 hue_order=hue_order, linewidth=1.5, alpha=0.5)
     plt.title(title)
 
     # Plot the results per category
