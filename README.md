@@ -4,7 +4,7 @@
 [![GitHub forks](https://img.shields.io/github/forks/HenriquesLab/PhotoFiTT?style=social)](https://github.com/HenriquesLab/PhotoFiTT/)
 
 
-<img src="https://github.com/HenriquesLab/PhotoFiTT/blob/main/docs/logo/photofitt-logo.png" align="right" width="200"/>
+<img src="https://github.com/HenriquesLab/PhotoFiTT/blob/main/docs/logo/photofitt-logo.png" align="right" width="300"/>
 
 # PhotoFiTT: Phototoxicity Fitness Time Trial
 A Quantitative Framework for Assessing Phototoxicity in Live-Cell
