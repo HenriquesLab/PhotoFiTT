@@ -69,11 +69,12 @@ def display_data_from_masks(data, output_path, roundness=0, graph_format='png',
                                         condition_name="Synchro")
         data_display["diameter [um]"] = 2 * (np.sqrt(data_display["cell_size"] / np.pi)) * pixel_size
         variable = "diameter [um]"
-        data_display.to_csv(os.path.join(output_path, f"data_display_cellsize_{d}.csv"))
+
 
         # Classify cells according to their size
         data_display["cell-class"] = "mother"
         data_display.loc[data_display["cell_size"] < 350, "cell-class"] = "daughter"
+        data_display.to_csv(os.path.join(output_path, f"data_display_cellsize_{d}.csv"))
         aux = data_display.loc[data_display["frame"] < 180]
         aux = aux.reset_index(drop=True)
 
