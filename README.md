@@ -1,41 +1,35 @@
-# PhotoFiTT: Phototoxicity Fitness Time Trial
+[![License](https://img.shields.io/github/license/HenriquesLab/PhotoFiTT?color=Green)](https://github.com/HenriquesLab/PhotoFiTT/blob/main/LICENSE.txt)
+[![Contributors](https://img.shields.io/github/contributors-anon/HenriquesLab/PhotoFiTT)](https://github.com/HenriquesLab/PhotoFiTT/graphs/contributors)
+[![GitHub stars](https://img.shields.io/github/stars/HenriquesLab/PhotoFiTT?style=social)](https://github.com/HenriquesLab/PhotoFiTT/)
+[![GitHub forks](https://img.shields.io/github/forks/HenriquesLab/PhotoFiTT?style=social)](https://github.com/HenriquesLab/PhotoFiTT/)
 
-Python package to measure and assess the temporal footprint of phototoxicity.
+
+<img src="https://github.com/HenriquesLab/PhotoFiTT/blob/main/docs/logo/photofitt-logo.png" align="right" width="200"/>
+
+# PhotoFiTT: Phototoxicity Fitness Time Trial
+A Quantitative Framework for Assessing Phototoxicity in Live-Cell
 
 # General description of the workflow
-PhotoFiTT was designed to quantitatively analyse the effect that light causes in the deviation of the cell division process. 
-We developed its content to analyse the image data obtained from our experiments so we distinguish two big steps: 
-1. **Identification of cells in mitosis.**
-   Here we used StarDist to segment the cells in mitosis in our phase contrast videos but one could use a different approach.
-   The next step is independent of this one. For StarDist we followed:
-      1. Run `resize_data.py` script, section `READ NIKON FIELS, RESIZE AND SAVE` in `accessorial_scripts/data_readers`. 
-         There you will find code for other microscopy format as well. We resized the data to optimise the performance of StarDist but it is independent of the quantification.
-      2. We used ZeroCostDL4Mic together with Google Colab to train, test and infer new data with StarDist. 
-      3. Download the segmentations for the next step.
-3. **Numerical analysis of the data after cell mitosis.**
-    Following the data structure explained below, one can reproduce the numerical analysis proposed in our work. 
+PhotoFiTT was designed to quantitatively analyse the imapct that fluorescence light excitation has in the cell behaviour.
+PhotoFiTT focuses on three different measurements: (1) Identified pre-mitotic cells, (2) Cell size dynamics and (3) Cell activity.
+These are the steps to follow to replicate the analysis: 
+### Deep learning based analysis
+Follow these steps to detect cell and pre-mitotic rounding events in the data.
+1. Cell Detection and Quantification (deep learning-based image analysis: This processing is only applied to the first time point of each video.
+   - Virtual Staining: Use ZeroCostDL4Mic/DL4MicEverywhere Pix2Pix notebook to train a virtual staining model that infers cell nuclei. Analyse the first frame of each video.
+   - Nuclei Segmentation: Use ZeroCostDL4Mic/DL4MicEverywhere 2D StarDist notebook to apply the pretrained StarDist-versatile model to segment individual nuclei in the virtually stained images.
+   - Initial Cell Quantification: Count the number of detected nuclei (Use notebook `XXXXX.ipnynb` to generate a CSV file with the counts). The number of detected nuclei serves as the baseline cell count for each field of view, enabling tracking of population dynamics over time.
+2. Pre-mitotic Cell Identification (deep learning-based image analysis):
+   - For CHO cells imaged with brightfield, you can use our trained StarDist model. Otherwise, manually annotate a representative image set and train a new StarDist model using the corresponding ZeroCostDL4Mic/DL4MicEverywhere notebooks.
+### Image data Analysis
+1. Cell Size Analysis and Classification `XXXXX.ipnynb`
+2. Quantification of Cellular Activity `XXXXX.ipnynb`
 
-From now on, we will focus in Step 2.
 
-# Folder structure
-- `photofitt`: folder containing the main functions of the package.
-  - `utils`: image processing scripts for nornalisation, cell shape analysis, tracking or data importing and exporting.
-  - `analysis`: functions to analyse the numerical data extracted from processed images.
-  - `display`: functions to plot, compute mosaics or display the analysis.
 
-- `accessorial/data_readers`: scripts to read stacks and concatenated files from Nikon, Zeiss or tiff files. The scripts also perform data up/downsampling. These are hard coded so please, read the comments along the scripts and comment the unnecessary steps. 
-For example:
-   - `nikon_files.py`: Examples of how to read ND2 files containing more than one stack. Has the scripts used to clean frames and concatenate videos for the final analysis. Same for zeiss (`zeiss_files.py`).
-   - `resize_data.py`: Data has been resized before any analysis. It contains the script used to resize training and final data.
-- `accessorial/analysis` and `accessorial/statistics`: scripts used for in-house development.
-- `notebooks`: compiled notebooks used to train and do inference & guided Step 2 of the proposed workflow.
-- `analysis`: scripts to run the analysis in a more programmatic fashion. Read the proposed workflow section bellow.
-- `environments`: Different conda environment files to run the installation. Look at the Installation section bellow.
+## Data structure
 
-## Proposed workflow to analyse .nd2 videos
-
-1. Classify the segmentations in folders (each folder for each condition to be analysed). 
-   At some point we will also analyse the raw data so both, the masks and the raw input, should be equally organised.
+1. The masks and the raw input, should be equally organised by folders, each folder for each condition to be analysed in a hierarchical manner.
    For example:
       ```
        -Raw-images (folder)
@@ -85,53 +79,17 @@ For example:
            |--Cell density / UV Ligth / WL 475 light [Subcategory-01]
            ...
       ```
-2. You can follow the steps in the notebooks:
-   1. `Analyse phototoxicity data.ipnynb`: it analyses the information from the masks and plot it in graphs. It will also compute the temporal peaks for mitosis and plot it in a comparative manner.
-   2. `Create mosaics with detections.ipynb`: it combines the masks and the input images to provide videos with mosaics in which one can easily see how the number of detected cells increases and how they look like.
-   3. `Cell growth analysis.ipynb`: it uses the input images to compute the differences between consecutive frames and estimate the general dynamics present in the video (*e.g.*, the deviations in the cell growth after mitosis in our case).
-
-3. Or use the scripts: 
-   1. In `analysis/mitoses_counting` folder one can find the following:
-      1. The scripts to count the number of identified cells in mitosis, calculate their size and plot the distributions upon time. It analyses full directories and stores the data with the corresponding conditions, dates and video names so all the results can be fully tracked (`analyse_all_masks.py`).
-      ```
-      python3 analyse_all_masks.py ../mitosis_mediated_data/masks/scaled_x8/stardist_prob03/ ../mitosis_mediated_data/results/scaled_x8/stardist_prob03 4
-      ```
-      2. Generate mosaics with detected rounded cells (*i.e.,* mitoses) (`create_mosaics.py`)
-      ```
-       python3 create_mosaics.py ../mitosis_mediated_data/masks/scaled_x8/stardist_prob03/2022-01-28 ../mitosis_mediated_data/input_data/2022-01-28/scaled_8 ../mitosis_mediated_data/results/scaled_x8/stardist_prob03/2022-01-28
-      ```
-      3. Compare the temporal peaks between groups and conditions (`display_mitosis_data.py`)
-      ```
-       python3 display_mitosis_data.py ../mitosis_mediated_data/results/scaled_x8/stardist_prob03/2022-01-28 mitosis_data
-      ```
-   2. In `analysis/dynamics` folder one can find the following:
-      1. Extract the motility metrics from normalised videos. It analyses full directories and stores the data with the corresponding conditions, dates and video names so all the results can be fully tracked. It stores a csv file in the chosen output directory. (`extract_fov_motility.py`).
-      ```
-      python3 extract_fov_motility.py ../mitosis_mediated_data/input_data/2022-01-28/scaled_8 ../mitosis_mediated_data/results/scaled_x8/stardist_prob03 'WL UV - high'
-      ```
-      2. Analyse and display the motility metrics extracted with `extract_fov_motility` (`analyse_fov_dynamics_metrics.py`).
       
 # Package installation
-
-## Installation in M1
-The code provides an `environment.yaml` file with most of the dependencies needed. As some dependencies might not be installed for all the operating system, we provide longer but still general enough guidelines.
-- Download the file `environment_m1.yaml` from the `environments` folder.
-- Create a new conda or mamba environment using `environment_m1.yaml`. All the packages will be installed from conda-forge.
+- The code provides an `environment.yaml` file top ceeate a conda environment with all the dependencies needed.
   Place your terminal in the `photofitt` folder. Use either conda or mamba:
   ```
+  git clone https://github.com/HenriquesLab/photofitt.git
+  cd photofitt
   mamba env create -f environment.yml  
   mamba activate photofitt
   ```
-- The current code uses `connected-components-3d `, which is not available for osx-arm64 (MacOS M1). 
-  Thus, we need to install it manually in the environment that we have just created.
-- Place the terminal in the package folder of your environment (*e.g.*, `/Users/esti/mambaforge/envs/photofitt/lib/python3.9/site-packages`) and run the following
-- 
-  ```
-  git clone https://github.com/seung-lab/connected-components-3d.git
-  cd connected-components-3d
-  pip install -r requirements.txt
-  python setup.py develop
-  ```
+
 - **ONCE PUBLISHED** You can now install the package using pip install or conda as follows:
   
   - ```
@@ -153,6 +111,12 @@ The code provides an `environment.yaml` file with most of the dependencies neede
   - ```
     git clone https://github.com/HenriquesLab/photofitt.git
     cd photofitt
+    pip install .
+    ```
+    or
+  - ```
+    git clone https://github.com/HenriquesLab/photofitt.git
+    cd photofitt
     conda build conda-recipe/meta.yaml
     ```
 
@@ -169,43 +133,5 @@ Most probably you need to update developers tools in your system. Before anythin
     sudo apt-get install libxml2-dev libxslt-dev python-dev
     ```
 
-### StarDist environment setup for the workstation (Linux)
-```
-conda create --name stardist-tf2 python=3.8 tensorflow-gpu=2.2.0 jupyter astropy numpy=1.21
-```
-install the followings
-```
-pip install stardist==0.8
-pip install csbdeep==0.7
-conda install imagecodecs
-conda install zarr
-conda install wget
-!pip install wget
-conda install pandas
-pip install -U scikit-learn
-conda install -c conda-forge opencv
-conda install scipy==1.4.1
-```
-### StarDist environment setup for Windows
-```
-conda create --name stardist-tf2 tensorflow-gpu=2.3.0 jupyter
-```
-install the followings
-```
-pip install stardist==0.8
-pip install csbdeep==0.7
-conda install imagecodecs
-conda install zarr
-conda install wget
-!pip install wget
-conda install pandas==1.5.3
-pip install -U scikit-learn
-conda install -c conda-forge opencv
-conda install scipy==1.4.1
-conda install opencv
-pip install -q fpdf
-pip install -q PTable # Nice tables
-conda install -c conda-forge bioimageio.core
-```
 
 

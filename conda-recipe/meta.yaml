@@ -26,8 +26,8 @@ requirements:
 
 about:
   home: https://github.com/HenriquesLab/photofitt
-  license: BSD
-  license_family: BSD
+  license: MIT
+  license_family: MIT
   license_file: LICENSE
   summary: 'Python package to measure cell arrestment and assess the temporal footprint of phototoxicity.'
 
