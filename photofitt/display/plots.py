@@ -473,3 +473,76 @@ def size_change_wrt_peak(data, x_labels, y_variable, hue_order, output_path, y_l
     # plt.yscale("log")
     g.savefig(os.path.join(output_path, "mitosis_time_folderwise.{}".format(graph_format)), format=graph_format)
     # plt.show()
+
+
+def unsynchro_tracking(data, condition_var, output_dir, hue_order, palette_colours=None):
+    if palette_colours is None:
+        palette_colours = ['#C9C9C9', '#FC9F30', '#99E3D7', '#BC77F8']
+
+    fig = plt.figure(figsize=(8, 9))
+    sns.set(font_scale=0.9)
+    sns.set_theme(style="white")
+
+    plt.subplot(3, 2, 1)
+    g = sns.barplot(
+        data[data["Division"] == True], y=condition_var, x="Mitosis duration",
+        palette=palette_colours, orient="h",
+        order=hue_order, errorbar=("ci", 95), capsize=.08
+    )
+    plt.tight_layout()
+    loc, labels = plt.xticks()
+    g.set_xticklabels(labels, rotation=45)
+    plt.title("Time in mitosis for dividing cells")
+
+    # --
+    plt.subplot(3, 2, 2)
+    g = sns.barplot(
+        data[data["Division"] == False], y=condition_var, x="Mitosis duration",
+        palette=palette_colours, orient="h",
+        order=hue_order, errorbar=("ci", 95), capsize=.08
+    )
+    plt.tight_layout()
+    loc, labels = plt.xticks()
+    g.set_xticklabels(labels, rotation=45)
+    plt.title("Time in mitosis for non-dividing cells")
+    # --
+    plt.subplot(3, 2, 3)
+    # Draw a categorical scatterplot to show each observation
+    g = sns.swarmplot(data=data, y=condition_var, x="Mitosis duration", orient="h",
+                      hue="Division", palette=['#94C9DF', '#FFA500'], order=hue_order)
+    plt.tight_layout()
+    loc, labels = plt.xticks()
+    g.set_xticklabels(labels, rotation=45)
+
+    # --
+    plt.subplot(3, 2, 4)
+    # Draw a categorical scatterplot to show each observation
+    g = sns.swarmplot(data=data, y=condition_var, x="Mitosis duration", orient="h",
+                      hue="Division", palette=['#94C9DF', '#FFA500'], order=hue_order)
+    plt.tight_layout()
+    loc, labels = plt.xticks()
+    g.set_xticklabels(labels, rotation=45)
+    plt.yscale('log')
+    g.set(ylabel="Mitosis duration (log)")
+    # --
+    plt.subplot(3, 2, 5)
+
+    g = sns.countplot(data, x=condition_var, hue="Division",
+                      palette=['#94C9DF', '#FFA500'], order=hue_order)
+    plt.tight_layout()
+    loc, labels = plt.xticks()
+    g.set_xticklabels(labels, rotation=45)
+
+    #
+    plt.subplot(3, 2, 6)
+    g = sns.barplot(
+        new_data[data["Division"] == True], y=condition_var, x="Division timepoint",
+        palette=palette_colours, orient="h",
+        order=hue_order, errorbar=("ci", 95), capsize=.08
+    )
+    plt.tight_layout()
+    loc, labels = plt.xticks()
+    g.set_xticklabels(labels, rotation=45)
+    fig.savefig(os.path.join(output_dir, "mitoses_delays.pdf"), format="pdf", transparent=True)
+    fig.savefig(os.path.join(output_dir, "mitoses_delays.png"), format="png", transparent=True)
+    plt.show()
