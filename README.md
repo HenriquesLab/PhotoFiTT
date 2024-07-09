@@ -10,11 +10,11 @@
 A Quantitative Framework for Assessing Phototoxicity in Live-Cell
 
 # General description of the workflow
-PhotoFiTT was designed to quantitatively analyse the imapct that fluorescence light excitation has in the cell behaviour.
+PhotoFiTT was designed to quantitatively analyse the impact that fluorescence light excitation has in cell behaviour.
 PhotoFiTT focuses on three different measurements: (1) Identified pre-mitotic cells, (2) Cell size dynamics and (3) Cell activity.
 These are the steps to follow to replicate the analysis: 
 ### Deep learning based analysis
-Follow these steps to detect cell and pre-mitotic rounding events in the data.
+Follow these steps to detect cells and pre-mitotic rounding events in the data.
 1. Cell Detection and Quantification (deep learning-based image analysis: This processing is only applied to the first time point of each video.
    - Virtual Staining: Use ZeroCostDL4Mic/DL4MicEverywhere Pix2Pix notebook to train a virtual staining model that infers cell nuclei. Analyse the first frame of each video.
    - Nuclei Segmentation: Use ZeroCostDL4Mic/DL4MicEverywhere 2D StarDist notebook to apply the pretrained StarDist-versatile model to segment individual nuclei in the virtually stained images.
@@ -81,7 +81,7 @@ Follow these steps to detect cell and pre-mitotic rounding events in the data.
       ```
       
 # Package installation
-- The code provides an `environment.yaml` file top ceeate a conda environment with all the dependencies needed.
+- The code provides an `environment.yaml` file to create a conda environment with all the dependencies needed.
   Place your terminal in the `photofitt` folder. Use either conda or mamba:
   ```
   git clone https://github.com/HenriquesLab/photofitt.git
