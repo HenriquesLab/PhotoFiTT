@@ -536,7 +536,7 @@ def unsynchro_tracking(data, condition_var, output_dir, hue_order, palette_colou
     #
     plt.subplot(3, 2, 6)
     g = sns.barplot(
-        new_data[data["Division"] == True], y=condition_var, x="Division timepoint",
+        data[data["Division"] == True], y=condition_var, x="Division timepoint",
         palette=palette_colours, orient="h",
         order=hue_order, errorbar=("ci", 95), capsize=.08
     )
