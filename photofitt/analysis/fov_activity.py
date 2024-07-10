@@ -274,7 +274,8 @@ def estimate_proportional_deviations(data,
         # Obtain the final image
         means_data = m_unique.merge(m)
         means_data[grouping_variable_aux] = g
-
+        means_data[f"normalised_mean_per_{unique_id_var}_wrt_{reference_category}"] = means_data[f"mean {variable}"] / s_mean
+        means_data[f"normalised_mean_per_{grouping_variable_aux}_wrt_{reference_category}"] = means_data[f"{grouping_variable_aux} mean {variable}"] / s_mean
         means_data[f"difference_per_{unique_id_var}"] = s_mean-means_data[f"mean {variable}"]
         means_data[f"difference_per_{grouping_variable_aux}"] = s_mean - means_data[f"{grouping_variable_aux} mean {variable}"]
         means_data[f"proportional_difference_per_{unique_id_var}"] = 100 * means_data[f"difference_per_{unique_id_var}"] / s_mean

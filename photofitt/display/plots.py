@@ -547,7 +547,7 @@ def unsynchro_tracking(data, condition_var, output_dir, hue_order, palette_colou
     fig.savefig(os.path.join(output_dir, "mitoses_delays.png"), format="png", transparent=True)
     plt.show()
 
-def display_cell_size(data, output_path,
+def cell_size_dynamics(data, output_path,
                         x_var ="Subcategory-02",
                         x_label = "Light dose [J/cm2]",
                         roundness=0, graph_format='png',
