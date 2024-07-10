@@ -162,7 +162,11 @@ def count_mitosis_all(path, stacks=True, pd_dataframe=None, column_data=[], fram
 
     return pd_dataframe
 
-def quantify_peaks(input_data, variable, frame_rate=4, alpha_init=25, alpha_end=120, beta_init=250, beta_end=350):
+def quantify_peaks(input_data, variable, frame_rate=4,
+                   reference_category='0 jcm2',
+                   reference_variable="Subcategory-02",
+                   alpha_init=25, alpha_end=120,
+                   beta_init=250, beta_end=350):
     """
     This is to calculate the motility peak and the ratio between
     the first part of the video and the second one.
@@ -215,7 +219,7 @@ def quantify_peaks(input_data, variable, frame_rate=4, alpha_init=25, alpha_end=
     for f in np.unique(aux["Subcategory-00"]):
         ## The loop runs by replica
         folder_wise = aux[aux["Subcategory-00"] == f].reset_index(drop=True)
-        s_mean = np.mean(folder_wise[folder_wise["Subcategory-02"] == "Synchro"]["peak_time"])
+        s_mean = np.mean(folder_wise[folder_wise[reference_variable] == reference_category]["peak_time"])
         folder_wise["delay_synchro"] = (folder_wise["peak_time"] - s_mean)
         folder_wise["proportional_delay_synchro"] = (folder_wise["peak_time"] - s_mean) * (100 / s_mean)
         input_data_f = input_data[input_data["Subcategory-00"] == f].reset_index(drop=True)
@@ -231,7 +235,7 @@ def quantify_peaks(input_data, variable, frame_rate=4, alpha_init=25, alpha_end=
             index_v = folder_wise[folder_wise["video_name"] == v].index.to_list()
             folder_wise.loc[index_v, 'Number of resistant cells'] = resistant_cells
 
-        folder_wise_synchro = folder_wise[folder_wise["Subcategory-02"] == "Synchro"]
+        folder_wise_synchro = folder_wise[folder_wise[reference_variable] == reference_category]
         r_mean = np.mean(folder_wise_synchro["Number of resistant cells"])
         folder_wise["Resistant cell decrease"] = (r_mean - folder_wise["Number of resistant cells"])
         folder_wise["Proportional resistant decrease"] = (r_mean - folder_wise["Number of resistant cells"]) * (

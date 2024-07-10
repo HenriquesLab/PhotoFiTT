@@ -248,7 +248,7 @@ def estimate_proportional_deviations(data,
                           reference_category='0 J/cm2',
                           reference_variable="Light dose cat",
                           unique_id_var = "video_name",
-                          grouping_variable=None, add_columns = None):
+                          grouping_variable=None, add_columns=None):
 
     if grouping_variable is None:
         # Create a fake variable
