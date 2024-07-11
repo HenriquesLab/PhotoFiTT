@@ -100,11 +100,6 @@ Two types of data is provided to test the notebooks:
   - ```
     pip install photofitt
     ```
-    or
-  - 
-    ```
-    conda install photofitt
-    ```
 
 ## Common error messages
 - Error messages with `lxml`. 
