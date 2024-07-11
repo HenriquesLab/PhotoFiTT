@@ -4,6 +4,7 @@ import matplotlib
 import matplotlib.pyplot as plt
 import os
 import pandas as pd
+from ast import literal_eval
 
 # Avoid warnings
 import warnings
@@ -259,7 +260,7 @@ def regressionfit(data, y_var, x_var, output_path, name, palette=None, spline_or
     format_extension = name.split(".")[-1]
     f.savefig(os.path.join(output_path, name), format=format_extension, transparent=True, dpi=300)
 
-def cellsize_distributions(data, output_path, file_name, hue_order,
+def cellsize_distributions(data, output_path, file_name, hue_order,condition_var="Subcategory-02",
                            variable = "cell_size", xlim=1200,
                            hue_var="frame", common_norm=True,
                            time_points=[32, 60, 92, 120], time_limit = 120,
@@ -284,7 +285,7 @@ def cellsize_distributions(data, output_path, file_name, hue_order,
     k = 1
     fig = plt.figure(figsize=figsize)
     for g in hue_order:
-        data_g = data[data["Light dose cat"] == g]
+        data_g = data[data[condition_var] == g]
         # Create the data
         df = pd.DataFrame(dict(variable=data_g[variable], frame=data_g["frame"]))
         if time_points is None:
@@ -548,7 +549,7 @@ def unsynchro_tracking(data, condition_var, output_dir, hue_order, palette_colou
     plt.show()
 
 def cell_size_dynamics(data, output_path,
-                        x_var ="Subcategory-02",
+                        condition_var="Subcategory-02",
                         x_label = "Light dose [J/cm2]",
                         roundness=0, graph_format='png',
                           hue_order=None,
@@ -596,10 +597,17 @@ def cell_size_dynamics(data, output_path,
                 CS = cell["cell_size"]
                 RA = cell["roundness_axis"]
                 t = cell["frame"]
-                S0 = cell["Subcategory-01"]  # Density
-                S1 = cell["Subcategory-02"]  # Condition
-                aux_data = [[t, CS[f], RA[f], S0, S1] for f in range(len(RA)) if RA[f] > roundness]
-                col_names = ["frame", "cell_size", "roundness_axis", "Subcategory-00", "Subcategory-01"]
+                S0 = cell["Subcategory-00"]  # Density
+                S1 = cell["Subcategory-01"]  # Condition
+                S2 = cell["Subcategory-02"]
+                if not condition_var.__contains__("Subcategory"):
+                    V = cell[condition_var]
+                    aux_data = [[t, CS[f], RA[f], S0, S1, S2, V] for f in range(len(RA)) if RA[f] > roundness]
+                    col_names = ["frame", "cell_size", "roundness_axis", "Subcategory-00", "Subcategory-01",
+                                 "Subcategory-02", condition_var]
+                else:
+                    aux_data = [[t, CS[f], RA[f], S0, S1, S2] for f in range(len(RA)) if RA[f] > roundness]
+                    col_names = ["frame", "cell_size", "roundness_axis", "Subcategory-00", "Subcategory-01", "Subcategory-02"]
                 aux = pd.DataFrame(aux_data, columns=col_names)
                 if data_display is None:
                     data_display = aux
@@ -623,13 +631,13 @@ def cell_size_dynamics(data, output_path,
         aux = aux.reset_index(drop=True)
 
         if orient=="v":
-            x_var = x_var
+            x_var = condition_var
             y_var = "frame"
             ylabel = "Time [min]"
             xlabel = x_label
             figsize = (7, 5)
         else:
-            y_var = x_var
+            y_var = condition_var
             x_var = "frame"
             ylabel = x_label
             xlabel = "Time [min]"
@@ -658,6 +666,7 @@ def cell_size_dynamics(data, output_path,
             del aux
 
         cellsize_distributions(data_display, output_path, f"{d}_cellsize_reduced.{graph_format}", reduced_hue,
+                               condition_var=condition_var,
                                variable=variable,
                                xlim=xlim,
                                hue_var="frame",
