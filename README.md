@@ -16,18 +16,21 @@ These are the steps to follow to replicate the analysis:
 ### Deep learning based analysis
 Follow these steps to detect cells and pre-mitotic rounding events in the data.
 1. Cell Detection and Quantification (deep learning-based image analysis: This processing is only applied to the first time point of each video.
-   - Virtual Staining: Use [ZeroCostDL4Mic](https://github.com/HenriquesLab/ZeroCostDL4Mic)/[DL4MicEverywhere](https://github.com/HenriquesLab/DL4MicEverywhere) Pix2Pix notebook to train a virtual staining model that infers cell nuclei. Analyse the first frame of each video.
+   - Virtual Staining: Use [ZeroCostDL4Mic](https://github.com/HenriquesLab/ZeroCostDL4Mic) / [DL4MicEverywhere](https://github.com/HenriquesLab/DL4MicEverywhere) Pix2Pix notebook to train a virtual staining model that infers cell nuclei. Analyse the first frame of each video.
    - Nuclei Segmentation: Use ZeroCostDL4Mic/DL4MicEverywhere 2D StarDist notebook to apply the pretrained StarDist-versatile model to segment individual nuclei in the virtually stained images.
-   - Initial Cell Quantification: Count the number of detected nuclei (Use notebook `XXXXX.ipnynb` to generate a CSV file with the counts). The number of detected nuclei serves as the baseline cell count for each field of view, enabling tracking of population dynamics over time.
 2. Pre-mitotic Cell Identification (deep learning-based image analysis):
    - For CHO cells imaged with brightfield, you can use our trained StarDist model. Otherwise, manually annotate a representative image set and train a new StarDist model using the corresponding ZeroCostDL4Mic/DL4MicEverywhere notebooks.
 
-### Image data Analysis
-1. Cell Size Analysis and Classification `Analyse_premitotic_rounding.ipnynb`
-2. Quantification of Cellular Activity `Analyse_cellactivity.ipnynb`
-3. Quantification of manually tracked mitotic events in unsynchronised cell populations `Analyse_unsynchronised_cells.ipnynb`
+### Image data analysis
+1. Cell Size Analysis and Classification notebook: [`Analyse_premitotic_rounding.ipnynb`](https://github.com/HenriquesLab/PhotoFiTT/blob/main/notebooks/Analyse_premitotic_rounding.ipynb)
+2. Quantification of Cellular Activity notebook: [`Analyse_cellactivity.ipnynb`](https://github.com/HenriquesLab/PhotoFiTT/blob/main/notebooks/Analyse_cellactivity.ipynb)
+3. Quantification of manually tracked mitotic events in unsynchronised cell populations notebook: [`Analyse_unsynchronised_cells.ipnynb`](https://github.com/HenriquesLab/PhotoFiTT/blob/main/notebooks/Analyse_unsynchronised_cells.ipynb)
 
-
+### Example data
+Two types of data is provided to test the notebooks:
+- Data to reproduce the plots and results from our study with synchronised cells. When using this, one could skip calculating the mitotic events or cell activity and skip section 1 of the notebooks.
+- Example data to start using the notebooks for synchronised populations. 
+- The manual annotations of unsynchronised populations used for our research study.
 
 ## Data structure
 
