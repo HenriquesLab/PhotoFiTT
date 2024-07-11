@@ -16,48 +16,57 @@ def smooth(y, t_win):
     y_smooth = np.convolve(y, t, mode='same')
     return y_smooth
 
-def total_cell_number(folder, type="csv"):
+def total_cell_number(path, type="csv", pd_dataframe=None, column_data=[]):
     """
 
-    :param folder:
+    :param path:
     :param type: "csv" or "image". It will read the total cell number from a csv file or compute it from the masks
+    :param cell_number: None initialisation parameter for recursiveness or a previously calculated list to add more datapoints. 
+    :param column_data: [] Initialisation parameter for recursiveness.
     :return:
     """
-    cell_number = None
 
-    for f in os.listdir(folder):
+    for f in os.listdir(path):
         if not f.startswith("."):
             print(f'Processing folder {f}')
-            if type=="csv":
-                masks = [files for files in os.listdir(os.path.join(folder, f)) if files.endswith("_Nuclei_centre.csv")]
-                for m in masks:
-                    info = pd.read_csv(os.path.join(folder, f, m), header=0)
+            if not os.path.isfile(os.path.join(path, f)):
+                pd_dataframe = total_cell_number(os.path.join(path, f), type=type, pd_dataframe=pd_dataframe,
+                                                 column_data=column_data + [f])
+            else:
+                if type=="csv" and f.__contains__('.csv'):
+                    info = pd.read_csv(os.path.join(path, f), header=0)
                     n = len(info)
                     video_name = m.split("_Nuclei_centre")[0]
                     aux = pd.DataFrame({
-                        'Subcategory-00': f,
-                        'video_name': video_name,
-                        'cell_counts_stardist': n}, index=[0])
-                    if cell_number is None:
-                        cell_number = aux
+                    'Subcategory-00': f,
+                    'video_name': video_name,
+                    'cell_counts_stardist': n}, index=[0])
+                    # Add the folder structure info to the set of files
+                    for i in range(len(column_data)):
+                            aux["Subcategory-{:02d}".format(i)] = column_data[i]
+                    # Update the dataframe
+                    if pd_dataframe is None:
+                        pd_dataframe = aux
                     else:
-                        cell_number = pd.concat([cell_number, aux]).reset_index(drop=True)
-            else:
-                masks = [files for files in os.listdir(os.path.join(folder, f)) if files.endswith(".tif")]
-                for m in masks:
-                    im = imread(os.path.join(folder, f, m))
+                        pd_dataframe = pd.concat([pd_dataframe, aux]).reset_index(drop=True)
+
+                elif type=="image" and f.__contains__('.tif'):
+                    im = imread(os.path.join(path, f))
                     n = len(np.unique(im))-1
-                    video_name = m.split(".tif")[0]
+                    video_name = f.split(".tif")[0]
                     aux = pd.DataFrame({
                         'Subcategory-00': f,
                         'video_name': video_name,
                         'cell_counts_stardist': n}, index=[0])
-                    if cell_number is None:
-                        cell_number = aux
+                    # Add the folder structure info to the set of files
+                    for i in range(len(column_data)):
+                            aux["Subcategory-{:02d}".format(i)] = column_data[i]
+                    # Update the dataframe
+                    if pd_dataframe is None:
+                        pd_dataframe = aux
                     else:
-                        cell_number = pd.concat([cell_number, aux]).reset_index(drop=True)
-
-    return cell_number
+                        pd_dataframe = pd.concat([pd_dataframe, aux]).reset_index(drop=True)
+    return pd_dataframe
 
 def add_inferred_nuclei(data, cellnumber_data):
     replicas = np.unique(cellnumber_data["Subcategory-00"])
@@ -117,14 +126,7 @@ def count_mitosis_all(path, stacks=True, pd_dataframe=None, column_data=[], fram
     print(folders)
     for f in folders:
         if f[0] != '.':
-            if not f.__contains__('.'):
-                if f.__contains__("CHO"): # folder for which the frame-rate is defined
-                    if f.__contains__("fast"):
-                        frame_rate = 2
-                    elif f.__contains__("4"):
-                        frame_rate = 4
-                    else:
-                        frame_rate = 10
+            if not os.path.isfile(os.path.join(path, f)):
                 print("Frame rate of this folder is {}".format(frame_rate))
                 pd_dataframe = count_mitosis_all(os.path.join(path, f), stacks=stacks, pd_dataframe=pd_dataframe,
                                                  column_data=column_data + [f], frame_rate=frame_rate,

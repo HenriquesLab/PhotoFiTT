@@ -99,7 +99,7 @@ def extract_activity(path, activity_info=None, column_data=[], frame_rate=4, enh
     print(folders)
     for f in folders:
         if f[0] != '.':
-            if not f.__contains__('.'):
+            if not os.path.isfile(os.path.join(path, f)):
 
                 activity_info = extract_activity(os.path.join(path, f), activity_info=activity_info,
                                                  column_data=column_data + [f], frame_rate=frame_rate,
@@ -174,8 +174,8 @@ def extract_activity(path, activity_info=None, column_data=[], frame_rate=4, enh
                     else:
                         activity_info = pd.concat([activity_info, aux]).reset_index(drop=True)
 
-                    os.makedirs(output_path.split("stardist")[0], exist_ok=True)
-                    activity_info.to_csv(os.path.join(output_path.split("stardist")[0],
+                    os.makedirs(output_path, exist_ok=True)
+                    activity_info.to_csv(os.path.join(output_path,
                                                       "data_activity_{0}_{1}_temp.csv".format(method, condition)))
     return activity_info
 
