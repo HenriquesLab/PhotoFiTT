@@ -29,7 +29,9 @@ Follow these steps to detect cells and pre-mitotic rounding events in the data.
 ### Example data
 Two types of data is provided to test the notebooks:
 - Data to reproduce the plots and results from our study with synchronised cells. When using this, one could skip calculating the mitotic events or cell activity and skip section 1 of the notebooks.
-- Example data to start using the notebooks for synchronised populations. 
+   -  [Cell pre-mitotic rounding](https://github.com/HenriquesLab/PhotoFiTT/releases/tag/v1.0.1#:~:text=data_activity_intensity.csv)
+   -  [Cell activity](https://github.com/HenriquesLab/PhotoFiTT/releases/tag/v1.0.1#:~:text=normalised_mitosis_counting.csv)
+- Example data to start using the notebooks for synchronised populations. (TODO Zenodo link)
 - The manual annotations of unsynchronised populations used for our research study.
 
 ## Data structure
