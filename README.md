@@ -41,7 +41,7 @@ Two types of data is provided to test the notebooks:
       ```
        -Raw-images (folder)
        |
-       |--Biological-replica-date-1 (folder) [Subcaegory-00]
+       |--Biological-replica-date-1 (folder) [Subcategory-00]
            |
            |--Cell density / UV Ligth / WL 475 light [Subcategory-01] 
               |
