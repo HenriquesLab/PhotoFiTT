@@ -32,7 +32,7 @@ Two types of data is provided to test the notebooks:
    -  [Cell mitotic rounding](https://github.com/HenriquesLab/PhotoFiTT/releases/tag/v1.0.1#:~:text=data_activity_intensity.csv)
    -  [Cell activity](https://github.com/HenriquesLab/PhotoFiTT/releases/tag/v1.0.1#:~:text=normalised_mitosis_counting.csv)
 - Example data to start using the notebooks for synchronised populations. ([Download here](https://zenodo.org/records/12733476))
-- The manual annotations of unsynchronised populations used for our research study.
+- The manual annotations of unsynchronised populations used for our research study are available in [Biorachive](https://www.ebi.ac.uk/biostudies/bioimages/studies/S-BIAD1269). Go to the 'Manual tracking annotation of mitotic rounding in CHO unsynchronised cells - brightfield' section.
 
 ## Data structure
 
