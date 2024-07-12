@@ -10,29 +10,30 @@
 A Quantitative Framework for Assessing Phototoxicity in Live-Cell
 
 # General description of the workflow
-PhotoFiTT was designed to quantitatively analyse the impact that fluorescence light excitation has in cell behaviour.
-PhotoFiTT focuses on three different measurements: (1) Identified mitotic cells, (2) Cell size dynamics and (3) Cell activity.
-These are the steps to follow to replicate the analysis: 
+PhotoFiTT is designed to quantitatively analyse the impact of fluorescence light excitation on cell behavior during live-cell imaging. It focuses on three key measurements: (1) Identified mitotic cells, (2) Cell size dynamics, and (3) Cell activity.
+To replicate our analysis, follow these steps: 
 ### Deep learning based analysis
 Follow these steps to detect cells and mitotic rounding events in the data.
-1. Cell Detection and Quantification (deep learning-based image analysis: This processing is only applied to the first time point of each video.
-   - Virtual Staining: Use [ZeroCostDL4Mic](https://github.com/HenriquesLab/ZeroCostDL4Mic) / [DL4MicEverywhere](https://github.com/HenriquesLab/DL4MicEverywhere) Pix2Pix notebook to train a virtual staining model that infers cell nuclei. Analyse the first frame of each video.
+1. Cell Detection and Quantification (deep learning-based image analysis):
+   - Virtual Staining: Use [ZeroCostDL4Mic](https://github.com/HenriquesLab/ZeroCostDL4Mic) / [DL4MicEverywhere](https://github.com/HenriquesLab/DL4MicEverywhere) Pix2Pix notebook to train a virtual staining model that infers cell nuclei. This analysis is applied only to the first frame of each video.
    - Nuclei Segmentation: Use ZeroCostDL4Mic/DL4MicEverywhere 2D StarDist notebook to apply the pretrained StarDist-versatile model to segment individual nuclei in the virtually stained images.
 2. Mitotic Cell Identification (deep learning-based image analysis):
-   - For CHO cells imaged with brightfield, you can use our trained StarDist model. Otherwise, manually annotate a representative image set and train a new StarDist model using the corresponding ZeroCostDL4Mic/DL4MicEverywhere notebooks.
+   - For Chinese Hamster Ovary (CHO) cells imaged with brightfield, you can use our trained StarDist model. If using other cell types or imaging conditions, manually annotate a representative image set and train a new StarDist model using the corresponding ZeroCostDL4Mic/DL4MicEverywhere notebooks.
 
 ### Image data analysis
 1. Cell Size Analysis and Classification notebook: [`Analyse_mitotic_rounding.ipnynb`](https://github.com/HenriquesLab/PhotoFiTT/blob/main/notebooks/Analyse_mitotic_rounding.ipynb)
 2. Quantification of Cellular Activity notebook: [`Analyse_cellactivity.ipnynb`](https://github.com/HenriquesLab/PhotoFiTT/blob/main/notebooks/Analyse_cellactivity.ipynb)
 3. Quantification of manually tracked mitotic events in unsynchronised cell populations notebook: [`Analyse_unsynchronised_cells.ipnynb`](https://github.com/HenriquesLab/PhotoFiTT/blob/main/notebooks/Analyse_unsynchronised_cells.ipynb)
 
+By following these steps, you can replicate our workflow and perform a detailed analysis of cell behavior under fluorescence light excitation.
+
 ### Example data
-Two types of data is provided to test the notebooks:
-- Data to reproduce the plots and results from our study with synchronised cells. When using this, one could skip calculating the mitotic events or cell activity and skip section 1 of the notebooks.
+Two types of data are provided to test the notebooks:
+- This dataset includes synchronised CHO cells and allows you to reproduce the plots and results from our study. You can skip calculating mitotic events or cell activity and section 1 of the notebooks when using this dataset.
    -  [Cell mitotic rounding](https://github.com/HenriquesLab/PhotoFiTT/releases/tag/v1.0.1#:~:text=data_activity_intensity.csv)
    -  [Cell activity](https://github.com/HenriquesLab/PhotoFiTT/releases/tag/v1.0.1#:~:text=normalised_mitosis_counting.csv)
-- Example data to start using the notebooks for synchronised populations. ([Download here](https://zenodo.org/records/12733476))
-- The manual annotations of unsynchronised populations used for our research study are available in [Biorachive](https://www.ebi.ac.uk/biostudies/bioimages/studies/S-BIAD1269). Go to the 'Manual tracking annotation of mitotic rounding in CHO unsynchronised cells - brightfield' section.
+- This dataset provides an example to start using the notebooks. ([Download here](https://zenodo.org/records/12733476))
+- The manual annotations used for our research study on unsynchronised populations are available on [Biorachive](https://www.ebi.ac.uk/biostudies/bioimages/studies/S-BIAD1269). Refer to the 'Manual tracking annotation of mitotic rounding in CHO unsynchronised cells - brightfield' section.
 
 ## Data structure
 
@@ -88,29 +89,32 @@ Two types of data is provided to test the notebooks:
       ```
       
 # Package installation
-- The code provides an `environment.yaml` file to create a conda environment with all the dependencies needed.
-  Place your terminal in the `photofitt` folder. Use either conda or mamba:
+- To set up the environment and install the necessary dependencies, follow these steps:
+## Clone the Repository and Set Up the Conda Environment:
+- Open up the terminal and using either conda or mamba paste the following:
+
   ```
   git clone https://github.com/HenriquesLab/photofitt.git
   cd photofitt
   mamba env create -f environment.yml  
   mamba activate photofitt
   ```
+- The code provides an `environment.yaml` file to create a conda environment with all the required dependencies and places your terminal in the photofitt folder created by cloning our PhotofiTT repo.
 
-- Install the package using pip install or conda as follows:
-  
+## Install the package using pip install or conda as follows:
+  - You can install the PhotoFiTT package using pip:
   - ```
     pip install photofitt
     ```
 
 ## Common error messages
-- Error messages with `lxml`. 
-Most probably you need to update developers tools in your system. Before anything, run in Mac M1:
+- Error messages involving `lxml`. 
+The most probable solution is to update the developers tools in your system. If you are running our code in Mac M1 copy this in the terminal:
   - 
       ```
       xcode-select --install
       ```
-- If you were in Linux, you can run 
+- If you are in Linux, copy this in the terminal instead: 
   - ```
     sudo apt-get update
     sudo apt-get install libxml2-dev libxslt-dev python-dev
