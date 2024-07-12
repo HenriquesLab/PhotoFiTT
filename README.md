@@ -43,7 +43,7 @@ Two types of data is provided to test the notebooks:
        |
        |--Biological-replica-date-1 (folder) [Subcategory-00]
            |
-           |--Cell density / UV Ligth / WL 475 light [Subcategory-01] 
+           |--Cell density / UV Light / WL 475 light [Subcategory-01] 
               |
               |-- control-condition (folder) [Subcategory-02] 
               |    |  file1.tif
@@ -60,13 +60,13 @@ Two types of data is provided to test the notebooks:
               |    |  file2.tif
               |    |  ...
            |
-           |--Cell density / UV Ligth / WL 475 light [Subcategory-01]
+           |--Cell density / UV Light / WL 475 light [Subcategory-01]
            ...
        -Masks (folder)
        |
-       |--Biological-replica-date-1 (folder) [Subcaegory-00]
+       |--Biological-replica-date-1 (folder) [Subcategory-00]
            |
-           |--Cell density / UV Ligth / WL 475 light [Subcategory-01] 
+           |--Cell density / UV Light / WL 475 light [Subcategory-01] 
               |
               |-- control-condition (folder) [Subcategory-02] 
               |    |  file1.tif
@@ -83,7 +83,7 @@ Two types of data is provided to test the notebooks:
               |    |  file2.tif
               |    |  ...
            |
-           |--Cell density / UV Ligth / WL 475 light [Subcategory-01]
+           |--Cell density / UV Light / WL 475 light [Subcategory-01]
            ...
       ```
       
