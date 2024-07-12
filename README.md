@@ -31,7 +31,7 @@ Two types of data is provided to test the notebooks:
 - Data to reproduce the plots and results from our study with synchronised cells. When using this, one could skip calculating the mitotic events or cell activity and skip section 1 of the notebooks.
    -  [Cell mitotic rounding](https://github.com/HenriquesLab/PhotoFiTT/releases/tag/v1.0.1#:~:text=data_activity_intensity.csv)
    -  [Cell activity](https://github.com/HenriquesLab/PhotoFiTT/releases/tag/v1.0.1#:~:text=normalised_mitosis_counting.csv)
-- Example data to start using the notebooks for synchronised populations. (TODO Zenodo link)
+- Example data to start using the notebooks for synchronised populations. ([Download here](https://zenodo.org/records/12733476))
 - The manual annotations of unsynchronised populations used for our research study.
 
 ## Data structure
