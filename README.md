@@ -113,6 +113,7 @@ Two types of data are provided to test the notebooks:
     jupyter notebook
     ```
    - Once your web browser opens with a location tree, find the photofitt folder and open the required notebook. The URL generally looks like user/photofitt/notebooks
+   - Follow the instructions in each notebook to carry out the analysis
 
 ## Common error messages
 ### Error messages involving `lxml`. 
