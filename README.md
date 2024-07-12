@@ -29,10 +29,10 @@ By following these steps, you can replicate our workflow and perform a detailed 
 
 ### Example data
 Two types of data are provided to test the notebooks:
-- This dataset includes synchronised CHO cells and allows you to reproduce the plots and results from our study. You can skip calculating mitotic events or cell activity and section 1 of the notebooks when using this dataset.
+- This dataset includes synchronised CHO cells and allows you to reproduce the plots and results from our study. You can skip calculating mitotic events or cell activity and section 1 of the notebooks when using these datasets.
    -  [Cell mitotic rounding](https://github.com/HenriquesLab/PhotoFiTT/releases/tag/v1.0.1#:~:text=data_activity_intensity.csv)
    -  [Cell activity](https://github.com/HenriquesLab/PhotoFiTT/releases/tag/v1.0.1#:~:text=normalised_mitosis_counting.csv)
-- This dataset provides an example to start using the notebooks. ([Download here](https://zenodo.org/records/12733476))
+- This dataset ([Download here](https://zenodo.org/records/12733476)) provides an example to start using the notebooks.
 - The manual annotations used for our research study on unsynchronised populations are available on [Biorachive](https://www.ebi.ac.uk/biostudies/bioimages/studies/S-BIAD1269). Refer to the 'Manual tracking annotation of mitotic rounding in CHO unsynchronised cells - brightfield' section.
 
 ## Data structure
@@ -91,7 +91,7 @@ Two types of data are provided to test the notebooks:
 # Package installation
 - To set up the environment and install the necessary dependencies, follow these steps:
 ## Clone the Repository and Set Up the Conda Environment:
-- Open up the terminal and using either conda or mamba paste the following:
+- Open up the terminal and using mamba (if conda is preferred, change the code accordingly) paste the following:
 
   ```
   git clone https://github.com/HenriquesLab/photofitt.git
