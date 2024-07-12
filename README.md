@@ -99,16 +99,23 @@ Two types of data are provided to test the notebooks:
   mamba env create -f environment.yml  
   mamba activate photofitt
   ```
-- The code provides an `environment.yaml` file to create a conda environment with all the required dependencies and places your terminal in the photofitt folder created by cloning our PhotofiTT repo.
+- The code above provides an `environment.yaml` file to create an environment with all the required dependencies and places your terminal in the photofitt folder created by cloning our PhotofiTT repo.
 
 ## Install the package using pip install or conda as follows:
   - You can install the PhotoFiTT package using pip:
-  - ```
+
+    ```
     pip install photofitt
     ```
+## Running our notebooks for analysis:
+  - You can use jupyter notebooks directly from the terminal with the following code:
+    ```
+    jupyter notebook
+    ```
+   - Locate the photofitt folder and open the required notebook in /photofitt/notebooks
 
 ## Common error messages
-- Error messages involving `lxml`. 
+### Error messages involving `lxml`. 
 The most probable solution is to update the developers tools in your system. If you are running our code in Mac M1 copy this in the terminal:
   - 
       ```
@@ -119,6 +126,8 @@ The most probable solution is to update the developers tools in your system. If 
     sudo apt-get update
     sudo apt-get install libxml2-dev libxslt-dev python-dev
     ```
-
+### Jupyter notebooks open as blank pages
+  - This is a common occurence with Jupyter notebooks. To fix this issue copy the URL you get when executing "Jupyter notebook" from your terminal into your web browser. This URL has a token that allows to securely open the notebooks and generally looks like this:
+http://127.0.0.1:8888/tree?token=2323dba1e********************************************
 
 
