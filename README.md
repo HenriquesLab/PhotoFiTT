@@ -11,25 +11,25 @@ A Quantitative Framework for Assessing Phototoxicity in Live-Cell
 
 # General description of the workflow
 PhotoFiTT was designed to quantitatively analyse the impact that fluorescence light excitation has in cell behaviour.
-PhotoFiTT focuses on three different measurements: (1) Identified pre-mitotic cells, (2) Cell size dynamics and (3) Cell activity.
+PhotoFiTT focuses on three different measurements: (1) Identified mitotic cells, (2) Cell size dynamics and (3) Cell activity.
 These are the steps to follow to replicate the analysis: 
 ### Deep learning based analysis
-Follow these steps to detect cells and pre-mitotic rounding events in the data.
+Follow these steps to detect cells and mitotic rounding events in the data.
 1. Cell Detection and Quantification (deep learning-based image analysis: This processing is only applied to the first time point of each video.
    - Virtual Staining: Use [ZeroCostDL4Mic](https://github.com/HenriquesLab/ZeroCostDL4Mic) / [DL4MicEverywhere](https://github.com/HenriquesLab/DL4MicEverywhere) Pix2Pix notebook to train a virtual staining model that infers cell nuclei. Analyse the first frame of each video.
    - Nuclei Segmentation: Use ZeroCostDL4Mic/DL4MicEverywhere 2D StarDist notebook to apply the pretrained StarDist-versatile model to segment individual nuclei in the virtually stained images.
-2. Pre-mitotic Cell Identification (deep learning-based image analysis):
+2. Mitotic Cell Identification (deep learning-based image analysis):
    - For CHO cells imaged with brightfield, you can use our trained StarDist model. Otherwise, manually annotate a representative image set and train a new StarDist model using the corresponding ZeroCostDL4Mic/DL4MicEverywhere notebooks.
 
 ### Image data analysis
-1. Cell Size Analysis and Classification notebook: [`Analyse_premitotic_rounding.ipnynb`](https://github.com/HenriquesLab/PhotoFiTT/blob/main/notebooks/Analyse_premitotic_rounding.ipynb)
+1. Cell Size Analysis and Classification notebook: [`Analyse_mitotic_rounding.ipnynb`](https://github.com/HenriquesLab/PhotoFiTT/blob/main/notebooks/Analyse_mitotic_rounding.ipynb)
 2. Quantification of Cellular Activity notebook: [`Analyse_cellactivity.ipnynb`](https://github.com/HenriquesLab/PhotoFiTT/blob/main/notebooks/Analyse_cellactivity.ipynb)
 3. Quantification of manually tracked mitotic events in unsynchronised cell populations notebook: [`Analyse_unsynchronised_cells.ipnynb`](https://github.com/HenriquesLab/PhotoFiTT/blob/main/notebooks/Analyse_unsynchronised_cells.ipynb)
 
 ### Example data
 Two types of data is provided to test the notebooks:
 - Data to reproduce the plots and results from our study with synchronised cells. When using this, one could skip calculating the mitotic events or cell activity and skip section 1 of the notebooks.
-   -  [Cell pre-mitotic rounding](https://github.com/HenriquesLab/PhotoFiTT/releases/tag/v1.0.1#:~:text=data_activity_intensity.csv)
+   -  [Cell mitotic rounding](https://github.com/HenriquesLab/PhotoFiTT/releases/tag/v1.0.1#:~:text=data_activity_intensity.csv)
    -  [Cell activity](https://github.com/HenriquesLab/PhotoFiTT/releases/tag/v1.0.1#:~:text=normalised_mitosis_counting.csv)
 - Example data to start using the notebooks for synchronised populations. (TODO Zenodo link)
 - The manual annotations of unsynchronised populations used for our research study.
