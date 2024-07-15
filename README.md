@@ -4,24 +4,37 @@
 [![GitHub forks](https://img.shields.io/github/forks/HenriquesLab/PhotoFiTT?style=social)](https://github.com/HenriquesLab/PhotoFiTT/)
 
 
-<img src="https://github.com/HenriquesLab/PhotoFiTT/blob/main/docs/logo/photofitt-logo.png" align="right" width="300"/>
 
 # PhotoFiTT: Phototoxicity Fitness Time Trial
-A Quantitative Framework for Assessing Phototoxicity in Live-Cell
 
-# General description of the workflow
+<img src="https://github.com/HenriquesLab/PhotoFiTT/blob/main/docs/logo/photofitt-logo.png" align="right" width="300"/>
+
+### A Quantitative Framework for Assessing Phototoxicity in Live-Cell
+
 PhotoFiTT is designed to quantitatively analyse the impact of fluorescence light excitation on cell behaviour during live-cell imaging. It focuses on three key measurements: (1) Identified mitotic cells, (2) Cell size dynamics, and (3) Cell activity.
 To replicate our analysis, follow these steps: 
 
-### Deep learning-based analysis
-Follow these steps to detect cells and mitotic rounding events in the data.
-1. Cell Detection and Quantification (deep learning-based image analysis):
-   - Virtual Staining: Use [ZeroCostDL4Mic](https://github.com/HenriquesLab/ZeroCostDL4Mic) / [DL4MicEverywhere](https://github.com/HenriquesLab/DL4MicEverywhere) Pix2Pix notebook to train a virtual staining model that infers cell nuclei. This analysis is applied only to the first frame of each video.
-   - Nuclei Segmentation: Use ZeroCostDL4Mic/DL4MicEverywhere 2D StarDist notebook to apply the pre-trained StarDist-versatile model to segment individual nuclei in the virtually stained images.
-2. Mitotic Cell Identification (deep learning-based image analysis):
-   - For Chinese Hamster Ovary (CHO) cells imaged with brightfield, you can use our trained StarDist model. If using other cell types or imaging conditions, manually annotate a representative image set and train a new StarDist model using the corresponding ZeroCostDL4Mic/DL4MicEverywhere notebooks.
+### Key Features
+- **Deep Learning-Based Cell Analysis:** Leverage state-of-the-art deep learning models for accurate cell detection, segmentation, and mitotic event identification.
+- **Mitotic Cell Identification:** Detect and quantify mitotic rounding events in live-cell imaging data.
+- **Cell Size Dynamics:** Analyse changes in cell size over time to assess the impact of phototoxicity.
+- **Cellular Activity Quantification:** Measure and compare cellular activity levels across different experimental conditions.
+- **Unsynchronized Cell Analysis:** Quantify mitotic events in unsynchronised cell populations through manual tracking.
 
-### Image data analysis
+## Workflow Overview
+
+### Deep learning-based analysis
+
+#### 1. Cell Detection and Quantification:
+- Use deep learning-based virtual staining and nuclei segmentation to identify individual cells with [ZeroCostDL4Mic](https://github.com/HenriquesLab/ZeroCostDL4Mic) / [DL4MicEverywhere](https://github.com/HenriquesLab/DL4MicEverywhere) Pix2Pix notebook. This analysis is applied only to the first frame of each video.
+- Leverage pre-trained 2D StarDist models available in [ZeroCostDL4Mic](https://github.com/HenriquesLab/ZeroCostDL4Mic) / [DL4MicEverywhere](https://github.com/HenriquesLab/DL4MicEverywhere), or equivalent models trained for your specific cell type and imaging conditions to segment individual nuclei in the virtually stained images.
+
+#### 2. Mitotic Cell Identification:
+- Detect and quantify mitotic rounding events using deep learning-based models.
+- For Chinese Hamster Ovary (CHO) cells imaged with brightfield, you can use our trained StarDist model.
+- If using other cell types or imaging conditions, manually annotate a representative image set and train a new segmentation model (e.g., StarDist) using the corresponding [ZeroCostDL4Mic](https://github.com/HenriquesLab/ZeroCostDL4Mic) / [DL4MicEverywhere](https://github.com/HenriquesLab/DL4MicEverywhere) notebooks.
+
+### Image Data Analysis
 1. Cell Size Analysis and Classification notebook: [`Analyse_mitotic_rounding.ipnynb`](https://github.com/HenriquesLab/PhotoFiTT/blob/main/notebooks/Analyse_mitotic_rounding.ipynb)
    - **Example data 1:** CSV file with the results published in our preprint that allows reproducing the plots and results from our study for synchronised CHO cells. Find it in [Biorachive](https://www.ebi.ac.uk/biostudies/bioimages/studies/S-BIAD1269) - Study component *PhotoFiTT published results data - detected mitotic events and cell activity*. Name of the file: `normalised_mitosis_counting.csv`.  When using these datasets, you can skip calculating mitotic events (section 1 of the notebook).
    - **Example data 2:** Image data to start using the notebook from scratch. [Download here](https://zenodo.org/records/12733476) the zip files `mitotic_rounding_masks.zip`and `pix2pix_masks.zip`. 
@@ -32,7 +45,35 @@ Follow these steps to detect cells and mitotic rounding events in the data.
    - **Example dataset:** The manual annotations used for our research study on unsynchronised populations, available on [Biorachive](https://www.ebi.ac.uk/biostudies/bioimages/studies/S-BIAD1269) - Annotation *Manual tracking annotation of mitotic rounding in CHO unsynchronised cells - brightfield*.
 By following these steps, you can replicate our workflow and perform a detailed analysis of cell behaviour under fluorescence light excitation.
 
-### Data structure
+## Installation
+
+To set up the PhotoFiTT framework, follow these steps in the terminal:
+
+#### 1. Clone the repository:
+Open up the terminal and paste the following commands to clone the PhotoFiTT repository and using `mamba` (or `conda` if preferred) create a Python environment with all the required dependencies.
+```
+git clone https://github.com/HenriquesLab/PhotoFiTT.git
+cd PhotoFiTT
+```
+
+#### 2. Create and Activate the Conda Environment:
+Use `mamba` or `conda`, as preferred.
+```
+mamba env create -f environment.yml
+mamba activate photofitt
+```
+#### 3. Install the PhotoFiTT Package:
+ ```
+ pip install photofitt
+ ```
+#### 4. Launch Jupyter Notebooks to start analysing your data:
+```
+jupyter notebook
+```
+This will open the Jupyter Notebook interface in your web browser. Navigate to the `notebooks` folder to access the provided analysis notebooks.
+
+
+## Data structure
 
 1. The masks and the raw input, should be equally organised by folders, each folder for each condition to be analysed in a hierarchical manner.
    For example:
@@ -84,44 +125,23 @@ By following these steps, you can replicate our workflow and perform a detailed 
            |--Cell density / UV Light / WL 475 light [Subcategory-01]
            ...
       ```
-      
-# Package installation
+The key aspects of this data structure are:
+1. **Raw-images** and **Masks** are the two main folders containing the raw image data and the corresponding segmentation masks, respectively. Both need to be **.tif** files.
+2. Within each main folder, there are subfolders for each biological replicate, denoted as **Biological-replica-date-1**, **Biological-replica-date-2**, etc. in the schema.
+3. Each biological replicate folder contains subfolders for different experimental conditions, such as **Cell density / UV Light / WL 475 light**.
+4. Inside the condition folders, there are further subfolders for each specific condition, like **control-condition**, **condition1**, **condition2**, etc.
+5. The actual image files (`.tif`) and mask files (`.tif`) are stored in the lowest-level condition folders.
+This hierarchical structure allows the PhotoFiTT framework to handle multiple experimental conditions and replicates in an organized manner. The notebooks and analysis scripts expect the data to be structured this way for proper processing and analysis.
 
-To set up the environment and install the necessary dependencies, follow these steps:
 
-## Clone the repository and set up the Anaconda Python environment:
-- Open up the terminal and paste the following commands to clone the PhotoFiTT repository and using `mamba` (or `conda` if preferred) create a Python environment with all the required dependencies.
-  ```
-  git clone https://github.com/HenriquesLab/photofitt.git
-  cd photofitt
-  mamba env create -f environment.yml  
-  mamba activate photofitt
-  ```
-## Install PhotoFiTT:
-  - Copy the following command in the terminal after the previous ones to install PhotoFiTT. Make sure that your `photofitt` environment is activated.
-    ```
-    pip install photofitt
-    ```
-## Launch Jupyter notebooks to start analysing your data:
-  - Copy the following command in the terminal to start a Jupyter notebooks server:
-    ```
-    jupyter notebook
-    ```
-   - Jupyter will open in the web browser. Find the `photofitt` folder and open the required notebook located in the `notebooks` folder. The URL generally looks like `user/Documents/PhotoFiTT/notebooks`
-   - Follow the instructions in each notebook to carry out the analysis
-
-# Common error messages
+## Troubleshooting
 
 ### Error messages involving `lxml` 
 
 The most probable solution is to update the developers tools in your system.
-If you are running our code in Mac M1 copy this in the terminal:
-
-- 
+- For Mac M1, run `xcode-select --install` in the terminal
       ```
-      xcode-select --install
-      ```
-- If you are in Linux, copy this in the terminal instead: 
+- For Linux, run this in the terminal instead: 
     ```
     sudo apt-get update
     sudo apt-get install libxml2-dev libxslt-dev python-dev
@@ -131,4 +151,4 @@ If you are running our code in Mac M1 copy this in the terminal:
   - Copy the URL you get when executing `jupyter notebook` from your terminal into your web browser. This URL has a token to securely open the notebooks and generally looks like this:
 `http://127.0.0.1:8888/tree?token=2323dba1e********************************************`
 
-
+For any other issues or questions, please open an [issue](https://github.com/HenriquesLab/PhotoFiTT/issues). 
