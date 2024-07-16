@@ -12,7 +12,6 @@
 ### A Quantitative Framework for Assessing Phototoxicity in Live-Cell
 
 PhotoFiTT is designed to quantitatively analyse the impact of fluorescence light excitation on cell behaviour during live-cell imaging. It focuses on three key measurements: (1) Identified mitotic cells, (2) Cell size dynamics, and (3) Cell activity.
-To replicate our analysis, follow these steps: 
 
 ### Key Features
 - **Deep Learning-Based Cell Analysis:** Leverage state-of-the-art deep learning models for accurate cell detection, segmentation, and mitotic event identification.
