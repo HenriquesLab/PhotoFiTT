@@ -26,11 +26,12 @@ PhotoFiTT is designed to quantitatively analyse the impact of fluorescence light
 
 #### 1. Cell Detection and Quantification:
 - Use deep learning-based virtual staining and nuclei segmentation to identify individual cells with [ZeroCostDL4Mic](https://github.com/HenriquesLab/ZeroCostDL4Mic) / [DL4MicEverywhere](https://github.com/HenriquesLab/DL4MicEverywhere) Pix2Pix notebook. This analysis is applied only to the first frame of each video.
+- For Chinese Hamster Ovary (CHO) cells imaged with brightfield, you can use [our trained pix2pix model](https://github.com/HenriquesLab/PhotoFiTT/releases/download/v1.0.1/cho_nucleistaining_pix2pix.zip). Check out the model training description in the attached PDF file and the preprint's methods for details about data acquisition.
 - Leverage pre-trained 2D StarDist models available in [ZeroCostDL4Mic](https://github.com/HenriquesLab/ZeroCostDL4Mic) / [DL4MicEverywhere](https://github.com/HenriquesLab/DL4MicEverywhere), or equivalent models trained for your specific cell type and imaging conditions to segment individual nuclei in the virtually stained images.
 
 #### 2. Mitotic Cell Identification:
 - Detect and quantify mitotic rounding events using deep learning-based models.
-- For Chinese Hamster Ovary (CHO) cells imaged with brightfield, you can use our trained StarDist model.
+- For Chinese Hamster Ovary (CHO) cells imaged with brightfield, you can use [our trained StarDist model](https://github.com/HenriquesLab/PhotoFiTT/releases/download/v1.0.1/mitotic_rounding_detection_stardist.zip). Check out the model training description in the attached PDF file and the preprint's methods for details about data acquisition.
 - If using other cell types or imaging conditions, manually annotate a representative image set and train a new segmentation model (e.g., StarDist) using the corresponding [ZeroCostDL4Mic](https://github.com/HenriquesLab/ZeroCostDL4Mic) / [DL4MicEverywhere](https://github.com/HenriquesLab/DL4MicEverywhere) notebooks.
 
 ### Image Data Analysis
