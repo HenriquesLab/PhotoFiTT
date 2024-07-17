@@ -152,3 +152,23 @@ The most probable solution is to update the developers tools in your system.
 `http://127.0.0.1:8888/tree?token=2323dba1e********************************************`
 
 For any other issues or questions, please open an [issue](https://github.com/HenriquesLab/PhotoFiTT/issues). 
+
+# How to cite this work
+
+Mario Del Rosario, Estibaliz Gómez-de-Mariscal, Leonor Morgado, Raquel Portela, Guillaume Jacquemet, Pedro M Pereira & Ricardo Henriques.
+**PhotoFiTT: A Quantitative Framework for Assessing Phototoxicity in Live-Cell Microscopy Experiments, bioRxiv 2024**
+DOI: [10.1101/2024.07.16.603046](https://doi.org/10.1101/2024.07.16.603046)
+
+[![](https://github.com/HenriquesLab/PhotoFiTT/blob/main/docs/logo/photofitt-preprint.png)](https://doi.org/10.1101/2024.07.16.603046)
+
+```
+@article{delrosario2024photofitt,
+  title={PhotoFiTT: A Quantitative Framework for Assessing Phototoxicity in Live-Cell Microscopy Experiments},
+  author={Del Rosario, Mario and G{\'o}mez-de-Mariscal, Estibaliz and Morgado, Leonor and Portela, Raquel and Jacquemet, Guillaume and M. Pereira, Pedro and Henriques, Ricardo},
+  journal={bioRxiv},
+  year={2024},
+  publisher = {Cold Spring Harbor Laboratory},
+  URL = {https://www.biorxiv.org/content/early/2024/07/16/2024.07.16.603046},
+  eprint = {https://www.biorxiv.org/content/early/2024/07/16/2024.07.16.603046.full.pdf},
+}
+```
