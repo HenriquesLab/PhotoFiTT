@@ -50,7 +50,7 @@ def perform_statistical_test(group1, group2, test_type):
         return stats.ks_2samp(group1, group2)
 
 def perform_statistical_analysis(df, quantitative_column, subcategory_00, subcategory_01,
-                                 test_type="Kolmogorov-Smirnov",choose_statistical_test="Manual"):
+                                 test_type="Kolmogorov-Smirnov",choose_test="Manual"):
     """
     Perform pairwise statistical analysis on groups defined by subcategories.
     
@@ -63,7 +63,7 @@ def perform_statistical_analysis(df, quantitative_column, subcategory_00, subcat
       - "t-test": When both groups are normally distributed and have equal variances.
       - "Welch's t-test": When both groups are normally distributed and have unequal variances.
       - "Kolmogorov-Smirnov": When at least one of the variables is not normally distributed. 
-    choose_statistical_test: 
+    choose_test: 
       - "Automatic" if you want to run an automatic testing based on assessed properties of the data distribution. 
       - "Manual" to manually indicate what test to run.
     Returns:
@@ -72,7 +72,7 @@ def perform_statistical_analysis(df, quantitative_column, subcategory_00, subcat
     
     groups_00 = df[subcategory_00].unique()
     results = []
-    if choose_statistical_test!="Automatic":
+    if choose_test!="Automatic":
         print(f"The statistical test chosen is {test_type}")
         
     for group in groups_00:
@@ -82,7 +82,7 @@ def perform_statistical_analysis(df, quantitative_column, subcategory_00, subcat
         for subgroup1, subgroup2 in combinations(subgroups_01, 2):
             data1 = group_data[group_data[subcategory_01] == subgroup1][quantitative_column]
             data2 = group_data[group_data[subcategory_01] == subgroup2][quantitative_column]
-            if choose_statistical_test=="Automatic":
+            if choose_test=="Automatic":
                 test_type = choose_statistical_test(data1, data2)
             statistic, p_value = perform_statistical_test(data1, data2, test_type)
             
